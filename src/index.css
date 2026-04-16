@@ -1,0 +1,106 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700&family=Manrope:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Velvet & Crumb Core Palette */
+  --color-primary: #b90a5a;
+  --color-primary-container: #ff4d8d;
+  --color-on-primary: #ffffff;
+  --color-surface: #fef8f4;
+  --color-surface-lowest: #ffffff;
+  --color-surface-low: #f8f2ef;
+  --color-surface-high: #ede7e3;
+  --color-surface-highest: #e7e1de;
+  --color-text-dark: #1d1b19;
+  --color-text-light: #594046;
+  --color-outline: #8d7076;
+  --color-outline-variant: #e1bec5;
+
+  /* Premium Typography */
+  --font-heading: 'Noto Serif', serif;
+  --font-body: 'Manrope', sans-serif;
+
+  /* Atmospheric Shadows */
+  --shadow-ambient: 0 20px 40px rgba(29, 27, 25, 0.06);
+  --shadow-sm: 0 2px 8px rgba(29, 27, 25, 0.04);
+  
+  /* Border Radius */
+  --radius-sm: 0.5rem;   /* ROUND_EIGHT base */
+  --radius-md: 1rem;
+  --radius-lg: 1.5rem;   /* XL buttons */
+  --radius-full: 9999px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-surface);
+  color: var(--color-text-dark);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+/* Base App Container - taking full screen as requested */
+#root {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Typography utilities */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: normal;
+}
+
+p {
+  color: var(--color-text-light);
+  line-height: 1.6;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 2rem;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(236, 37, 92, 0.3);
+}
+
+.btn-outline {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background-color: transparent;
+}
+
+.btn-outline:hover {
+  background-color: var(--color-primary-light);
+  transform: translateY(-2px);
+}

@@ -1,0 +1,21 @@
+name: Keep Supabase Alive
+
+on:
+  schedule:
+    # Runs automatically at 00:00 every day
+    - cron: '0 0 * * *'
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  ping-database:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send API Ping to Supabase
+        run: |
+          echo "Pinging Supabase REST API to prevent pausing due to inactivity..."
+          curl -s -o /dev/null -w "Status Code: %{http_code}\n" \
+            --request GET 'https://nroedkxgnrhemgpljrot.supabase.co/rest/v1/products?select=id&limit=1' \
+            --header 'apikey: sb_publishable_h-FI9EV0HnM089RkhDBdlA_hdYhMRP7' \
+            --header 'Authorization: Bearer sb_publishable_h-FI9EV0HnM089RkhDBdlA_hdYhMRP7'
+          echo "Ping successful! Supabase will remain active."

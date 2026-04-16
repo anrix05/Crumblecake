@@ -1,0 +1,185 @@
+.checkout-page {
+  background-color: var(--color-surface);
+  min-height: 100vh;
+  padding-bottom: 4rem;
+}
+
+/* Eliminate the massive top gap by making margin-top precise */
+.checkout-content {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 2rem;
+  align-items: flex-start;
+}
+
+/* Left Column: Form Setup */
+.checkout-form-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.checkout-form-container h2, .order-summary-container h2 {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: var(--color-primary);
+}
+
+.checkout-form {
+  background: var(--color-surface-lowest);
+  padding: 2.5rem;
+  border-radius: var(--radius-xl);
+  box-shadow: 0 10px 30px rgba(185, 10, 90, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--color-text-dark);
+  opacity: 0.7;
+  letter-spacing: 0.1em;
+}
+
+.form-group input, .form-group textarea {
+  padding: 1.25rem 1.5rem;
+  background-color: var(--color-surface-low);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.form-group input:focus, .form-group textarea:focus {
+  outline: none;
+  background-color: var(--color-surface-lowest);
+  border-color: var(--color-primary-container);
+  box-shadow: 0 0 0 4px rgba(255, 77, 141, 0.1);
+}
+
+/* Right Column: Order Summary (Glassmorphism) */
+.order-summary-container {
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: calc(70px + 2rem); /* Sticks right under the navbar perfectly */
+}
+
+.order-summary {
+  background: rgba(253, 242, 242, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 2rem;
+  border-radius: var(--radius-xl);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 20px 40px rgba(185, 10, 90, 0.06);
+}
+
+.order-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px dashed rgba(185, 10, 90, 0.15);
+}
+
+.order-item {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  color: var(--color-text-dark);
+  font-size: 0.95rem;
+}
+
+.summary-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  color: var(--color-text-light);
+  font-size: 0.95rem;
+}
+
+.summary-row.total {
+  margin-top: 0.5rem;
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: var(--color-text-dark);
+  border-top: 1px dashed rgba(185, 10, 90, 0.15);
+  padding-top: 1.5rem;
+}
+
+/* Submit Button embedded in summary card */
+.place-order-btn {
+  width: 100%;
+  margin-top: 2rem;
+  padding: 1.25rem;
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  background: linear-gradient(135deg, var(--color-primary-container) 0%, var(--color-primary) 100%);
+  border: none;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 10px 20px rgba(185, 10, 90, 0.15);
+  color: white;
+  font-weight: 700;
+  transition: all 0.3s;
+}
+
+.place-order-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px rgba(185, 10, 90, 0.25);
+}
+
+/* Success State */
+.checkout-page.success {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  padding: 0;
+}
+
+.success-content {
+  margin: auto;
+  max-width: 600px;
+  padding: 6rem 2rem;
+}
+
+.success-icon {
+  margin-bottom: 2rem;
+  animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.success-content h1 {
+  font-family: var(--font-heading);
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: var(--color-primary);
+}
+
+.success-content p {
+  margin-bottom: 2.5rem;
+  font-size: 1.1rem;
+  color: var(--color-text-light);
+}

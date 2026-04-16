@@ -1,0 +1,13 @@
+/* Add these background decor classes to index.css at the bottom */
+.bg-decor {
+  position: absolute;
+  opacity: 0.8;
+  z-index: 0;
+  pointer-events: none;
+  font-size: 2rem;
+}
+
+.bg-leaf::before { content: '🍃'; opacity: 0.3; }
+.bg-berry::before { content: '🍓'; opacity: 0.5; }
+.bg-strawberry::before { content: '🍓'; filter: blur(1px); opacity: 0.6; }
+.bg-cake::before { content: '🧁'; opacity: 0.3; }
