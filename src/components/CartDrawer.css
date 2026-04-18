@@ -24,8 +24,11 @@
   width: 440px;
   max-width: 100%;
   height: 100%;
-  background: #ffffff;
-  box-shadow: -15px 0 50px rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-left: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: -20px 0 60px rgba(185, 10, 90, 0.08);
   display: flex;
   flex-direction: column;
   position: relative;
@@ -39,12 +42,13 @@
 
 /* COMPACT HEADER */
 .cart-header {
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid #f2f2f2;
+  padding: 1.5rem 1.8rem;
+  border-bottom: 1px solid rgba(185, 10, 90, 0.08);
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-shrink: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.5) 100%);
 }
 
 .cart-title {
@@ -93,20 +97,29 @@
 
 .cart-item {
   display: grid;
-  grid-template-columns: 75px 1fr auto;
+  grid-template-columns: 80px 1fr auto;
   gap: 1.25rem;
-  padding: 1rem 0;
-  border-bottom: 1px solid #f8f8f8;
+  padding: 1.25rem 0;
+  border-bottom: 1px dashed rgba(185, 10, 90, 0.15);
   align-items: center;
+  transition: all 0.3s ease;
+}
+
+.cart-item:hover {
+  background: rgba(255, 255, 255, 0.4);
+  transform: translateX(4px);
+  border-radius: 8px;
+  padding: 1.25rem 0.5rem;
+  margin: 0 -0.5rem;
 }
 
 .cart-item-img {
-  width: 75px;
-  height: 75px;
+  width: 80px;
+  height: 80px;
   object-fit: cover;
-  border-radius: 1rem;
-  background: #fafafa;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  border-radius: 1.2rem;
+  background: padding-box linear-gradient(to right, #fafafa, #efefef);
+  box-shadow: 0 8px 16px rgba(185, 10, 90, 0.06), inset 0 0 0 1px rgba(0,0,0,0.02);
 }
 
 .cart-item-info h4 {
@@ -157,21 +170,24 @@
 
 /* COMPACT FOOTER SECTION */
 .cart-footer {
-  padding: 1.25rem 1.5rem;
-  background: #ffffff;
-  border-top: 1px solid #f2f2f2;
+  padding: 1.5rem 1.8rem;
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.03);
+  border-top: 1px solid rgba(255, 255, 255, 0.5);
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.2rem;
   flex-shrink: 0;
 }
 
 /* SLIM PROMO BOX */
 .promo-section {
-  background: rgba(185, 10, 90, 0.03);
-  padding: 0.85rem 1rem;
-  border-radius: 1rem;
-  border: 1px solid rgba(185, 10, 90, 0.08);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.4));
+  backdrop-filter: blur(12px);
+  padding: 1rem 1.25rem;
+  border-radius: 1.2rem;
+  border: 1px solid rgba(185, 10, 90, 0.15);
+  box-shadow: 0 4px 12px rgba(185, 10, 90, 0.04);
 }
 
 .promo-locked, .promo-available, .promo-limit-reached {

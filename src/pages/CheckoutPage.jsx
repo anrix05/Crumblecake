@@ -17,6 +17,7 @@ export default function CheckoutPage() {
   const [customerAddress, setCustomerAddress] = useState(savedAddress || '');
   const [customerPhone, setCustomerPhone] = useState(savedPhone || '');
   const [saveAddress, setSaveAddress] = useState(false);
+  const [orderSnapshot, setOrderSnapshot] = useState(null);
   
   const todayDateStr = new Date().toISOString().split('T')[0];
   const [deliveryDate, setDeliveryDate] = useState(todayDateStr);
@@ -91,32 +92,145 @@ export default function CheckoutPage() {
       });
     }
 
+    // Save snapshot to display on the receipt before the cart clears
+    setOrderSnapshot({
+      items: [...cartItems],
+      subtotal,
+      discountAmount,
+      totalPrice: totalPrice + 50,
+      customerName,
+      customerEmail,
+      customerPhone,
+      customerAddress,
+      date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+      orderNumber: Math.floor(100000000 + Math.random() * 900000000).toString()
+    });
+
     setIsOrdered(true);
     clearCart();
   };
 
-  if (isOrdered) {
+  if (isOrdered && orderSnapshot) {
     return (
-      <div className="checkout-page success">
+      <div className="checkout-page-wrapper success">
         <Navbar />
-        <div className="success-content">
-          <div className="success-icon">
-            <CheckCircle size={80} color="#ec255c" />
+        <div className="success-content-grid">
+          
+          <div className="success-left-col">
+            <h1 className="success-heading">Thank you for your purchase!</h1>
+            <p className="success-text">Your order will be processed within 24 hours during working days. We will notify you by email once your order has been shipped.</p>
+            
+            <h3 className="billing-heading">Delivery Address</h3>
+            <div className="billing-details-grid">
+              <span className="b-label">Name</span>
+              <span className="b-value">{orderSnapshot.customerName}</span>
+              
+              <span className="b-label">Address</span>
+              <span className="b-value">{orderSnapshot.customerAddress.substring(0,60)}...</span>
+              
+              <span className="b-label">Phone</span>
+              <span className="b-value">{orderSnapshot.customerPhone}</span>
+              
+              <span className="b-label">Email</span>
+              <span className="b-value">{orderSnapshot.customerEmail}</span>
+            </div>
+
+            <button className="btn-track-order" onClick={() => navigate('/account')}>Track Your Order</button>
           </div>
-          <h1>Order Placed Successfully!</h1>
-          <p>Thank you for choosing Crumble Cake. Your delicious treats are being prepared.</p>
-          <button className="btn btn-primary" onClick={() => navigate('/')}>BACK TO HOME</button>
+
+          <div className="success-right-col">
+            <div className="receipt-box">
+              <div className="receipt-content">
+                <h3 className="receipt-title">Order Summary</h3>
+                
+                <div className="receipt-meta-grid">
+                  <div className="meta-col">
+                    <span className="m-label">Date</span>
+                    <span className="m-value">{orderSnapshot.date}</span>
+                  </div>
+                  <div className="meta-col">
+                    <span className="m-label">Order Number</span>
+                    <span className="m-value">{orderSnapshot.orderNumber}</span>
+                  </div>
+                  <div className="meta-col">
+                    <span className="m-label">Payment Method</span>
+                    <span className="m-value">Cash on Delivery</span>
+                  </div>
+                </div>
+
+                <div className="receipt-items">
+                  {orderSnapshot.items.map((item) => (
+                    <div key={item.id} className="receipt-item">
+                      <div className="r-item-img">
+                         <img src={item.image} alt={item.name} />
+                      </div>
+                      <div className="r-item-details">
+                        <h4>{item.name}</h4>
+                        <span className="r-item-variant">Qty: {item.quantity}</span>
+                      </div>
+                      <div className="r-item-price">₹{(item.price * item.quantity).toFixed(2)}</div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="receipt-summary">
+                  <div className="r-sum-row">
+                    <span>Sub Total</span>
+                    <span>₹{orderSnapshot.subtotal.toFixed(2)}</span>
+                  </div>
+                  {orderSnapshot.discountAmount > 0 && (
+                    <div className="r-sum-row">
+                      <span>Discount</span>
+                      <span>-₹{orderSnapshot.discountAmount.toFixed(2)}</span>
+                    </div>
+                  )}
+                  <div className="r-sum-row">
+                    <span>Delivery</span>
+                    <span>₹50.00</span>
+                  </div>
+                </div>
+
+                <div className="receipt-total">
+                  <span>Order Total</span>
+                  <span>₹{orderSnapshot.totalPrice.toFixed(2)}</span>
+                </div>
+              </div>
+              <div className="receipt-zigzag"></div>
+            </div>
+          </div>
+
         </div>
       </div>
     );
   }
 
   return (
-    <div className="checkout-page">
+    <div className="checkout-page-wrapper">
       <Navbar />
+      
+      {/* Stepper Breadcrumbs matching mockup */}
+      <div className="stepper-container">
+        <div className="stepper">
+          <span className="step" onClick={() => navigate('/cart')} style={{cursor:'pointer', color:'#a0a0a0'}}>
+            <span className="step-circle"></span>
+            Cart
+          </span>
+          <span className="step-divider">{'>'}</span>
+          <span className="step active" style={{color:'#111'}}>
+            <span className="step-circle active" style={{borderColor:'#111'}}></span>
+            Checkout
+          </span>
+          <span className="step-divider">{'>'}</span>
+          <span className="step" style={{color:'#a0a0a0'}}>
+            <span className="step-circle"></span>
+            Payment
+          </span>
+        </div>
+      </div>
+
       <div className="checkout-content">
-        <div className="checkout-form-container">
-          <h2>Delivery Information</h2>
+        <div className="checkout-left-col">
+          <h2 className="section-title">Delivery Information</h2>
           <form id="checkout-form" onSubmit={handlePlaceOrder} className="checkout-form">
             <div className="form-group">
               <label>Full Name</label>
@@ -192,9 +306,9 @@ export default function CheckoutPage() {
           </form>
         </div>
 
-        <div className="order-summary-container">
-          <h2>Order Summary</h2>
-          <div className="order-summary">
+        <div className="checkout-right-col">
+          <h2 className="section-title">Order Summary</h2>
+          <div className="summary-box">
             <div className="order-items">
               {cartItems.map((item) => (
                 <div key={item.id} className="order-item">

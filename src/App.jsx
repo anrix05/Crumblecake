@@ -11,7 +11,8 @@ import AdminOrders from './pages/AdminOrders';
 import AdminSettings from './pages/AdminSettings';
 import LoginPage from './pages/LoginPage';
 import AccountPage from './pages/AccountPage';
-import CartDrawer from './components/CartDrawer';
+import OrderDetailPage from './pages/OrderDetailPage';
+import CartPage from './pages/CartPage';
 import CustomerAuthModal from './components/CustomerAuthModal';
 import { useAuth } from './context/AuthContext';
 
@@ -20,7 +21,6 @@ function App() {
 
   return (
     <>
-      <CartDrawer />
       <CustomerAuthModal 
         isOpen={isAuthModalOpen} 
         onClose={() => setIsAuthModalOpen(false)} 
@@ -28,8 +28,10 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/cart" element={<CartPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/account" element={<AccountPage />} />
+        <Route path="/account/order/:orderId" element={<OrderDetailPage />} />
         
         {/* Admin Routes */}
         <Route path="/admin" element={<AdminLayout />}>

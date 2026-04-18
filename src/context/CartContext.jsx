@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { useOrders } from './OrderContext';
+import { useNavigate } from 'react-router-dom';
 
 const CartContext = createContext();
 
@@ -11,9 +12,11 @@ export function CartProvider({ children }) {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [discountPercent, setDiscountPercent] = useState(0);
   const [appliedPromo, setAppliedPromo] = useState('');
+  const navigate = useNavigate();
 
   const addToCart = (product) => {
-    setIsCartOpen(true); // Open the cart drawer automatically when adding
+    // Navigate to the new Cart Page automatically when adding an item
+    navigate('/cart');
     setCartItems(prev => {
       const existing = prev.find(item => item.id === product.id);
       if (existing) {

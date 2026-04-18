@@ -4,7 +4,7 @@ import { useProducts } from '../context/ProductContext';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useOrders } from '../context/OrderContext';
-import { ShoppingBag, Star, Plus, Upload, X, Palette, Info } from 'lucide-react';
+import { ShoppingBag, Star, Plus, Upload, X, Palette, Info, Cake } from 'lucide-react';
 import './CakesPage.css';
 
 export default function CakesPage() {
@@ -126,21 +126,34 @@ export default function CakesPage() {
 
         <div className="cakes-grid">
           {filteredCakes.map(cake => (
-            <div key={cake.id} className="cake-card">
-              <div className="cake-image-container">
+            <div key={cake.id} className="cake-card" onClick={() => addToCart(cake)}>
+              <div className="cake-image-section">
                 <img src={cake.image} alt={cake.name} className="cake-img" />
-                <div className="cake-rating">
-                  <Star size={14} fill="#ffc107" color="#ffc107" />
-                  <span>{cake.rating}</span>
+                <div className="pagination-dots">
+                   <div className="dot active"></div>
+                   <div className="dot"></div>
+                   <div className="dot"></div>
+                   <div className="dot"></div>
                 </div>
               </div>
-              <div className="cake-info">
-                <span className="cake-category">{cake.category}</span>
-                <h3 className="cake-name">{cake.name}</h3>
-                <div className="cake-bottom">
-                  <span className="cake-price">₹{cake.price.toFixed(2)}</span>
-                  <button className="add-to-cart-btn" onClick={() => addToCart(cake)}>
-                    <ShoppingBag size={18} />
+
+              <div className="cake-content">
+                <div className="cake-header-row">
+                  <h3 className="cake-title">{cake.name}</h3>
+                  <div className="cake-rating-box">
+                    <Star size={16} fill="#146b43" color="#146b43" />
+                    <span>{cake.rating} ({(cake.id.length * 7 % 10) / 2 + 1}k)</span>
+                  </div>
+                </div>
+                
+                <p className="cake-meta">
+                  {cake.category} , 1kg , Eggless , Freshly Baked
+                </p>
+
+                <div className="cake-footer">
+                  <span className="cake-price-tag">₹{Number(cake.price).toFixed(2)}</span>
+                  <button className="buy-now-btn" onClick={(e) => { e.stopPropagation(); addToCart(cake); }}>
+                    Buy Now
                   </button>
                 </div>
               </div>
@@ -149,19 +162,34 @@ export default function CakesPage() {
 
           {/* Build Your Own Cake Card */}
           <div className="cake-card custom-cake-card" onClick={openCustomModal}>
-            <div className="custom-cake-visual">
-              <div className="custom-cake-icon">
-                <Palette size={32} />
-              </div>
-              <div className="custom-cake-plus">
-                <Plus size={24} />
-              </div>
+            <div className="cake-image-section">
+               <div className="custom-cake-visual-alt">
+                 <Cake size={48} />
+               </div>
+               <div className="pagination-dots">
+                  <div className="dot active"></div>
+                  <div className="dot"></div>
+               </div>
             </div>
-            <div className="cake-info">
-              <span className="cake-category" style={{color: '#5200ff'}}>Custom</span>
-              <h3 className="cake-name">Build Your Own</h3>
-              <div className="cake-bottom">
-                <span className="custom-cake-tag">Design It →</span>
+
+            <div className="cake-content">
+              <div className="cake-header-row">
+                <h3 className="cake-title">Build Your Own</h3>
+                <div className="cake-rating-box">
+                  <Star size={16} fill="#5200ff" color="#5200ff" />
+                  <span>5.0 (New)</span>
+                </div>
+              </div>
+              
+              <p className="cake-meta" style={{color: '#5200ff'}}>
+                Custom Design , Your Choice , Special Occasion
+              </p>
+
+               <div className="cake-footer">
+                <span className="cake-price-tag" style={{fontSize: '1.2rem'}}>₹(See Price)</span>
+                <span className="design-more-link" onClick={(e) => { e.stopPropagation(); openCustomModal(); }}>
+                  Design It →
+                </span>
               </div>
             </div>
           </div>

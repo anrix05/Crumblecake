@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useOrders } from '../context/OrderContext';
-import { useNavigate } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
+import { useNavigate, Link } from 'react-router-dom';
 import { 
   Package, 
   MapPin, 
@@ -88,19 +89,18 @@ const StarRating = ({ rating, onRate, readOnly = false }) => {
     </div>
   );
 };
-
 export default function AccountPage() {
   const { user, signOut, savedAddress, savedName, savedPhone, updateProfile } = useAuth();
-  const { orders, updateOrderStatus, rateOrderItem } = useOrders();
+  const { orders, updateOrderStatus } = useOrders();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('orders');
   const [isEditing, setIsEditing] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState(null);
   const [nameInput, setNameInput] = useState(savedName || '');
   const [phoneInput, setPhoneInput] = useState(savedPhone || '');
   const [addressInput, setAddressInput] = useState(savedAddress || '');
   const [updateMsg, setUpdateMsg] = useState('');
   const [cancellableOrders, setCancellableOrders] = useState({});
+  const [orderFilter, setOrderFilter] = useState('All');
 
   const checkCancellable = useCallback((order) => {
     if (order.status !== 'Processing' || order.status === 'Cancelled') return false;
@@ -124,8 +124,14 @@ export default function AccountPage() {
     return null;
   }
 
-  // Filter orders for this user
   const myOrders = orders.filter(order => order.email === user.email);
+
+  const filteredOrders = myOrders.filter(order => {
+    if (orderFilter === 'All') return true;
+    if (orderFilter === 'Shipped') return order.status === 'Shipped' || order.status === 'Out for Delivery';
+    if (orderFilter === 'Delivered') return order.status === 'Delivered' || order.status === 'Completed';
+    return order.status.toLowerCase() === orderFilter.toLowerCase();
+  });
 
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
@@ -143,146 +149,150 @@ export default function AccountPage() {
     }
   };
 
-  const handleCancelOrder = async (orderId) => {
-    if (window.confirm('Are you sure you want to cancel this order?')) {
-      await updateOrderStatus(orderId, 'Cancelled');
-      setUpdateMsg('Order cancelled successfully.');
-      setTimeout(() => setUpdateMsg(''), 3000);
-    }
-  };
-
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'Processing': return <Clock size={18} />;
-      case 'Out for Delivery': return <Truck size={18} />;
-      case 'Completed': return <CheckCircle size={18} />;
-      default: return <Package size={18} />;
-    }
-  };
-
   const formatDate = (dateStr) => {
     if (!dateStr) return '';
-    if (!dateStr.includes('T')) return dateStr; // Fallback for old orders
+    if (!dateStr.includes('T')) return dateStr;
     return new Date(dateStr).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
   };
 
   return (
-    <div className="account-page">
-      <Navbar />
-      
-      <div className="account-container">
-        {/* Header Section */}
-        <header className="account-header">
-          <div className="user-info">
-            <div className="user-avatar">
-              {user.email[0].toUpperCase()}
-            </div>
-            <div>
-              <h1>Welcome, {savedName || user.email.split('@')[0]}</h1>
-              <p>{user.email}</p>
-            </div>
-          </div>
-          <button className="btn-logout" onClick={() => { signOut(); navigate('/'); }}>
-            <LogOut size={18} />
-            <span>Logout</span>
-          </button>
-        </header>
+    <div className="account-page-wrapper">
+      <div className="brand-account-header">
+        <h2>{activeTab === 'orders' ? 'My Orders' : 'My Account'}</h2>
+        <div className="brand-breadcrumbs">
+          <Link to="/">Home</Link> &gt; <Link to="/account" onClick={() => setActiveTab('profile')}>My Account</Link> &gt; {activeTab === 'orders' ? 'My Orders' : 'Personal Information'}
+        </div>
+      </div>
 
-        <div className="account-content">
-          {/* Sidebar Navigation */}
-          <aside className="account-sidebar">
-            <nav>
-              <button 
-                className={activeTab === 'orders' ? 'active' : ''} 
-                onClick={() => setActiveTab('orders')}
-              >
-                <Package size={20} />
-                <span>My Orders</span>
-              </button>
+      <div className="account-container-brand">
+        <div className="account-content-brand">
+          <aside className="account-sidebar-brand">
+            <div className="sidebar-profile-card">
+              <div className="avatar-circle">
+                <img src={`https://ui-avatars.com/api/?name=${savedName || user.email}&background=random`} alt="Avatar" />
+              </div>
+              <div className="profile-names">
+                <span className="greeting-text">Hello,</span>
+                <span className="user-name-text">{savedName || user.email.split('@')[0]}</span>
+              </div>
+            </div>
+            
+            <nav className="brand-nav-list">
               <button 
                 className={activeTab === 'profile' ? 'active' : ''} 
                 onClick={() => setActiveTab('profile')}
               >
-                <MapPin size={20} />
-                <span>Saved Address</span>
+                Personal Information
+              </button>
+              <button 
+                className={activeTab === 'orders' ? 'active' : ''} 
+                onClick={() => setActiveTab('orders')}
+              >
+                My Orders
+              </button>
+              <button className="logout-btn-nav" onClick={() => { signOut(); navigate('/'); }}>
+                Logout
               </button>
             </nav>
+
+            <div className="need-help-card">
+              <div className="help-icon">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="#cfd8dc"><path d="M12 2C6.48 2 2 5.58 2 10c0 2.5 1.45 4.7 3.73 6.09-.32 1.58-1.12 3.14-1.24 3.36a.48.48 0 00.56.66c2.81-.69 4.88-2.22 5.86-3.05a11.53 11.53 0 001.09.05c5.52 0 10-3.58 10-8s-4.48-8-10-8zm0 14c-.45 0-.91-.04-1.35-.1a.5.5 0 00-.47.16c-1.14 1.15-3.02 2.39-5.18 2.87.52-1.22 1.14-2.88 1.14-4.42a.5.5 0 00-.23-.42C4.1 12.87 3 11.51 3 10c0-3.86 4.03-7 9-7s9 3.14 9 7-4.03 7-9 7z"/></svg>
+              </div>
+              <h4>Need Help?</h4>
+              <p>Have questions or concerns regarding your account?</p>
+            </div>
           </aside>
 
-          {/* Main Content Area */}
           <main className="account-main">
             {activeTab === 'orders' ? (
-              <div className="tab-pane">
-                <div className="pane-header">
-                  <h2>Order History</h2>
-                  <span>{myOrders.length} Orders</span>
+              <div className="tab-pane-brand">
+                <div className="pane-header-brand">
+                  <h2>My Orders</h2>
+                </div>
+                
+                <div className="order-filter-tabs">
+                  <span 
+                    className={orderFilter === 'All' ? 'active' : ''} 
+                    onClick={() => setOrderFilter('All')}
+                  >All</span>
+                  <span className="divider">|</span>
+                  <span 
+                    className={orderFilter === 'Shipped' ? 'active' : ''} 
+                    onClick={() => setOrderFilter('Shipped')}
+                  >Shipped</span>
+                  <span className="divider">|</span>
+                  <span 
+                    className={orderFilter === 'Delivered' ? 'active' : ''} 
+                    onClick={() => setOrderFilter('Delivered')}
+                  >Delivered</span>
+                  <span className="divider">|</span>
+                  <span 
+                    className={orderFilter === 'Cancelled' ? 'active' : ''} 
+                    onClick={() => setOrderFilter('Cancelled')}
+                  >Cancelled</span>
                 </div>
 
-                {myOrders.length === 0 ? (
+                {filteredOrders.length === 0 ? (
                   <div className="empty-state">
                     <ShoppingBag size={48} />
-                    <p>You haven't placed any orders yet.</p>
+                    <p>No orders found in "{orderFilter}".</p>
                     <button className="btn-primary" onClick={() => navigate('/')}>Explore Cakes</button>
                   </div>
                 ) : (
-                  <div className="order-list">
-                    {myOrders.map(order => (
-                      <div key={order.id} className="order-card">
-                        <div className="order-card-header">
-                          <div className="order-id">
-                            <span>Order ID</span>
-                            <strong style={{display: 'flex', alignItems: 'center', gap: '6px'}}>#{order.id}
-                              {Array.isArray(order.items) && order.items.some(i => i.type === 'custom') && (
-                                <span style={{background: 'linear-gradient(135deg, #8B5CF6, #A855F7)', color: 'white', fontSize: '0.55rem', fontWeight: '800', padding: '2px 7px', borderRadius: '9999px', letterSpacing: '0.06em'}}>CUSTOM</span>
+                  <div className="brand-order-list">
+                    {filteredOrders.map(order => {
+                      const firstItem = order.items && order.items[0];
+                      const totalQty = order.items ? order.items.reduce((sum, i) => sum + i.quantity, 0) : 0;
+                      
+                      return (
+                        <div key={order.id} className="brand-order-card">
+                          <div className="b-card-top">
+                            <span className={`b-status-badge ${order.status.toLowerCase().replace(/\s/g, '-')}`}>
+                              {order.status}
+                            </span>
+                            {['Delivered', 'Completed'].includes(order.status) && (
+                              <button className="b-rate-link" onClick={() => navigate(`/account/order/${order.id}`)}>
+                                <Star fill="currentColor" size={12} /> Rate & Review Product
+                              </button>
+                            )}
+                          </div>
+                          
+                          <div className="b-card-meta">
+                            <span className="b-meta-date">{formatDate(order.date)}</span>
+                            <span className="meta-divider">|</span>
+                            <span className="b-meta-order">Order No: {order.id}</span>
+                            <span className="b-meta-total">Total: <strong>₹{Number(order.total).toFixed(2)}</strong></span>
+                          </div>
+                          
+                          <div className="b-line-divider"></div>
+                          
+                          <div className="b-card-product-row">
+                            <div className="b-product-info">
+                              {firstItem?.image && (
+                                <div className="b-product-img">
+                                  <img src={firstItem.image} alt="product" />
+                                </div>
                               )}
-                            </strong>
+                              <div className="b-product-details">
+                                <h4>{firstItem?.name || 'Assorted Cakes'}</h4>
+                                <span className="b-product-qty">₹{firstItem?.price} × {totalQty}</span>
+                              </div>
+                            </div>
+                            
+                            <button className="b-order-details-btn" onClick={() => navigate(`/account/order/${order.id}`)}>
+                              Order Details
+                            </button>
                           </div>
-                          <div className={`status-badge ${order.status.toLowerCase().replace(/\s/g, '-')}`}>
-                            {getStatusIcon(order.status)}
-                            <span>{order.status}</span>
-                          </div>
-                          <button className="btn-view-details-header" onClick={() => setSelectedOrder(order)}>
-                            Details <ChevronRight size={14} />
-                          </button>
                         </div>
-                        
-                        <div className="order-card-body">
-                           <div className="order-details">
-                             <div className="detail-item">
-                               <span className="label">Date:</span>
-                               <span className="value">{formatDate(order.date)}</span>
-                             </div>
-                             <div className="detail-item">
-                               <span className="label">{Number(order.total) === 0 ? '' : 'Total Paid:'}</span>
-                               {Number(order.total) === 0 ? (
-                                 <span className="value" style={{color: '#EA580C', fontWeight: 700, fontSize: '0.95rem'}}>⏳ Price Pending</span>
-                               ) : (
-                                 <span className="value price">₹{Number(order.total).toFixed(2)}</span>
-                               )}
-                             </div>
-                           </div>
-                           <div className="order-actions">
-                             {cancellableOrders[order.id] && (
-                               <div className="cancellation-zone">
-                                 <OrderTimer 
-                                   createdAt={order.date} 
-                                   onExpire={() => setCancellableOrders(prev => ({...prev, [order.id]: false}))} 
-                                 />
-                                 <button className="btn-cancel-order" onClick={() => handleCancelOrder(order.id)}>
-                                   Cancel Order
-                                 </button>
-                               </div>
-                             )}
-                           </div>
-                         </div>
-                      </div>
-                    ))}
+                      )
+                    })}
                   </div>
                 )}
               </div>
             ) : (
-              <div className="tab-pane">
-                <div className="pane-header">
+              <div className="tab-pane-brand">
+                <div className="pane-header-brand">
                   <h2>Profile & Address</h2>
                 </div>
 
@@ -355,121 +365,6 @@ export default function AccountPage() {
           </main>
         </div>
       </div>
-
-      {/* Order Details Modal */}
-      {selectedOrder && (() => {
-        const currentOrder = orders.find(o => o.id === selectedOrder.id) || selectedOrder;
-        return (
-          <div className="order-modal-overlay" onClick={() => setSelectedOrder(null)}>
-            <div className="order-modal" onClick={e => e.stopPropagation()}>
-              <div className="modal-header">
-                <div>
-                  <h2>Order Receipt</h2>
-                  <p>#{currentOrder.id} • {formatDate(currentOrder.date)}</p>
-                </div>
-                <button className="close-modal" onClick={() => setSelectedOrder(null)}>
-                  <X size={20} />
-                </button>
-              </div>
-              
-              <div className="modal-body">
-                <div className="modal-section">
-                  <h3>Items Purchased</h3>
-                  <div className="modal-items">
-                    {currentOrder.items && currentOrder.items.map((item, idx) => (
-                      <div key={idx} className="modal-item-rating-wrapper">
-                        {item.type === 'custom' ? (
-                          <div className="custom-order-detail" style={{padding: '1rem', backgroundColor: 'var(--color-surface-low)', borderRadius: '12px'}}>
-                            <div style={{display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem'}}>
-                              <Palette size={18} color="#8B5CF6" />
-                              <span style={{fontWeight: 800, color: '#8B5CF6', fontSize: '0.95rem', letterSpacing: '0.02em'}}>Custom Cake Request</span>
-                            </div>
-                            {item.image && (
-                              <img src={item.image} alt="Reference" style={{width: '100%', maxHeight: '400px', objectFit: 'contain', backgroundColor: 'rgba(0,0,0,0.03)', borderRadius: '12px', marginBottom: '1rem', border: '1px solid var(--color-outline-variant)'}} />
-                            )}
-                            <div style={{backgroundColor: 'white', padding: '1.25rem', borderRadius: '12px', border: '1px solid var(--color-outline-variant)'}}>
-                              <p style={{fontWeight: 800, fontSize: '1.1rem', marginBottom: '0.5rem', color: 'var(--color-text-dark)'}}>{item.name}</p>
-                              <p style={{fontSize: '0.9rem', color: 'var(--color-text-light)', marginBottom: '1rem', lineHeight: '1.5'}}>{item.description}</p>
-                              <p style={{fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-primary)', display: 'inline-block', backgroundColor: 'var(--color-primary-light)', padding: '0.3rem 0.8rem', borderRadius: '20px'}}>Size: {item.size}</p>
-                              {Number(currentOrder.total) === 0 && (
-                                <div style={{marginTop: '1rem', padding: '0.75rem 1rem', background: '#FFF7ED', border: '1px solid #FED7AA', borderRadius: '8px', fontSize: '0.85rem', color: '#9A3412', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px'}}>
-                                  ⏳ Price will be updated by the bakery soon
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        ) : (
-                          <>
-                            <div className="modal-item" style={{backgroundColor: 'var(--color-surface-lowest)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--color-outline-variant)', marginBottom: '0.5rem'}}>
-                              <div className="item-main">
-                                <span className="item-qty" style={{fontWeight: '800'}}>{item.quantity}x</span>
-                                <span className="item-name" style={{fontWeight: '700', color: 'var(--color-text-dark)'}}>{item.name}</span>
-                              </div>
-                              <span className="item-price" style={{fontWeight: '800'}}>₹{(item.price * item.quantity).toFixed(2)}</span>
-                            </div>
-                            
-                            {['Completed', 'Delivered'].includes(currentOrder.status) && (
-                              <div className="item-rating-row" style={{padding: '0.5rem 1rem 1rem'}}>
-                                <span className="rating-label">
-                                  {item.user_rating ? 'Your Rating:' : 'Rate this item:'}
-                                </span>
-                                <StarRating 
-                                  rating={item.user_rating || 0} 
-                                  onRate={(val) => rateOrderItem(currentOrder.id, idx, val)}
-                                />
-                              </div>
-                            )}
-                          </>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="modal-section">
-                  <h3>Delivery Details</h3>
-                  <div className="delivery-info">
-                    <p className="delivery-formatted">{currentOrder.address}</p>
-                  </div>
-                </div>
-
-                <div className="modal-summary">
-                  <div className="summary-row">
-                    <span>Subtotal</span>
-                    <span>₹{(Number(currentOrder.total) - 50).toFixed(2)}</span>
-                  </div>
-                  <div className="summary-row">
-                    <span>Delivery Fee</span>
-                    <span>₹50.00</span>
-                  </div>
-                  <div className="summary-row total">
-                    <span>Total Paid</span>
-                    <span>₹{Number(currentOrder.total).toFixed(2)}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="modal-footer">
-                <div className={`status-pill ${currentOrder.status.toLowerCase().replace(/\s/g, '-')}`}>
-                  {getStatusIcon(currentOrder.status)}
-                  {currentOrder.status}
-                </div>
-                {cancellableOrders[currentOrder.id] && (
-                  <button 
-                    className="btn-cancel-order large" 
-                    onClick={() => {
-                      handleCancelOrder(currentOrder.id);
-                      setSelectedOrder(null);
-                    }}
-                  >
-                    Cancel Order Now
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        );
-      })()}
     </div>
   );
 }

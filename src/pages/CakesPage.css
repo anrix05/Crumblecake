@@ -1,10 +1,3 @@
-.page-wrapper {
-  display: flex;
-  flex-direction: column;
-  min-height: 100%;
-  position: relative;
-}
-
 .cakes-main {
   padding: 2rem 4rem 4rem;
   z-index: 1;
@@ -17,21 +10,18 @@
 
 .cakes-title {
   font-size: 3.8rem;
-  font-family: var(--font-heading);
-  color: var(--color-text-dark);
+  font-family: var(--font-heading, serif);
+  color: #111;
   font-weight: 800;
   letter-spacing: -0.02em;
 }
 
 .text-pink {
-  background: linear-gradient(135deg, var(--color-primary), #ff6b9d);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #bc024d;
 }
 
 .cakes-subtitle {
-  color: var(--color-text-light);
+  color: #666;
   font-size: 1.1rem;
   margin-top: 0.5rem;
 }
@@ -45,355 +35,339 @@
 }
 
 .filter-btn {
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(185, 10, 90, 0.1);
+  background: white;
+  border: 1px solid #eee;
   padding: 0.6rem 1.8rem;
-  border-radius: var(--radius-full);
+  border-radius: 30px;
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-  color: var(--color-text-light);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
-}
-
-.filter-btn:hover {
-  background: white;
-  border-color: rgba(185, 10, 90, 0.3);
-  color: var(--color-primary);
-  transform: translateY(-2px);
+  transition: all 0.3s ease;
+  color: #666;
 }
 
 .filter-btn.active {
-  background: var(--color-primary);
+  background: #bc024d;
   color: white;
-  border-color: var(--color-primary);
-  box-shadow: 0 8px 16px rgba(185, 10, 90, 0.25);
-  transform: translateY(-2px);
+  border-color: #bc024d;
 }
 
+/* =========================================
+   THE PREMIUM PRODUCT GRID (Rolex Inspired)
+   ========================================= */
 .cakes-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
   gap: 2.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .cake-card {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(12px);
-  border-radius: 24px;
-  padding: 1.25rem;
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04), inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  background: #ffffff;
+  border-radius: 32px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.03);
+  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
   display: flex;
   flex-direction: column;
+  position: relative;
+  border: 1px solid rgba(0,0,0,0.05);
+  height: 520px; /* Locked height for consistency */
 }
 
 .cake-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(185, 10, 90, 0.08), inset 0 0 0 1px rgba(255, 255, 255, 1);
+  transform: translateY(-12px);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.08);
 }
 
-.cake-image-container {
-  position: relative;
-  width: 100%;
-  height: 240px;
-  border-radius: 16px;
-  overflow: hidden;
-  background-color: var(--color-surface-low);
+/* Top Image Frame */
+.cake-image-section {
+  background-color: #f7f7f7; 
+  margin: 12px;
+  border-radius: 24px;
+  height: 280px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: inset 0 2px 10px rgba(0,0,0,0.02);
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
 }
 
 .cake-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  width: 85%;
+  height: 85%;
+  object-fit: contain;
+  transition: transform 0.5s ease;
 }
 
 .cake-card:hover .cake-img {
-  transform: scale(1.08);
+  transform: scale(1.05);
 }
 
-.cake-rating {
+/* Pagination Dots */
+.pagination-dots {
   position: absolute;
-  top: 12px;
-  right: 12px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(4px);
-  padding: 6px 10px;
-  border-radius: var(--radius-full);
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 5px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #e0e0e0;
+}
+
+.dot.active {
+  width: 14px;
+  height: 6px;
+  border-radius: 10px;
+  background: #146b43; /* Rolex Green */
+}
+
+/* Lower Content Section */
+.cake-content {
+  padding: 1.25rem 1.75rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.cake-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+  width: 100%;
+}
+
+.cake-title {
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #111;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.cake-rating-box {
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 0.85rem;
-  font-weight: 800;
-  color: var(--color-text-dark);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #111;
+  padding: 4px 8px;
+  background: #f0f0f0;
+  border-radius: 8px;
+  white-space: nowrap;
 }
 
-.cake-info {
-  padding: 1.5rem 0.5rem 0.5rem;
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-}
-
-.cake-category {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: var(--color-primary);
-  font-weight: 800;
-  margin-bottom: 0.5rem;
-}
-
-.cake-name {
-  font-size: 1.35rem;
-  font-weight: 800;
-  margin-bottom: 1.5rem;
-  line-height: 1.3;
-  color: var(--color-text-dark);
-}
-
-.cake-bottom {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: auto;
-}
-
-.cake-price {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--color-text-dark);
-}
-
-.add-to-cart-btn {
-  background: white;
-  border: 1px solid rgba(185, 10, 90, 0.1);
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-  color: var(--color-primary);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-}
-
-.add-to-cart-btn:hover {
-  background: var(--color-primary);
-  color: white;
-  border-color: var(--color-primary);
-  transform: scale(1.1);
-  box-shadow: 0 6px 16px rgba(185, 10, 90, 0.3);
-}
-
-/* ================================
-   CUSTOM CAKE CARD
-   ================================ */
-.custom-cake-card {
-  cursor: pointer;
-  background: linear-gradient(135deg, rgba(82, 0, 255, 0.05), rgba(185, 10, 90, 0.05));
-  border: 1px solid rgba(82, 0, 255, 0.1);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02), inset 0 0 0 1px rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(12px);
-  border-radius: 24px;
-}
-
-.custom-cake-card:hover {
-  border-color: rgba(82, 0, 255, 0.2);
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(82, 0, 255, 0.12), inset 0 0 0 1px rgba(255, 255, 255, 0.8);
-}
-
-.custom-cake-visual {
-  position: relative;
-  width: 100%;
-  height: 240px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, rgba(82, 0, 255, 0.1), rgba(185, 10, 90, 0.1));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  box-shadow: inset 0 2px 10px rgba(0,0,0,0.04);
-}
-
-.custom-cake-icon {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #5200ff, var(--color-primary));
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-  box-shadow: 0 8px 24px rgba(82, 0, 255, 0.3);
-}
-
-.custom-cake-card:hover .custom-cake-icon {
-  transform: scale(1.15) rotate(10deg);
-}
-
-.custom-cake-plus {
-  position: absolute;
-  bottom: 12px;
-  right: 12px;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: white;
-  color: #5200ff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(82, 0, 255, 0.15);
-  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.custom-cake-card:hover .custom-cake-plus {
-  transform: rotate(90deg) scale(1.1);
-  background: #5200ff;
-  color: white;
-  box-shadow: 0 8px 16px rgba(82, 0, 255, 0.3);
-}
-
-.custom-cake-tag {
+.cake-meta {
   font-size: 0.95rem;
-  font-weight: 800;
+  color: #888;
+  margin-bottom: 1.5rem;
+  line-height: 1.4;
+  font-family: var(--font-body);
+}
+
+/* Price & Button Footer */
+.cake-footer {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.cake-price-tag {
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: #111;
+  letter-spacing: -0.5px;
+}
+
+.buy-now-btn {
+  background: #146b43; /* Rolex Green */
+  color: white;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(20, 107, 67, 0.2);
+}
+
+.buy-now-btn:hover {
+  background: #0d4d30;
+  box-shadow: 0 6px 16px rgba(20, 107, 67, 0.3);
+  transform: translateY(-1px);
+}
+
+/* Custom Card Layout */
+.custom-cake-card .cake-image-section {
+  background: linear-gradient(135deg, #f0f0ff 0%, #e8e8ff 100%);
+}
+
+.custom-cake-visual-alt {
   color: #5200ff;
-  letter-spacing: 0.05em;
+  font-size: 3rem;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0); }
+}
+
+.design-more-link {
+  color: #5200ff;
+  font-weight: 800;
+  font-size: 1rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+  .cakes-main {
+    padding: 2rem 1rem;
+  }
+  .cakes-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ================================
-   CUSTOM CAKE MODAL
+   CUSTOM CAKE MODAL (Restored)
    ================================ */
 .custom-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.5);
-  backdrop-filter: blur(6px);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 10000;
   padding: 2rem;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .custom-modal {
   background: white;
-  border-radius: var(--radius-lg);
+  border-radius: 32px;
   width: 100%;
-  max-width: 520px;
+  max-width: 560px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 32px 64px rgba(0,0,0,0.2);
-  animation: modalSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.2);
+  position: relative;
+  animation: modalPop 0.4s cubic-bezier(0.17, 0.84, 0.44, 1);
 }
 
-@keyframes modalSlideUp {
-  from { opacity: 0; transform: translateY(24px) scale(0.97); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+@keyframes modalPop {
+  from { opacity: 0; transform: scale(0.95) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 .custom-modal-header {
+  padding: 2.5rem 2.5rem 1rem;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 2rem 2rem 0;
 }
 
 .custom-modal-header h2 {
-  font-family: var(--font-heading);
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: var(--color-text-dark);
-  margin-bottom: 0.25rem;
+  font-family: var(--font-heading, serif);
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #111;
+  margin: 0 0 0.25rem;
 }
 
 .custom-modal-header p {
-  font-size: 0.9rem;
-  color: var(--color-text-light);
+  color: #666;
+  font-size: 0.95rem;
+  margin: 0;
 }
 
 .custom-close {
-  background: var(--color-surface-low);
+  background: #f5f5f5;
   border: none;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: var(--color-text-light);
+  color: #666;
   transition: all 0.2s ease;
-  flex-shrink: 0;
 }
 
 .custom-close:hover {
-  background: var(--color-surface-high);
-  color: var(--color-text-dark);
+  background: #eee;
+  color: #111;
+  transform: rotate(90deg);
 }
 
 .custom-modal-body {
-  padding: 1.5rem 2rem 2rem;
+  padding: 1rem 2.5rem 2.5rem;
 }
 
 /* Upload Area */
 .custom-upload-area {
-  position: relative;
-  width: 100%;
-  height: 200px;
-  border: 2px dashed var(--color-outline-variant);
-  border-radius: var(--radius-md);
+  background: #f9f9f9;
+  border: 2px dashed #ddd;
+  border-radius: 20px;
+  height: 220px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s ease;
+  margin-bottom: 2rem;
   overflow: hidden;
-  margin-bottom: 1.5rem;
-  background: var(--color-surface-low);
+  position: relative;
 }
 
 .custom-upload-area:hover {
-  border-color: var(--color-primary);
-  background: rgba(185, 10, 90, 0.02);
+  border-color: #bc024d;
+  background: #fdf5f8;
 }
 
 .custom-upload-area.has-image {
   border-style: solid;
-  border-color: var(--color-primary);
+  border-color: #bc024d;
 }
 
 .upload-placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  color: var(--color-outline);
+  text-align: center;
+  color: #888;
 }
 
 .upload-placeholder p {
   font-weight: 700;
-  color: var(--color-text-light);
-  font-size: 0.95rem;
+  color: #444;
+  margin: 0.5rem 0 0.25rem;
 }
 
 .upload-placeholder span {
   font-size: 0.8rem;
-  color: var(--color-outline);
 }
 
 .custom-preview {
@@ -404,70 +378,58 @@
 
 .remove-image {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
+  top: 12px;
+  right: 12px;
   background: rgba(0,0,0,0.6);
   color: white;
   border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s;
+  backdrop-filter: blur(4px);
 }
 
-.remove-image:hover {
-  background: rgba(186, 26, 26, 0.9);
-}
-
-/* Form Fields */
+/* Form Styles */
 .custom-form {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-  margin-bottom: 1.5rem;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .custom-field label {
   display: block;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--color-text-light);
+  color: #444;
   margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .custom-field input,
 .custom-field textarea {
   width: 100%;
-  padding: 0.85rem 1rem;
-  border: 1.5px solid var(--color-outline-variant);
-  border-radius: var(--radius-sm);
-  font-family: var(--font-body);
-  font-size: 0.95rem;
-  color: var(--color-text-dark);
-  transition: border-color 0.2s ease;
-  background: white;
-  resize: none;
+  padding: 1rem 1.25rem;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 1rem;
+  background: #fff;
+  transition: all 0.2s ease;
 }
 
 .custom-field input:focus,
 .custom-field textarea:focus {
   outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(185, 10, 90, 0.08);
+  border-color: #bc024d;
+  box-shadow: 0 0 0 4px rgba(188, 2, 77, 0.05);
 }
 
-.custom-field input::placeholder,
-.custom-field textarea::placeholder {
-  color: var(--color-outline);
-}
-
-/* Size Options */
 .size-options {
   display: flex;
   gap: 0.75rem;
@@ -475,76 +437,56 @@
 
 .size-btn {
   flex: 1;
-  padding: 0.65rem 0.5rem;
-  border: 1.5px solid var(--color-outline-variant);
-  border-radius: var(--radius-sm);
+  padding: 0.75rem;
+  border: 1px solid #eee;
+  border-radius: 10px;
   background: white;
-  cursor: pointer;
   font-weight: 700;
-  font-size: 0.9rem;
-  color: var(--color-text-light);
-  transition: all 0.2s ease;
-}
-
-.size-btn:hover {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #666;
 }
 
 .size-btn.active {
-  background: var(--color-primary);
+  background: #bc024d;
   color: white;
-  border-color: var(--color-primary);
-  box-shadow: 0 2px 8px rgba(185, 10, 90, 0.25);
+  border-color: #bc024d;
 }
 
-/* Notice Banner */
 .custom-notice {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
+  background: #fff8f0;
   padding: 1rem 1.25rem;
-  background: #FFF7ED;
-  border: 1px solid #FED7AA;
-  border-radius: var(--radius-sm);
-  margin-bottom: 1.5rem;
-}
-
-.custom-notice svg {
-  color: #EA580C;
-  flex-shrink: 0;
-  margin-top: 1px;
+  border-radius: 16px;
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border: 1px solid #feeacf;
 }
 
 .custom-notice p {
   font-size: 0.85rem;
+  color: #8a5312;
+  margin: 0;
   line-height: 1.5;
-  color: #9A3412;
 }
 
-.custom-notice strong {
-  color: #7C2D12;
-}
-
-/* Submit Button */
 .custom-submit-btn {
   width: 100%;
-  padding: 1rem;
-  border: none;
-  border-radius: var(--radius-full);
-  background: linear-gradient(135deg, #8B5CF6, var(--color-primary));
+  padding: 1.25rem;
+  background: #111;
   color: white;
+  border: none;
+  border-radius: 16px;
+  font-weight: 800;
   font-size: 1rem;
-  font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
-  letter-spacing: 0.02em;
-  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
 }
 
 .custom-submit-btn:hover:not(:disabled) {
+  background: #000;
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
 }
 
 .custom-submit-btn:disabled {
@@ -554,39 +496,23 @@
 
 /* Success State */
 .custom-success {
-  text-align: center;
   padding: 4rem 2rem;
-}
-
-.success-checkmark {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #10b981, #34d399);
-  color: white;
-  font-size: 2.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 1.5rem;
-  animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes popIn {
-  from { transform: scale(0); }
-  to { transform: scale(1); }
+  text-align: center;
 }
 
 .custom-success h2 {
-  font-family: var(--font-heading);
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 0.75rem;
-  color: var(--color-text-dark);
+  font-family: var(--font-heading, serif);
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #111;
+  margin-bottom: 0.5rem;
 }
 
 .custom-success p {
-  color: var(--color-text-light);
-  font-size: 0.95rem;
+  color: #666;
+  font-size: 1rem;
+  max-width: 320px;
+  margin: 0 auto;
   line-height: 1.6;
 }
+

@@ -7,7 +7,7 @@ import './Navbar.css';
 
 export default function Navbar() {
   const { cartCount, setIsCartOpen } = useCart();
-  const { user, setIsAuthModalOpen } = useAuth();
+  const { user, isAdmin, setIsAuthModalOpen } = useAuth();
   const navigate = useNavigate();
 
   const handleAuthClick = () => {
@@ -31,7 +31,7 @@ export default function Navbar() {
         <li><a href="/#cakes">Cakes</a></li>
         <li><a href="/#about">About</a></li>
         <li><a href="/#contact">Contact</a></li>
-        <li><Link to="/admin" style={{color: 'var(--color-primary)'}}>Admin</Link></li>
+        {isAdmin && <li><Link to="/admin" style={{color: 'var(--color-primary)'}}>Admin</Link></li>}
       </ul>
 
       <div className="navbar-actions">
@@ -41,7 +41,7 @@ export default function Navbar() {
         <button className="icon-btn auth-btn" onClick={handleAuthClick} aria-label="Account">
           <User size={20} style={{ color: user ? 'var(--color-primary)' : 'inherit' }} />
         </button>
-        <button className="icon-btn cart-btn" onClick={() => setIsCartOpen(true)} aria-label="Cart">
+        <button className="icon-btn cart-btn" onClick={() => navigate('/cart')} aria-label="Cart">
           <ShoppingBag size={20} />
           {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
         </button>
