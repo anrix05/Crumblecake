@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { Minus, Plus, X } from 'lucide-react';
@@ -5,6 +6,7 @@ import Navbar from '../components/Navbar';
 import './CartPage.css';
 
 export default function CartPage() {
+  const [promoInput, setPromoInput] = useState('');
   const { 
     cartItems, 
     updateQuantity, 
@@ -12,15 +14,23 @@ export default function CartPage() {
     clearCart,
     subtotal, 
     discountAmount, 
-    totalPrice 
+    totalPrice,
+    applyPromoCode,
+    appliedPromo
   } = useCart();
   const navigate = useNavigate();
+
+  const handleApplyPromo = () => {
+    const result = applyPromoCode(promoInput);
+    if (!result.success) {
+      alert(result.message);
+    }
+  };
 
   return (
     <div className="cart-page-wrapper">
       <Navbar />
       
-      {/* Stepper Breadcrumbs matching mockup */}
       <div className="stepper-container">
         <div className="stepper">
           <span className="step active">
@@ -48,7 +58,6 @@ export default function CartPage() {
           </div>
         ) : (
           <div className="cart-content-grid">
-            {/* LEFT COLUMN: Cart Items */}
             <div className="cart-left-col">
               <div className="cart-header-box">
                 <div className="cart-title">
@@ -97,7 +106,6 @@ export default function CartPage() {
                 ))}
               </div>
 
-              {/* Promo Banner imitating Apple Banner from image */}
               <div className="cart-banner-ad">
                 <div className="ad-content">
                   <h3>Check the newest<br/>Crumble specials</h3>
@@ -107,14 +115,23 @@ export default function CartPage() {
               </div>
             </div>
 
-            {/* RIGHT COLUMN: Summary & Promo */}
             <div className="cart-right-col">
               <div className="summary-box">
                 <h3 className="promo-title">Promo code</h3>
                 <div className="promo-input-group">
-                  <input type="text" placeholder="Type here..." />
-                  <button className="btn-apply">Apply</button>
+                  <input 
+                    type="text" 
+                    placeholder="Type here..." 
+                    value={promoInput}
+                    onChange={(e) => setPromoInput(e.target.value)}
+                  />
+                  <button className="btn-apply" onClick={handleApplyPromo}>Apply</button>
                 </div>
+                {appliedPromo && (
+                  <p style={{ color: '#146b43', fontSize: '0.8rem', fontWeight: 600, marginTop: '5px' }}>
+                    ✓ Code {appliedPromo} applied
+                  </p>
+                )}
 
                 <div className="summary-breakdown">
                   <div className="summary-row">

@@ -59,16 +59,44 @@ export function OrderProvider({ children }) {
     if (!order) return;
 
     const updatedItems = [...order.items];
-    updatedItems[itemIndex] = { ...updatedItems[itemIndex], user_rating: rating };
+    const ratedItem = updatedItems[itemIndex];
+    updatedItems[itemIndex] = { ...ratedItem, user_rating: rating };
 
-    const { error } = await supabase.from('orders').update({ items: updatedItems }).eq('id', orderId);
+    // 1. Update the order itself
+    const { error: orderError } = await supabase.from('orders').update({ items: updatedItems }).eq('id', orderId);
     
-    if (error) {
-      console.error("Error saving rating:", error);
-    } else {
-      setOrders(prev => prev.map(o => 
-        o.id === orderId ? { ...o, items: updatedItems } : o
-      ));
+    if (orderError) {
+      console.error("Error saving rating to order:", orderError);
+      return;
+    }
+
+    // Update local state for orders
+    setOrders(prev => prev.map(o => o.id === orderId ? { ...o, items: updatedItems } : o));
+
+    // 2. Sync with the Product's global rating
+    // We search all orders to find all ratings for this specific product ID
+    if (ratedItem.id) {
+      const { data: allOrders } = await supabase.from('orders').select('items');
+      
+      let totalRating = 0;
+      let count = 0;
+
+      allOrders.forEach(o => {
+        if (Array.isArray(o.items)) {
+          o.items.forEach(item => {
+            if (item.id === ratedItem.id && item.user_rating) {
+              totalRating += item.user_rating;
+              count++;
+            }
+          });
+        }
+      });
+
+      if (count > 0) {
+        const averageRating = parseFloat((totalRating / count).toFixed(1));
+        // Update the products table
+        await supabase.from('products').update({ rating: averageRating }).eq('id', ratedItem.id);
+      }
     }
   };
 

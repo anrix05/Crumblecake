@@ -1,14 +1,15 @@
-import { useState } from 'react';
-import { Plus, Edit, Trash2, X, Search, Filter } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Plus, Edit, Trash2, X, Search, Filter, Bell, Cake, Package, Star, Palette, Image as ImageIcon, UploadCloud, Check } from 'lucide-react';
 import { useProducts } from '../context/ProductContext';
 import './Admin.css';
 
 export default function AdminProducts() {
   const { products, addProduct, updateProduct, deleteProduct } = useProducts();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingProduct, setEditingProduct] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isAddingNew, setIsAddingNew] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState('All');
+  const fileInputRef = useRef(null);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -16,10 +17,14 @@ export default function AdminProducts() {
     category: 'Classic',
     rating: 4.5,
     description: '',
-    image: '/hero-cake.png'
+    images: [],
+    weight: '1kg',
+    isEggless: true,
+    isFreshlyBaked: true
   });
 
   const categories = ['All', 'Classic', 'Fruit', 'Chocolate', 'Specialty'];
+  const weightOptions = ['0.5kg', '1kg', '1.5kg', '2kg', '3kg', 'Custom'];
 
   const filteredProducts = products.filter(p => {
     const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -27,206 +32,294 @@ export default function AdminProducts() {
     return matchesSearch && matchesCategory;
   });
 
-  const openModal = (product = null) => {
-    if (product) {
-      setEditingProduct(product);
-      setFormData(product);
-    } else {
-      setEditingProduct(null);
-      setFormData({
-        name: '', price: '', category: 'Classic', rating: 4.5, description: '', image: '/hero-cake.png'
-      });
+  const startEdit = (product) => {
+    setIsAddingNew(false);
+    setSelectedProduct(product);
+    
+    let images = [];
+    try {
+      if (typeof product.image === 'string' && product.image.startsWith('[')) {
+        images = JSON.parse(product.image);
+      } else if (Array.isArray(product.images)) {
+        images = product.images;
+      } else if (product.image) {
+        images = [product.image];
+      }
+    } catch (e) {
+      images = [product.image];
     }
-    setIsModalOpen(true);
+    
+    setFormData({ 
+      ...product, 
+      images,
+      weight: product.weight || '1kg',
+      isEggless: product.is_eggless !== undefined ? product.is_eggless : true,
+      isFreshlyBaked: product.is_freshly_baked !== undefined ? product.is_freshly_baked : true
+    });
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setEditingProduct(null);
+  const startAdd = () => {
+    setSelectedProduct(null);
+    setIsAddingNew(true);
+    setFormData({
+      name: '', price: '', category: 'Classic', rating: 4.5, description: '', images: [],
+      weight: '1kg', isEggless: true, isFreshlyBaked: true
+    });
+  };
+
+  const closePanel = () => {
+    setSelectedProduct(null);
+    setIsAddingNew(false);
+  };
+
+  const compressImage = (file) => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          const MAX_SIZE = 1200;
+          if (width > height) {
+            if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
+          } else {
+            if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', 0.7));
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleImageUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    for (const file of files) {
+      const compressedBase64 = await compressImage(file);
+      setFormData(prev => ({
+        ...prev,
+        images: [...prev.images, compressedBase64]
+      }));
+    }
+  };
+
+  const removeImage = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const data = { ...formData, price: parseFloat(formData.price) };
-    if (editingProduct) {
-      updateProduct(data);
+    
+    const dbData = {
+      name: formData.name,
+      price: parseFloat(formData.price) || 0,
+      category: formData.category || 'Classic',
+      description: formData.description || '',
+      rating: parseFloat(formData.rating) || 4.5,
+      image: formData.images.length > 1 ? JSON.stringify(formData.images) : (formData.images[0] || '/hero-cake.png'),
+      in_stock: true,
+      weight: formData.weight,
+      is_eggless: formData.isEggless,
+      is_freshly_baked: formData.isFreshlyBaked
+    };
+
+    if (selectedProduct) {
+      updateProduct({ ...dbData, id: selectedProduct.id });
     } else {
-      addProduct(data);
+      addProduct(dbData);
     }
-    closeModal();
+    closePanel();
   };
 
+  const isPanelOpen = selectedProduct || isAddingNew;
+
   return (
-    <div className="admin-products">
-      <h3 className="section-title">Inventory ({filteredProducts.length})</h3>
+    <div className={`admin-view-content ${isPanelOpen ? 'has-selection' : ''}`}>
+      {/* Left List Section */}
+      <section className="list-section">
+        <header className="view-header">
+          <div>
+            <h2>Inventory</h2>
+            <p style={{ color: '#64748b', fontSize: '0.9rem' }}>Manage your bakery's product catalog.</p>
+          </div>
+          <div className="header-tools">
+            <button className="tool-icon-btn"><Bell size={20} /></button>
+            <button className="tool-icon-btn"><Search size={20} /></button>
+            <div className="profile-pill">
+               <img src={`https://ui-avatars.com/api/?name=Admin+Chef&background=bc024d&color=fff`} alt="Admin" />
+               <div className="details">
+                 <span className="name">Admin Chef</span>
+                 <span className="email">chef@crumblecakes.in</span>
+               </div>
+            </div>
+          </div>
+        </header>
 
-      <div className="admin-toolbar" style={{padding: '0 0.5rem', alignItems: 'center'}}>
-        <button className="btn btn-primary" onClick={() => openModal()} style={{padding: '1.25rem 2rem', display: 'flex', alignItems: 'center', gap: '10px', height: '100%', whiteSpace: 'nowrap'}}>
-          <Plus size={20} style={{strokeWidth: 3}} /> CREATE PRODUCT
-        </button>
-
-        <div style={{position: 'relative', flex: 1}}>
-          <Search size={18} style={{position: 'absolute', left: '1.5rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-outline)'}} />
-          <input 
-            type="text" 
-            placeholder="Search by product name..." 
-            className="search-input"
-            style={{paddingLeft: '3.5rem', width: '100%'}}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+        <div className="filter-toolbar">
+          <div className="filter-left" style={{ flex: 1 }}>
+            <div style={{ position: 'relative', flex: 1, maxWidth: '300px' }}>
+              <Search size={18} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+              <input 
+                type="text" 
+                placeholder="Search products..." 
+                className="filter-select"
+                style={{ paddingLeft: '2.5rem', width: '100%' }}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <select 
+              className="filter-select"
+              style={{ minWidth: '120px' }}
+              value={filterCategory}
+              onChange={(e) => setFilterCategory(e.target.value)}
+            >
+              {categories.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </div>
+          <button className="btn-action-main btn-black" onClick={startAdd} style={{ padding: '0.85rem 1.5rem' }}>
+            <Plus size={20} /> Add New Cake
+          </button>
         </div>
 
-        <div style={{position: 'relative'}}>
-          <Filter size={18} style={{position: 'absolute', left: '1.5rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-outline)'}} />
-          <select 
-            className="filter-select"
-            style={{paddingLeft: '3.5rem'}}
-            value={filterCategory}
-            onChange={(e) => setFilterCategory(e.target.value)}
-          >
-            {categories.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
-        </div>
-      </div>
-
-      <div className="panel" style={{marginTop: '1.5rem'}}>
-        <div className="table-wrapper">
-          <table className="admin-table">
+        <div className="orders-table-wrapper">
+          <table className="orders-table">
             <thead>
               <tr>
-                <th>Preview</th>
-                <th>Name</th>
-                <th>Category</th>
-                <th>Price</th>
-                <th>Performance</th>
-                <th style={{textAlign: 'right'}}>Management</th>
+                <th style={{width: '100px'}}>Preview</th>
+                <th>Product Details</th>
+                <th style={{width: '140px'}}>Category</th>
+                <th style={{width: '120px'}}>Price</th>
+                <th style={{width: '100px'}}>Rating</th>
               </tr>
             </thead>
             <tbody>
-              {filteredProducts.length === 0 ? (
-                <tr>
-                  <td colSpan="6" style={{textAlign: 'center', padding: '5rem', color: 'var(--color-text-light)'}}>
-                    No inventory items found.
+              {filteredProducts.map(cake => (
+                <tr 
+                  key={cake.id} 
+                  className={selectedProduct?.id === cake.id ? 'selected' : ''}
+                  onClick={() => startEdit(cake)}
+                >
+                  <td style={{ padding: '1.5rem' }}>
+                    <img src={cake.image || (cake.images?.[0])} alt={cake.name} style={{width:'64px', height:'64px', borderRadius:'16px', objectFit:'cover', boxShadow: '0 8px 20px rgba(0,0,0,0.06)'}}/>
+                  </td>
+                  <td>
+                    <div style={{display: 'flex', flexDirection: 'column', gap: '4px'}}>
+                      <span style={{fontWeight: 800, fontSize: '1.05rem', color: '#1a1a1a'}}>{cake.name}</span>
+                      <span style={{fontSize: '0.8rem', color: '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '240px'}}>
+                        {cake.weight || '1kg'} • {cake.is_eggless ? 'Eggless' : 'Contains Egg'}
+                      </span>
+                    </div>
+                  </td>
+                  <td>
+                    <span className="status-tag" style={{background: '#f1f5f9', color: '#475569', fontSize: '0.75rem'}}>
+                      {cake.category}
+                    </span>
+                  </td>
+                  <td style={{fontWeight: 900, fontSize: '1.15rem', color: '#1a1a1a'}}>₹{Number(cake.price).toLocaleString()}</td>
+                  <td>
+                    <div style={{display: 'flex', alignItems: 'center', gap: '6px', color: '#ca8a04', fontWeight: 800}}>
+                      <Star size={16} fill="#ca8a04" strokeWidth={0} /> {cake.rating}
+                    </div>
                   </td>
                 </tr>
-              ) : (
-                filteredProducts.map(cake => (
-                  <tr key={cake.id}>
-                    <td>
-                      <img src={cake.image} alt={cake.name} style={{width:'56px', height:'56px', borderRadius:'14px', objectFit:'cover', boxShadow: 'var(--shadow-sm)'}}/>
-                    </td>
-                    <td style={{fontWeight: '700', color: 'var(--color-text-dark)'}}>{cake.name}</td>
-                    <td><span className="badge" style={{background: 'var(--color-surface-low)', color: 'var(--color-text-light)', opacity: 0.8}}>{cake.category}</span></td>
-                    <td style={{fontWeight: '700', fontSize: '1.1rem'}}>₹{cake.price.toLocaleString()}</td>
-                    <td><span style={{color: '#10b981', fontWeight: '700'}}>{cake.rating} ★</span></td>
-                    <td style={{textAlign: 'right'}}>
-                      <div className="row-actions" style={{justifyContent: 'flex-end', gap: '10px'}}>
-                        <button className="action-btn edit" onClick={() => openModal(cake)} title="Edit Details" style={{color: 'var(--color-primary)'}}><Edit size={18}/></button>
-                        <button className="action-btn delete" onClick={() => deleteProduct(cake.id)} title="Remove Product" style={{color: '#ba1a1a'}}><Trash2 size={18}/></button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
+              ))}
             </tbody>
           </table>
         </div>
-      </div>
+      </section>
 
-      {isModalOpen && (
-        <div className="modal-overlay">
-          <div className="modal-content" style={{maxWidth: '600px'}}>
-            <div className="modal-header">
-              <h3 style={{fontFamily: 'var(--font-heading)', fontSize: '1.8rem'}}>{editingProduct ? 'Edit Inventory Item' : 'Create New Inventory Item'}</h3>
-              <button className="close-btn" onClick={closeModal} style={{background:'none', border:'none', cursor:'pointer', color: 'var(--color-outline)'}}><X size={28} /></button>
-            </div>
-            <form onSubmit={handleSubmit} className="admin-form" style={{marginTop: '2rem'}}>
-              <div className="form-group" style={{marginBottom: '1.5rem'}}>
-                <label style={{fontSize: '0.75rem', fontWeight: '800', color: 'var(--color-text-light)', letterSpacing: '0.1em'}}>PRODUCT NAME</label>
-                <input 
-                  type="text" 
-                  value={formData.name} 
-                  onChange={(e) => setFormData({...formData, name: e.target.value})} 
-                  placeholder="e.g. Red Velvet Dream"
-                  className="search-input"
-                  style={{width: '100%', marginTop: '0.5rem'}}
-                  required 
-                />
-              </div>
-              <div className="form-row" style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem'}}>
-                <div className="form-group">
-                  <label style={{fontSize: '0.75rem', fontWeight: '800', color: 'var(--color-text-light)', letterSpacing: '0.1em'}}>UNIT PRICE (₹)</label>
-                  <input 
-                    type="number" 
-                    value={formData.price} 
-                    onChange={(e) => setFormData({...formData, price: e.target.value})} 
-                    placeholder="0.00"
-                    className="search-input"
-                    style={{width: '100%', marginTop: '0.5rem'}}
-                    required 
-                  />
-                </div>
-                <div className="form-group">
-                  <label style={{fontSize: '0.75rem', fontWeight: '800', color: 'var(--color-text-light)', letterSpacing: '0.1em'}}>CATEGORY</label>
-                  <select 
-                    value={formData.category} 
-                    onChange={(e) => setFormData({...formData, category: e.target.value})}
-                    className="filter-select"
-                    style={{width: '100%', marginTop: '0.5rem'}}
-                  >
-                    <option>Classic</option>
-                    <option>Fruit</option>
-                    <option>Chocolate</option>
-                    <option>Specialty</option>
-                  </select>
-                </div>
-              </div>
-              <div className="form-group" style={{marginBottom: '2rem'}}>
-                <label style={{fontSize: '0.75rem', fontWeight: '800', color: 'var(--color-text-light)', letterSpacing: '0.1em'}}>SPECIFICATIONS / DESCRIPTION</label>
-                <textarea 
-                  value={formData.description} 
-                  onChange={(e) => setFormData({...formData, description: e.target.value})} 
-                  placeholder="Describe your delicious creation..."
-                  className="search-input"
-                  rows="4"
-                  style={{width: '100%', marginTop: '0.5rem', resize: 'none'}}
-                ></textarea>
-              </div>
-              <div className="image-upload-area">
-                <label style={{fontSize: '0.75rem', fontWeight: '800', color: 'var(--color-text-light)', letterSpacing: '0.1em'}}>PRODUCT ILLUSTRATION</label>
-                <div className="image-preview-wrapper" onClick={() => document.getElementById('cake-upload').click()} style={{cursor: 'pointer'}}>
-                  <img src={formData.image} alt="Preview" className="image-preview-large" />
-                  <div className="file-input-label">
-                    <p>{editingProduct ? 'Change product image' : 'Upload a delicious cake photo'}</p>
-                    <span>Click to browse files (JPG, PNG)</span>
-                  </div>
-                  <input 
-                    id="cake-upload"
-                    type="file" 
-                    accept="image/*"
-                    className="hidden-file-input"
-                    onChange={(e) => {
-                      const file = e.target.files[0];
-                      if (file) {
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
-                          setFormData({ ...formData, image: reader.result });
-                        };
-                        reader.readAsDataURL(file);
-                      }
-                    }}
-                  />
-                </div>
-              </div>
-
-              <button type="submit" className="btn btn-primary" style={{width: '100%', padding: '1.25rem', borderRadius: '1.5rem', fontSize: '1rem', letterSpacing: '0.05em'}}>
-                {editingProduct ? 'UPDATE INVENTORY' : 'CONFIRM ADDITION'}
-              </button>
-            </form>
-          </div>
+      {/* Right Details/Edit Panel */}
+      <aside className="details-section" style={{ width: '450px' }}>
+        <div className="details-header" style={{ marginBottom: '2rem' }}>
+          <h3 style={{ fontSize: '1.75rem', fontWeight: 900 }}>{isAddingNew ? 'New Creation' : 'Edit Cake'}</h3>
+          <button className="tool-icon-btn" onClick={closePanel} style={{ background: '#f5f5f5', border: 'none' }}><X size={20} /></button>
         </div>
-      )}
+
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1.25rem', paddingBottom: '2rem' }}>
+            
+            {/* Multi-Image Uploader */}
+            <div>
+              <div 
+                onClick={() => fileInputRef.current.click()}
+                style={{ 
+                  padding: '1.25rem', border: '2px dashed #e2e8f0', borderRadius: '20px', textAlign: 'center', cursor: 'pointer', background: '#f8fafc', transition: 'all 0.2s'
+                }}
+              >
+                <p style={{ fontSize: '0.9rem', fontWeight: 700, color: '#1a1a1a' }}>Add / Drop product image</p>
+                <input ref={fileInputRef} type="file" hidden multiple accept="image/*" onChange={handleImageUpload} />
+              </div>
+              <div style={{ display: 'flex', gap: '10px', marginTop: '12px', overflowX: 'auto', paddingBottom: '8px' }}>
+                {formData.images.map((img, idx) => (
+                  <div key={idx} style={{ position: 'relative', flexShrink: 0, width: '60px', height: '60px', borderRadius: '10px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+                    <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <button type="button" onClick={() => removeImage(idx)} style={{ position: 'absolute', top: '2px', right: '2px', background: 'white', border: 'none', borderRadius: '50%', width: '16px', height: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={10} /></button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="admin-label">PRODUCT NAME</label>
+              <input type="text" className="filter-select" style={{width: '100%'}} value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} required />
+            </div>
+
+            <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem'}}>
+              <div>
+                <label className="admin-label">PRICE (₹)</label>
+                <input type="number" className="filter-select" style={{width: '100%'}} value={formData.price} onChange={(e) => setFormData({...formData, price: e.target.value})} required />
+              </div>
+              <div>
+                <label className="admin-label">CATEGORY</label>
+                <select className="filter-select" style={{width: '100%'}} value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})}>
+                  {categories.filter(c => c !== 'All').map(c => <option key={c}>{c}</option>)}
+                </select>
+              </div>
+            </div>
+
+            <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem'}}>
+              <div>
+                <label className="admin-label">WEIGHT</label>
+                <select className="filter-select" style={{width: '100%'}} value={formData.weight} onChange={(e) => setFormData({...formData, weight: e.target.value})}>
+                  {weightOptions.map(w => <option key={w}>{w}</option>)}
+                </select>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingTop: '1.8rem' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600 }}>
+                  <input type="checkbox" checked={formData.isEggless} onChange={(e) => setFormData({...formData, isEggless: e.target.checked})} />
+                  Eggless
+                </label>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600 }}>
+                  <input type="checkbox" checked={formData.isFreshlyBaked} onChange={(e) => setFormData({...formData, isFreshlyBaked: e.target.checked})} />
+                  Freshly Baked
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <label className="admin-label">DESCRIPTION</label>
+              <textarea className="filter-select" style={{width: '100%', minHeight: '100px', resize: 'none'}} value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} />
+            </div>
+          </div>
+
+          <div style={{ marginTop: 'auto', display: 'grid', gap: '1rem', paddingTop: '1rem' }}>
+            <button type="submit" className="btn-action-main btn-black" style={{ width: '100%' }}>
+              {selectedProduct ? 'Save Changes' : 'Create Product'}
+            </button>
+          </div>
+        </form>
+      </aside>
     </div>
   );
 }

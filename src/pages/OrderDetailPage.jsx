@@ -66,20 +66,24 @@ export default function OrderDetailPage() {
   };
 
   const statusSteps = [
-    { label: 'Ordered', status: 'Processing', icon: <Clock size={16} /> },
-    { label: 'Packed', status: 'Processing', icon: <Package size={16} /> },
-    { label: 'On its way', status: 'Shipped', icon: <Truck size={16} /> },
-    { label: 'Delivered', status: 'Delivered', icon: <CheckCircle size={16} /> }
+    { label: 'Ordered', icon: <Clock size={16} /> },
+    { label: 'Packed', icon: <Package size={16} /> },
+    { label: 'On its way', icon: <Truck size={16} /> },
+    { label: 'Delivered', icon: <CheckCircle size={16} /> }
   ];
 
   const getStatusIndex = (status) => {
-    if (status === 'Delivered' || status === 'Completed') return 4;
-    if (status === 'Out for Delivery') return 3;
-    if (status === 'Shipped') return 3;
-    return 1; // Processing
+    switch (status) {
+      case 'Ordered': return 1;
+      case 'Packed': return 2;
+      case 'On its way': return 3;
+      case 'Delivered': return 4;
+      case 'Completed': return 4;
+      default: return 1;
+    }
   };
 
-  const activeIndex = getStatusIndex(currentOrder.status);
+  const activeIndex = getStatusIndex(currentOrder.status || 'Ordered');
 
   return (
     <div className="order-details-page">

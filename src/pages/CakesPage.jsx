@@ -1,11 +1,82 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useProducts } from '../context/ProductContext';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useOrders } from '../context/OrderContext';
-import { ShoppingBag, Star, Plus, Upload, X, Palette, Info, Cake } from 'lucide-react';
+import { ShoppingBag, Star, Plus, Upload, X, Palette, Info, Cake, ChevronLeft, ChevronRight } from 'lucide-react';
 import './CakesPage.css';
+
+function CakeCard({ cake, addToCart }) {
+  const [currentImgIndex, setCurrentImgIndex] = useState(0);
+  
+  // Parse images from the workaround JSON string or fallback
+  const images = (() => {
+    try {
+      if (typeof cake.image === 'string' && cake.image.startsWith('[')) {
+        return JSON.parse(cake.image);
+      }
+      return [cake.image || '/hero-cake.png'];
+    } catch (e) {
+      return [cake.image || '/hero-cake.png'];
+    }
+  })();
+
+  const nextImg = (e) => {
+    e.stopPropagation();
+    setCurrentImgIndex((prev) => (prev + 1) % images.length);
+  };
+
+  const prevImg = (e) => {
+    e.stopPropagation();
+    setCurrentImgIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  return (
+    <div className="cake-card" onClick={() => addToCart(cake)}>
+      <div className="cake-image-section">
+        <img src={images[currentImgIndex]} alt={cake.name} className="cake-img" />
+        
+        {images.length > 1 && (
+          <>
+            <button className="slider-btn prev" onClick={prevImg}><ChevronLeft size={16} /></button>
+            <button className="slider-btn next" onClick={nextImg}><ChevronRight size={16} /></button>
+            <div className="pagination-dots">
+              {images.map((_, idx) => (
+                <div 
+                  key={idx} 
+                  className={`dot ${idx === currentImgIndex ? 'active' : ''}`}
+                  onClick={(e) => { e.stopPropagation(); setCurrentImgIndex(idx); }}
+                ></div>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+
+      <div className="cake-content">
+        <div className="cake-header-row">
+          <h3 className="cake-title">{cake.name}</h3>
+          <div className="cake-rating-box">
+            <Star size={16} fill="#146b43" color="#146b43" />
+            <span>{cake.rating || 4.5}</span>
+          </div>
+        </div>
+        
+        <p className="cake-meta">
+          {cake.weight || '1kg'} • {cake.is_eggless ? 'Eggless' : 'Contains Egg'} • {cake.is_freshly_baked ? 'Freshly Baked' : 'Daily Fresh'}
+        </p>
+
+        <div className="cake-footer">
+          <span className="cake-price-tag">₹{Number(cake.price).toFixed(2)}</span>
+          <button className="buy-now-btn" onClick={(e) => { e.stopPropagation(); addToCart(cake); }}>
+            Buy Now
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function CakesPage() {
   const { products: CAKES } = useProducts();
@@ -126,38 +197,7 @@ export default function CakesPage() {
 
         <div className="cakes-grid">
           {filteredCakes.map(cake => (
-            <div key={cake.id} className="cake-card" onClick={() => addToCart(cake)}>
-              <div className="cake-image-section">
-                <img src={cake.image} alt={cake.name} className="cake-img" />
-                <div className="pagination-dots">
-                   <div className="dot active"></div>
-                   <div className="dot"></div>
-                   <div className="dot"></div>
-                   <div className="dot"></div>
-                </div>
-              </div>
-
-              <div className="cake-content">
-                <div className="cake-header-row">
-                  <h3 className="cake-title">{cake.name}</h3>
-                  <div className="cake-rating-box">
-                    <Star size={16} fill="#146b43" color="#146b43" />
-                    <span>{cake.rating} ({(cake.id.length * 7 % 10) / 2 + 1}k)</span>
-                  </div>
-                </div>
-                
-                <p className="cake-meta">
-                  {cake.category} , 1kg , Eggless , Freshly Baked
-                </p>
-
-                <div className="cake-footer">
-                  <span className="cake-price-tag">₹{Number(cake.price).toFixed(2)}</span>
-                  <button className="buy-now-btn" onClick={(e) => { e.stopPropagation(); addToCart(cake); }}>
-                    Buy Now
-                  </button>
-                </div>
-              </div>
-            </div>
+            <CakeCard key={cake.id} cake={cake} addToCart={addToCart} />
           ))}
 
           {/* Build Your Own Cake Card */}
