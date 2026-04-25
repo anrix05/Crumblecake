@@ -29,55 +29,59 @@ export default function ContactPage() {
           {/* Location Card */}
           <div className="contact-card">
             <div className="contact-card-icon">
-              <MapPin size={28} />
+              <MapPin size={24} />
             </div>
             <h3>Visit & Pick Up</h3>
             <div className="contact-details">
-              <p className="contact-location">📍 Azamgarh</p>
+              <p className="contact-location"><MapPin size={14} /> Azamgarh</p>
               <p className="contact-address">
-                <strong>Nagar Palika, Agrasen Chauraha</strong><br/>
+                Nagar Palika, Agrasen Chauraha<br/>
                 Near Blackberry Showroom<br/>
                 Azamgarh, 276001
               </p>
             </div>
+            <a href="https://maps.google.com" target="_blank" rel="noreferrer" className="contact-action-btn primary-gradient">
+              Get Directions <span className="arrow">&gt;</span>
+            </a>
           </div>
 
           {/* WhatsApp Card */}
           <div className="contact-card">
             <div className="contact-card-icon whatsapp">
-              <MessageCircle size={28} />
+              <MessageCircle size={24} />
             </div>
             <h3>WhatsApp to Order</h3>
             <div className="contact-details">
-              <a href="https://wa.me/917307729020" target="_blank" rel="noreferrer" className="contact-btn">
-                <Phone size={16} />
+              <div className="info-pill">
+                <Phone size={14} />
                 +91 7307729020
-              </a>
-              <a href="https://wa.me/919219309797" target="_blank" rel="noreferrer" className="contact-btn">
-                <Phone size={16} />
+              </div>
+              <div className="info-pill">
+                <Phone size={14} />
                 +91 9219309797
-              </a>
+              </div>
             </div>
+            <a href="https://wa.me/917307729020" target="_blank" rel="noreferrer" className="contact-action-btn green-gradient">
+              WhatsApp Us <span className="arrow">&gt;</span>
+            </a>
           </div>
 
           {/* Instagram Card */}
           <div className="contact-card">
             <div className="contact-card-icon instagram">
-              <InstagramIcon size={28} />
+              <InstagramIcon size={24} />
             </div>
             <h3>Follow & Order in DM</h3>
             <div className="contact-details">
-              <a 
-                href="https://www.instagram.com/crumblecakes.in/" 
-                target="_blank" 
-                rel="noreferrer"
-                className="contact-btn instagram-btn"
-              >
-                <InstagramIcon size={18} />
+              <div className="info-pill instagram">
+                <InstagramIcon size={14} />
                 @crumblecakes.in
-              </a>
+              </div>
               <p className="contact-hint">Follow us for the latest cakes, reels & daily specials!</p>
             </div>
+            <a href="https://www.instagram.com/crumblecakes.in/" target="_blank" rel="noreferrer" className="contact-action-btn primary-gradient">
+              Message Us <span className="arrow">&gt;</span>
+            </a>
           </div>
         </div>
       </div>

@@ -239,50 +239,51 @@ export default function AdminProducts() {
         </div>
       </section>
 
-      {/* Right Details/Edit Panel */}
-      <aside className="details-section" style={{ width: '450px' }}>
+      <aside className="details-section" style={{ width: '450px', display: 'flex', flexDirection: 'column' }}>
         <div className="details-header" style={{ marginBottom: '2rem' }}>
-          <h3 style={{ fontSize: '1.75rem', fontWeight: 900 }}>{isAddingNew ? 'New Creation' : 'Edit Cake'}</h3>
-          <button className="tool-icon-btn" onClick={closePanel} style={{ background: '#f5f5f5', border: 'none' }}><X size={20} /></button>
+          <h3 style={{ fontFamily: "'Noto Serif', serif", fontSize: '2rem', fontWeight: 700, color: '#3f4247', margin: 0 }}>{isAddingNew ? 'New Creation' : 'Edit Cake'}</h3>
+          <button className="tool-icon-btn" onClick={closePanel} style={{ background: '#fdf2f5', border: 'none', color: '#cd3d7a' }}><X size={20} /></button>
         </div>
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1.25rem', paddingBottom: '2rem' }}>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', flex: 1, overflowY: 'auto', paddingRight: '0.5rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', paddingBottom: '2rem' }}>
             
             {/* Multi-Image Uploader */}
             <div>
               <div 
                 onClick={() => fileInputRef.current.click()}
                 style={{ 
-                  padding: '1.25rem', border: '2px dashed #e2e8f0', borderRadius: '20px', textAlign: 'center', cursor: 'pointer', background: '#f8fafc', transition: 'all 0.2s'
+                  padding: '1.5rem', border: '2px dashed #eab8c8', borderRadius: '16px', textAlign: 'center', cursor: 'pointer', background: '#fdfafb', transition: 'all 0.2s', color: '#cd3d7a'
                 }}
+                onMouseEnter={(e) => e.target.style.background = '#fdf2f5'}
+                onMouseLeave={(e) => e.target.style.background = '#fdfafb'}
               >
-                <p style={{ fontSize: '0.9rem', fontWeight: 700, color: '#1a1a1a' }}>Add / Drop product image</p>
+                <p style={{ fontSize: '0.95rem', fontWeight: 700, margin: 0 }}>Add / Drop product image</p>
                 <input ref={fileInputRef} type="file" hidden multiple accept="image/*" onChange={handleImageUpload} />
               </div>
               <div style={{ display: 'flex', gap: '10px', marginTop: '12px', overflowX: 'auto', paddingBottom: '8px' }}>
                 {formData.images.map((img, idx) => (
-                  <div key={idx} style={{ position: 'relative', flexShrink: 0, width: '60px', height: '60px', borderRadius: '10px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+                  <div key={idx} style={{ position: 'relative', flexShrink: 0, width: '60px', height: '60px', borderRadius: '10px', overflow: 'hidden', border: '1px solid #eab8c8' }}>
                     <img src={img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    <button type="button" onClick={() => removeImage(idx)} style={{ position: 'absolute', top: '2px', right: '2px', background: 'white', border: 'none', borderRadius: '50%', width: '16px', height: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={10} /></button>
+                    <button type="button" onClick={() => removeImage(idx)} style={{ position: 'absolute', top: '2px', right: '2px', background: 'rgba(255,255,255,0.9)', color: '#cd3d7a', border: 'none', borderRadius: '50%', width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}><X size={12} /></button>
                   </div>
                 ))}
               </div>
             </div>
 
             <div>
-              <label className="admin-label">PRODUCT NAME</label>
-              <input type="text" className="filter-select" style={{width: '100%'}} value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} required />
+              <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#888', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'block' }}>PRODUCT NAME</label>
+              <input type="text" style={{ width: '100%', padding: '0.9rem 1.2rem', borderRadius: '12px', border: '1px solid #eab8c8', background: '#fdfafb', fontSize: '0.95rem', color: '#3f4247', fontFamily: 'inherit' }} value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} required />
             </div>
 
             <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem'}}>
               <div>
-                <label className="admin-label">PRICE (₹)</label>
-                <input type="number" className="filter-select" style={{width: '100%'}} value={formData.price} onChange={(e) => setFormData({...formData, price: e.target.value})} required />
+                <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#888', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'block' }}>PRICE (₹)</label>
+                <input type="number" style={{ width: '100%', padding: '0.9rem 1.2rem', borderRadius: '12px', border: '1px solid #eab8c8', background: '#fdfafb', fontSize: '0.95rem', color: '#3f4247', fontFamily: 'inherit' }} value={formData.price} onChange={(e) => setFormData({...formData, price: e.target.value})} required />
               </div>
               <div>
-                <label className="admin-label">CATEGORY</label>
-                <select className="filter-select" style={{width: '100%'}} value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})}>
+                <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#888', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'block' }}>CATEGORY</label>
+                <select style={{ width: '100%', padding: '0.9rem 1.2rem', borderRadius: '12px', border: '1px solid #eab8c8', background: '#fdfafb', fontSize: '0.95rem', color: '#3f4247', fontFamily: 'inherit' }} value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})}>
                   {categories.filter(c => c !== 'All').map(c => <option key={c}>{c}</option>)}
                 </select>
               </div>
@@ -290,31 +291,35 @@ export default function AdminProducts() {
 
             <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem'}}>
               <div>
-                <label className="admin-label">WEIGHT</label>
-                <select className="filter-select" style={{width: '100%'}} value={formData.weight} onChange={(e) => setFormData({...formData, weight: e.target.value})}>
+                <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#888', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'block' }}>WEIGHT</label>
+                <select style={{ width: '100%', padding: '0.9rem 1.2rem', borderRadius: '12px', border: '1px solid #eab8c8', background: '#fdfafb', fontSize: '0.95rem', color: '#3f4247', fontFamily: 'inherit' }} value={formData.weight} onChange={(e) => setFormData({...formData, weight: e.target.value})}>
                   {weightOptions.map(w => <option key={w}>{w}</option>)}
                 </select>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingTop: '1.8rem' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600 }}>
-                  <input type="checkbox" checked={formData.isEggless} onChange={(e) => setFormData({...formData, isEggless: e.target.checked})} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingTop: '1.8rem' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem', color: '#3f4247', fontWeight: 600 }}>
+                  <input type="checkbox" checked={formData.isEggless} onChange={(e) => setFormData({...formData, isEggless: e.target.checked})} style={{ accentColor: '#cd3d7a', width: '18px', height: '18px' }} />
                   Eggless
                 </label>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600 }}>
-                  <input type="checkbox" checked={formData.isFreshlyBaked} onChange={(e) => setFormData({...formData, isFreshlyBaked: e.target.checked})} />
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem', color: '#3f4247', fontWeight: 600 }}>
+                  <input type="checkbox" checked={formData.isFreshlyBaked} onChange={(e) => setFormData({...formData, isFreshlyBaked: e.target.checked})} style={{ accentColor: '#cd3d7a', width: '18px', height: '18px' }} />
                   Freshly Baked
                 </label>
               </div>
             </div>
 
             <div>
-              <label className="admin-label">DESCRIPTION</label>
-              <textarea className="filter-select" style={{width: '100%', minHeight: '100px', resize: 'none'}} value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} />
+              <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#888', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'block' }}>DESCRIPTION</label>
+              <textarea style={{ width: '100%', padding: '0.9rem 1.2rem', borderRadius: '12px', border: '1px solid #eab8c8', background: '#fdfafb', fontSize: '0.95rem', color: '#3f4247', fontFamily: 'inherit', minHeight: '100px', resize: 'none' }} value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} />
             </div>
           </div>
 
-          <div style={{ marginTop: 'auto', display: 'grid', gap: '1rem', paddingTop: '1rem' }}>
-            <button type="submit" className="btn-action-main btn-black" style={{ width: '100%' }}>
+          <div style={{ marginTop: 'auto', paddingTop: '1.5rem', paddingBottom: '1rem', borderTop: '1px solid #fdf2f5' }}>
+            <button type="submit" style={{ 
+              width: '100%', padding: '1rem', background: 'linear-gradient(135deg, #d44d7d 0%, #c43369 100%)', 
+              color: 'white', border: 'none', borderRadius: '50px', fontWeight: 700, fontSize: '1rem', fontFamily: 'inherit',
+              cursor: 'pointer', boxShadow: '0 8px 24px rgba(200, 50, 100, 0.2)', transition: 'all 0.2s'
+            }}>
               {selectedProduct ? 'Save Changes' : 'Create Product'}
             </button>
           </div>

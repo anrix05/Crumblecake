@@ -157,10 +157,11 @@ export default function AccountPage() {
 
   return (
     <div className="account-page-wrapper">
-      <div className="brand-account-header">
+      <Navbar />
+      <div className="account-header-elegant">
         <h2>{activeTab === 'orders' ? 'My Orders' : 'My Account'}</h2>
-        <div className="brand-breadcrumbs">
-          <Link to="/">Home</Link> &gt; <Link to="/account" onClick={() => setActiveTab('profile')}>My Account</Link> &gt; {activeTab === 'orders' ? 'My Orders' : 'Personal Information'}
+        <div className="account-breadcrumbs">
+          <Link to="/">Home</Link> <span className="divider">/</span> <Link to="/account" onClick={() => setActiveTab('profile')}>My Account</Link> <span className="divider">/</span> <span>{activeTab === 'orders' ? 'My Orders' : 'Personal Information'}</span>
         </div>
       </div>
 

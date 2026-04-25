@@ -6,7 +6,7 @@ import './Admin.css';
 export default function AdminLayout() {
   const { user, isAdmin, loading, signOut } = useAuth();
 
-  if (loading) return <div style={{padding: '5rem', textAlign: 'center', background: '#f7f6f2', height: '100vh'}}>Loading Administration...</div>;
+  if (loading) return <div style={{padding: '5rem', textAlign: 'center', background: '#fdf2f5', height: '100vh'}}>Loading Administration...</div>;
   if (!user) return <Navigate to="/login" replace />;
   if (!isAdmin) return <Navigate to="/" replace />;
 
@@ -32,23 +32,7 @@ export default function AdminLayout() {
               <Cake size={20} />
               Inventory
             </NavLink>
-            
-            <NavLink to="/admin/payments" onClick={e => e.preventDefault()}>
-              <ShoppingBag size={20} />
-              Payments
-            </NavLink>
-            <NavLink to="/admin/customers" onClick={e => e.preventDefault()}>
-              <Users size={20} />
-              Customers
-            </NavLink>
-            <NavLink to="/admin/reports" onClick={e => e.preventDefault()}>
-              <Cake size={20} />
-              Reports
-            </NavLink>
-            <NavLink to="/admin/statistics" onClick={e => e.preventDefault()}>
-              <BarChart size={20} />
-              Statistics
-            </NavLink>
+
 
             <div style={{marginTop: 'auto', paddingTop: '2rem'}}>
                <NavLink to="/admin/settings">

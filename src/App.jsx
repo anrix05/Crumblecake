@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
 import CakesPage from './pages/CakesPage';
 import CheckoutPage from './pages/CheckoutPage';
@@ -15,9 +15,12 @@ import OrderDetailPage from './pages/OrderDetailPage';
 import CartPage from './pages/CartPage';
 import CustomerAuthModal from './components/CustomerAuthModal';
 import { useAuth } from './context/AuthContext';
+import Footer from './components/Footer';
 
 function App() {
   const { isAuthModalOpen, setIsAuthModalOpen } = useAuth();
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
 
   return (
     <>
@@ -42,6 +45,7 @@ function App() {
           <Route path="*" element={<div style={{padding:'2rem'}}>Under Construction</div>} />
         </Route>
       </Routes>
+      {!isAdminRoute && <Footer />}
     </>
   )
 }

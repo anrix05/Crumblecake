@@ -90,10 +90,60 @@ export default function OrderDetailPage() {
       <Navbar />
       
       <main className="amz-container">
-        {/* Hidden Invoice Header for Printing */}
-        <div className="invoice-print-header">
-           <div className="amz-print-logo">CrumbleCakes Bakery</div>
-           <div className="amz-print-sub">Official Order Receipt</div>
+        {/* Dedicated Hidden Print Invoice */}
+        <div className="print-only-invoice">
+          <div className="print-header">
+            <h1 className="print-logo-text">CrumbleCakes Bakery</h1>
+            <p className="print-subtext">Official Order Receipt</p>
+          </div>
+          
+          <div className="print-meta-row">
+            <div>
+              <strong>Order ID:</strong> {currentOrder.id}<br/>
+              <strong>Date:</strong> {formatDate(currentOrder.date)}<br/>
+              <strong>Payment:</strong> Cash on Delivery
+            </div>
+            <div style={{textAlign: 'right'}}>
+              <strong>Billed To:</strong><br/>
+              {currentOrder.customer || user?.email.split('@')[0]}<br/>
+              {currentOrder.address}
+            </div>
+          </div>
+
+          <table className="print-table">
+            <thead>
+              <tr>
+                <th>Item Details</th>
+                <th style={{textAlign: 'center'}}>Qty</th>
+                <th style={{textAlign: 'right'}}>Price</th>
+                <th style={{textAlign: 'right'}}>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentOrder.items && currentOrder.items.map((item, idx) => (
+                <tr key={idx}>
+                  <td>
+                    <strong>{item.name}</strong><br/>
+                    <small>Sold by CrumbleCakes Bakery</small>
+                  </td>
+                  <td style={{textAlign: 'center'}}>1</td>
+                  <td style={{textAlign: 'right'}}>₹{Number(item.price).toFixed(2)}</td>
+                  <td style={{textAlign: 'right'}}>₹{Number(item.price).toFixed(2)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <div className="print-totals">
+            <div className="pt-row"><span>Subtotal:</span><span>₹{subtotal.toFixed(2)}</span></div>
+            <div className="pt-row"><span>Shipping:</span><span>₹50.00</span></div>
+            <div className="pt-row pt-grand"><span>Grand Total:</span><span>₹{Number(currentOrder.total).toFixed(2)}</span></div>
+          </div>
+          
+          <div className="print-footer">
+            Thank you for shopping with CrumbleCakes Bakery!<br/>
+            For support, contact chef@crumblecakes.in
+          </div>
         </div>
 
         {/* Breadcrumbs */}
@@ -219,8 +269,8 @@ export default function OrderDetailPage() {
                             key={star} 
                             size={20} 
                             onClick={() => rateOrderItem(currentOrder.id, idx, star)}
-                            fill={star <= (item.user_rating || 0) ? "#FFA41C" : "transparent"}
-                            color={star <= (item.user_rating || 0) ? "#FFA41C" : "#ddd"}
+                            fill={star <= (item.user_rating || 0) ? "#ca8a04" : "transparent"}
+                            color={star <= (item.user_rating || 0) ? "#ca8a04" : "#eab8c8"}
                             style={{cursor: 'pointer'}}
                           />
                         ))}
@@ -236,7 +286,7 @@ export default function OrderDetailPage() {
       
       <footer className="amz-simple-footer">
         <div className="amz-container">
-          <p>© 2026, CrumbleCakes Bakery or its affiliates</p>
+          <p>© 2026, CrumbleCakes Bakery</p>
         </div>
       </footer>
     </div>
@@ -250,8 +300,8 @@ function StarRating({ rating, onRate }) {
         <Star 
           key={star} 
           size={18} 
-          color={star <= rating ? "#FFA41C" : "#ddd"}
-          fill={star <= rating ? "#FFA41C" : "transparent"}
+          color={star <= rating ? "#ca8a04" : "#eab8c8"}
+          fill={star <= rating ? "#ca8a04" : "transparent"}
           onClick={() => onRate(star)}
           style={{ cursor: 'pointer' }}
         />

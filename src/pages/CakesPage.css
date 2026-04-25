@@ -1,7 +1,14 @@
 .cakes-main {
-  padding: 2rem 4rem 4rem;
+  padding: 6rem 6rem;
   z-index: 1;
+  background: #ffffff; /* White background for the cakes section */
+  position: relative;
+  border-radius: 100px 100px 0 0;
+  box-shadow: 0 -20px 40px rgba(220, 150, 170, 0.15);
+  margin-top: -50px; /* Overlap the hero section slightly */
 }
+
+/* We don't need the ::before pseudo-element curve anymore since we used border-radius on the main container */
 
 .cakes-header {
   text-align: center;
@@ -9,83 +16,93 @@
 }
 
 .cakes-title {
-  font-size: 3.8rem;
-  font-family: var(--font-heading, serif);
-  color: #111;
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  font-size: 4rem;
+  font-family: 'Noto Serif', serif;
+  color: #3f4247;
+  font-weight: 700;
+  letter-spacing: -1px;
 }
 
 .text-pink {
-  color: #bc024d;
+  color: #cd3d7a;
 }
 
 .cakes-subtitle {
-  color: #666;
-  font-size: 1.1rem;
+  color: #7a7a7a;
+  font-size: 1.05rem;
   margin-top: 0.5rem;
+  font-family: 'Manrope', sans-serif;
 }
 
 .category-filters {
   display: flex;
   justify-content: center;
   gap: 1rem;
-  margin-bottom: 3rem;
+  margin-bottom: 3.5rem;
   flex-wrap: wrap;
 }
 
 .filter-btn {
   background: white;
-  border: 1px solid #eee;
-  padding: 0.6rem 1.8rem;
-  border-radius: 30px;
-  font-weight: 600;
+  border: 1px solid #eab8c8;
+  padding: 0.75rem 2rem;
+  border-radius: 50px;
+  font-weight: 700;
+  font-family: 'Manrope', sans-serif;
   font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  color: #666;
+  color: #3f4247;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+}
+
+.filter-btn:hover {
+  border-color: #cd3d7a;
 }
 
 .filter-btn.active {
-  background: #bc024d;
+  background: #cd3d7a;
   color: white;
-  border-color: #bc024d;
+  border-color: #cd3d7a;
+  box-shadow: 0 8px 20px rgba(205, 61, 122, 0.3);
 }
 
 /* =========================================
-   THE PREMIUM PRODUCT GRID (Rolex Inspired)
+   THE PREMIUM PRODUCT GRID
    ========================================= */
 .cakes-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 2.5rem;
   max-width: 1400px;
   margin: 0 auto;
 }
 
 .cake-card {
-  background: #ffffff;
-  border-radius: 32px;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  border-radius: 28px;
   overflow: hidden;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.03);
+  box-shadow: 0 15px 35px rgba(200, 150, 160, 0.1);
   transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
   display: flex;
   flex-direction: column;
   position: relative;
-  border: 1px solid rgba(0,0,0,0.05);
-  height: 520px; /* Locked height for consistency */
+  border: 2px solid #ffffff;
+  height: 520px;
 }
 
 .cake-card:hover {
-  transform: translateY(-12px);
-  box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+  transform: translateY(-8px);
+  box-shadow: 0 25px 50px rgba(200, 150, 160, 0.2);
+  background: rgba(255, 255, 255, 0.9);
 }
 
 /* Top Image Frame */
 .cake-image-section {
-  background-color: #f7f7f7; 
-  margin: 12px;
-  border-radius: 24px;
+  background-color: #ffffff; 
+  margin: 16px 16px 0 16px;
+  border-radius: 20px;
   height: 280px;
   display: flex;
   align-items: center;
@@ -93,13 +110,15 @@
   position: relative;
   overflow: hidden;
   flex-shrink: 0;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.03);
 }
 
 .cake-img {
-  width: 85%;
-  height: 85%;
+  width: 90%;
+  height: 90%;
   object-fit: contain;
   transition: transform 0.5s ease;
+  mix-blend-mode: darken;
 }
 
 .cake-card:hover .cake-img {
@@ -114,6 +133,7 @@
   transform: translateX(-50%);
   display: flex;
   gap: 5px;
+  z-index: 5;
 }
 
 .dot {
@@ -127,12 +147,12 @@
   width: 14px;
   height: 6px;
   border-radius: 10px;
-  background: #146b43; /* Rolex Green */
+  background: #cd3d7a;
 }
 
 /* Lower Content Section */
 .cake-content {
-  padding: 1.25rem 1.75rem 1.75rem;
+  padding: 1.5rem 1.5rem;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -141,15 +161,16 @@
 .cake-header-row {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   margin-bottom: 0.5rem;
   width: 100%;
 }
 
 .cake-title {
-  font-size: 1.45rem;
+  font-family: 'Noto Serif', serif;
+  font-size: 1.5rem;
   font-weight: 700;
-  color: #111;
+  color: #2a2c31;
   margin: 0;
   line-height: 1.2;
 }
@@ -157,22 +178,22 @@
 .cake-rating-box {
   display: flex;
   align-items: center;
-  gap: 4px;
-  font-weight: 700;
-  font-size: 0.9rem;
-  color: #111;
-  padding: 4px 8px;
-  background: #f0f0f0;
-  border-radius: 8px;
+  gap: 6px;
+  font-weight: 800;
+  font-size: 0.85rem;
+  color: #333;
+  padding: 4px 10px;
+  background: #f7f7f7;
+  border-radius: 20px;
   white-space: nowrap;
 }
 
 .cake-meta {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: #888;
   margin-bottom: 1.5rem;
   line-height: 1.4;
-  font-family: var(--font-body);
+  font-family: 'Manrope', sans-serif;
 }
 
 /* Price & Button Footer */
@@ -185,38 +206,40 @@
 }
 
 .cake-price-tag {
-  font-size: 1.9rem;
-  font-weight: 700;
-  color: #111;
+  font-size: 1.8rem;
+  font-weight: 800;
+  font-family: 'Manrope', sans-serif;
+  color: #2a2c31;
   letter-spacing: -0.5px;
 }
 
 .buy-now-btn {
-  background: #146b43; /* Rolex Green */
+  background: #2a6f4d; /* Deep green */
   color: white;
   border: none;
-  padding: 12px 28px;
-  border-radius: 12px;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  font-family: 'Manrope', sans-serif;
   font-weight: 700;
   font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(20, 107, 67, 0.2);
+  box-shadow: 0 4px 12px rgba(42, 111, 77, 0.2);
 }
 
 .buy-now-btn:hover {
-  background: #0d4d30;
-  box-shadow: 0 6px 16px rgba(20, 107, 67, 0.3);
-  transform: translateY(-1px);
+  background: #1f573a;
+  box-shadow: 0 6px 16px rgba(42, 111, 77, 0.3);
+  transform: translateY(-2px);
 }
 
 /* Custom Card Layout */
 .custom-cake-card .cake-image-section {
-  background: linear-gradient(135deg, #f0f0ff 0%, #e8e8ff 100%);
+  background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
 }
 
 .custom-cake-visual-alt {
-  color: #5200ff;
+  color: #cd3d7a;
   font-size: 3rem;
   animation: float 3s ease-in-out infinite;
 }
@@ -228,7 +251,7 @@
 }
 
 .design-more-link {
-  color: #5200ff;
+  color: #cd3d7a;
   font-weight: 800;
   font-size: 1rem;
   text-decoration: underline;
@@ -245,9 +268,7 @@
   }
 }
 
-/* ================================
-   CUSTOM CAKE MODAL (Restored)
-   ================================ */
+/* Custom Modal Styles Kept as Before */
 .custom-modal-overlay {
   position: fixed;
   inset: 0;
@@ -283,236 +304,33 @@
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
-.custom-modal-header {
-  padding: 2.5rem 2.5rem 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-}
-
-.custom-modal-header h2 {
-  font-family: var(--font-heading, serif);
-  font-size: 1.8rem;
-  font-weight: 800;
-  color: #111;
-  margin: 0 0 0.25rem;
-}
-
-.custom-modal-header p {
-  color: #666;
-  font-size: 0.95rem;
-  margin: 0;
-}
-
-.custom-close {
-  background: #f5f5f5;
-  border: none;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: #666;
-  transition: all 0.2s ease;
-}
-
-.custom-close:hover {
-  background: #eee;
-  color: #111;
-  transform: rotate(90deg);
-}
-
-.custom-modal-body {
-  padding: 1rem 2.5rem 2.5rem;
-}
-
-/* Upload Area */
-.custom-upload-area {
-  background: #f9f9f9;
-  border: 2px dashed #ddd;
-  border-radius: 20px;
-  height: 220px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-bottom: 2rem;
-  overflow: hidden;
-  position: relative;
-}
-
-.custom-upload-area:hover {
-  border-color: #bc024d;
-  background: #fdf5f8;
-}
-
-.custom-upload-area.has-image {
-  border-style: solid;
-  border-color: #bc024d;
-}
-
-.upload-placeholder {
-  text-align: center;
-  color: #888;
-}
-
-.upload-placeholder p {
-  font-weight: 700;
-  color: #444;
-  margin: 0.5rem 0 0.25rem;
-}
-
-.upload-placeholder span {
-  font-size: 0.8rem;
-}
-
-.custom-preview {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.remove-image {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: rgba(0,0,0,0.6);
-  color: white;
-  border: none;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(4px);
-}
-
-/* Form Styles */
-.custom-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.custom-field label {
-  display: block;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #444;
-  margin-bottom: 0.5rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.custom-field input,
-.custom-field textarea {
-  width: 100%;
-  padding: 1rem 1.25rem;
-  border: 1px solid #eee;
-  border-radius: 12px;
-  font-family: inherit;
-  font-size: 1rem;
-  background: #fff;
-  transition: all 0.2s ease;
-}
-
-.custom-field input:focus,
-.custom-field textarea:focus {
-  outline: none;
-  border-color: #bc024d;
-  box-shadow: 0 0 0 4px rgba(188, 2, 77, 0.05);
-}
-
-.size-options {
-  display: flex;
-  gap: 0.75rem;
-}
-
-.size-btn {
-  flex: 1;
-  padding: 0.75rem;
-  border: 1px solid #eee;
-  border-radius: 10px;
-  background: white;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s;
-  color: #666;
-}
-
-.size-btn.active {
-  background: #bc024d;
-  color: white;
-  border-color: #bc024d;
-}
-
-.custom-notice {
-  background: #fff8f0;
-  padding: 1rem 1.25rem;
-  border-radius: 16px;
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  border: 1px solid #feeacf;
-}
-
-.custom-notice p {
-  font-size: 0.85rem;
-  color: #8a5312;
-  margin: 0;
-  line-height: 1.5;
-}
-
-.custom-submit-btn {
-  width: 100%;
-  padding: 1.25rem;
-  background: #111;
-  color: white;
-  border: none;
-  border-radius: 16px;
-  font-weight: 800;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.custom-submit-btn:hover:not(:disabled) {
-  background: #000;
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-}
-
-.custom-submit-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Success State */
-.custom-success {
-  padding: 4rem 2rem;
-  text-align: center;
-}
-
-.custom-success h2 {
-  font-family: var(--font-heading, serif);
-  font-size: 1.8rem;
-  font-weight: 800;
-  color: #111;
-  margin-bottom: 0.5rem;
-}
-
-.custom-success p {
-  color: #666;
-  font-size: 1rem;
-  max-width: 320px;
-  margin: 0 auto;
-  line-height: 1.6;
-}
-
+/* Other modal classes unchanged */
+.custom-modal-header { padding: 2.5rem 2.5rem 1rem; display: flex; justify-content: space-between; align-items: flex-start; }
+.custom-modal-header h2 { font-family: 'Noto Serif', serif; font-size: 1.8rem; font-weight: 800; color: #111; margin: 0 0 0.25rem; }
+.custom-modal-header p { color: #666; font-size: 0.95rem; margin: 0; }
+.custom-close { background: #f5f5f5; border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #666; transition: all 0.2s ease; }
+.custom-close:hover { background: #eee; color: #111; transform: rotate(90deg); }
+.custom-modal-body { padding: 1rem 2.5rem 2.5rem; }
+.custom-upload-area { background: #f9f9f9; border: 2px dashed #ddd; border-radius: 20px; height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; margin-bottom: 2rem; overflow: hidden; position: relative; }
+.custom-upload-area:hover { border-color: #cd3d7a; background: #fef0f4; }
+.custom-upload-area.has-image { border-style: solid; border-color: #cd3d7a; }
+.upload-placeholder { text-align: center; color: #888; }
+.upload-placeholder p { font-weight: 700; color: #444; margin: 0.5rem 0 0.25rem; }
+.upload-placeholder span { font-size: 0.8rem; }
+.custom-preview { width: 100%; height: 100%; object-fit: cover; }
+.remove-image { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.6); color: white; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+.custom-form { display: flex; flex-direction: column; gap: 1.5rem; margin-bottom: 2rem; }
+.custom-field label { display: block; font-size: 0.85rem; font-weight: 700; color: #444; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px; }
+.custom-field input, .custom-field textarea { width: 100%; padding: 1rem 1.25rem; border: 1px solid #eee; border-radius: 12px; font-family: inherit; font-size: 1rem; background: #fff; transition: all 0.2s ease; }
+.custom-field input:focus, .custom-field textarea:focus { outline: none; border-color: #cd3d7a; box-shadow: 0 0 0 4px rgba(205, 61, 122, 0.1); }
+.size-options { display: flex; gap: 0.75rem; }
+.size-btn { flex: 1; padding: 0.75rem; border: 1px solid #eee; border-radius: 10px; background: white; font-weight: 700; cursor: pointer; transition: all 0.2s; color: #666; }
+.size-btn.active { background: #cd3d7a; color: white; border-color: #cd3d7a; }
+.custom-notice { background: #fff8f0; padding: 1rem 1.25rem; border-radius: 16px; display: flex; gap: 1rem; margin-bottom: 2rem; border: 1px solid #feeacf; }
+.custom-notice p { font-size: 0.85rem; color: #8a5312; margin: 0; line-height: 1.5; }
+.custom-submit-btn { width: 100%; padding: 1.25rem; background: #111; color: white; border: none; border-radius: 16px; font-weight: 800; font-size: 1rem; cursor: pointer; transition: all 0.3s ease; }
+.custom-submit-btn:hover:not(:disabled) { background: #000; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+.custom-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.custom-success { padding: 4rem 2rem; text-align: center; }
+.custom-success h2 { font-family: 'Noto Serif', serif; font-size: 1.8rem; font-weight: 800; color: #111; margin-bottom: 0.5rem; }
+.custom-success p { color: #666; font-size: 1rem; max-width: 320px; margin: 0 auto; line-height: 1.6; }
