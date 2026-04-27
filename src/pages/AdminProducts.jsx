@@ -14,11 +14,17 @@ export default function AdminProducts() {
   const [formData, setFormData] = useState({
     name: '',
     price: '',
+    actual_price: '',
     category: 'Classic',
     rating: 4.5,
     description: '',
+    instructions: '',
     images: [],
     weight: '1kg',
+    prices: {
+      egg: { '0.5kg': '', '1kg': '', '1.5kg': '', '2kg': '', '3kg': '' },
+      eggless: { '0.5kg': '', '1kg': '', '1.5kg': '', '2kg': '', '3kg': '' }
+    },
     isEggless: true,
     isFreshlyBaked: true
   });
@@ -52,7 +58,26 @@ export default function AdminProducts() {
     setFormData({ 
       ...product, 
       images,
+      actual_price: product.actual_price || product.price || '',
+      description: product.description || '',
+      instructions: product.instructions || '',
       weight: product.weight || '1kg',
+      prices: (() => {
+        let base = {
+          egg: { '0.5kg': '', '1kg': product.price || '', '1.5kg': '', '2kg': '', '3kg': '' },
+          eggless: { '0.5kg': '', '1kg': product.price || '', '1.5kg': '', '2kg': '', '3kg': '' }
+        };
+        if (product.prices) {
+          if (product.prices.egg || product.prices.eggless) {
+            base.egg = { ...base.egg, ...product.prices.egg };
+            base.eggless = { ...base.eggless, ...product.prices.eggless };
+          } else {
+            base.egg = { ...base.egg, ...product.prices };
+            base.eggless = { ...base.eggless, ...product.prices };
+          }
+        }
+        return base;
+      })(),
       isEggless: product.is_eggless !== undefined ? product.is_eggless : true,
       isFreshlyBaked: product.is_freshly_baked !== undefined ? product.is_freshly_baked : true
     });
@@ -62,8 +87,13 @@ export default function AdminProducts() {
     setSelectedProduct(null);
     setIsAddingNew(true);
     setFormData({
-      name: '', price: '', category: 'Classic', rating: 4.5, description: '', images: [],
-      weight: '1kg', isEggless: true, isFreshlyBaked: true
+      name: '', price: '', actual_price: '', category: 'Classic', rating: 4.5, description: '', instructions: '', images: [],
+      weight: '1kg', 
+      prices: {
+        egg: { '0.5kg': '', '1kg': '', '1.5kg': '', '2kg': '', '3kg': '' },
+        eggless: { '0.5kg': '', '1kg': '', '1.5kg': '', '2kg': '', '3kg': '' }
+      }, 
+      isEggless: true, isFreshlyBaked: true
     });
   };
 
@@ -123,12 +153,15 @@ export default function AdminProducts() {
     const dbData = {
       name: formData.name,
       price: parseFloat(formData.price) || 0,
+      actual_price: parseFloat(formData.actual_price) || parseFloat(formData.price) || 0,
       category: formData.category || 'Classic',
       description: formData.description || '',
+      instructions: formData.instructions || '',
       rating: parseFloat(formData.rating) || 4.5,
       image: formData.images.length > 1 ? JSON.stringify(formData.images) : (formData.images[0] || '/hero-cake.png'),
       in_stock: true,
       weight: formData.weight,
+      prices: formData.prices,
       is_eggless: formData.isEggless,
       is_freshly_baked: formData.isFreshlyBaked
     };
@@ -239,7 +272,7 @@ export default function AdminProducts() {
         </div>
       </section>
 
-      <aside className="details-section" style={{ width: '450px', display: 'flex', flexDirection: 'column' }}>
+      <aside className="details-section">
         <div className="details-header" style={{ marginBottom: '2rem' }}>
           <h3 style={{ fontFamily: "'Noto Serif', serif", fontSize: '2rem', fontWeight: 700, color: '#3f4247', margin: 0 }}>{isAddingNew ? 'New Creation' : 'Edit Cake'}</h3>
           <button className="tool-icon-btn" onClick={closePanel} style={{ background: '#fdf2f5', border: 'none', color: '#cd3d7a' }}><X size={20} /></button>
@@ -276,9 +309,13 @@ export default function AdminProducts() {
               <input type="text" style={{ width: '100%', padding: '0.9rem 1.2rem', borderRadius: '12px', border: '1px solid #eab8c8', background: '#fdfafb', fontSize: '0.95rem', color: '#3f4247', fontFamily: 'inherit' }} value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} required />
             </div>
 
-            <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem'}}>
+            <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem'}}>
               <div>
-                <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#888', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'block' }}>PRICE (₹)</label>
+                <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#888', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'block' }}>ACTUAL PRICE (₹)</label>
+                <input type="number" style={{ width: '100%', padding: '0.9rem 1.2rem', borderRadius: '12px', border: '1px solid #eab8c8', background: '#fdfafb', fontSize: '0.95rem', color: '#3f4247', fontFamily: 'inherit' }} value={formData.actual_price} onChange={(e) => setFormData({...formData, actual_price: e.target.value})} required />
+              </div>
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#888', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'block' }}>OFFER PRICE (₹)</label>
                 <input type="number" style={{ width: '100%', padding: '0.9rem 1.2rem', borderRadius: '12px', border: '1px solid #eab8c8', background: '#fdfafb', fontSize: '0.95rem', color: '#3f4247', fontFamily: 'inherit' }} value={formData.price} onChange={(e) => setFormData({...formData, price: e.target.value})} required />
               </div>
               <div>
@@ -289,28 +326,50 @@ export default function AdminProducts() {
               </div>
             </div>
 
-            <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem'}}>
-              <div>
-                <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#888', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'block' }}>WEIGHT</label>
-                <select style={{ width: '100%', padding: '0.9rem 1.2rem', borderRadius: '12px', border: '1px solid #eab8c8', background: '#fdfafb', fontSize: '0.95rem', color: '#3f4247', fontFamily: 'inherit' }} value={formData.weight} onChange={(e) => setFormData({...formData, weight: e.target.value})}>
-                  {weightOptions.map(w => <option key={w}>{w}</option>)}
-                </select>
+            <div>
+              <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#888', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'block' }}>PRICING BY WEIGHT (WITH EGG)</label>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '1.5rem' }}>
+                {Object.keys(formData.prices.egg).map(weight => (
+                  <div key={weight}>
+                    <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#c2410c', display: 'block', marginBottom: '0.25rem' }}>{weight} (₹)</label>
+                    <input 
+                      type="number" 
+                      style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', border: '1px solid #eab8c8', background: '#fff', fontSize: '0.9rem', color: '#3f4247' }} 
+                      value={formData.prices.egg[weight]} 
+                      onChange={(e) => setFormData({...formData, prices: {...formData.prices, egg: {...formData.prices.egg, [weight]: e.target.value}}})} 
+                      placeholder="e.g. 500" 
+                    />
+                  </div>
+                ))}
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingTop: '1.8rem' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem', color: '#3f4247', fontWeight: 600 }}>
-                  <input type="checkbox" checked={formData.isEggless} onChange={(e) => setFormData({...formData, isEggless: e.target.checked})} style={{ accentColor: '#cd3d7a', width: '18px', height: '18px' }} />
-                  Eggless
-                </label>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem', color: '#3f4247', fontWeight: 600 }}>
-                  <input type="checkbox" checked={formData.isFreshlyBaked} onChange={(e) => setFormData({...formData, isFreshlyBaked: e.target.checked})} style={{ accentColor: '#cd3d7a', width: '18px', height: '18px' }} />
-                  Freshly Baked
-                </label>
+
+              <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#888', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'block' }}>PRICING BY WEIGHT (EGGLESS)</label>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
+                {Object.keys(formData.prices.eggless).map(weight => (
+                  <div key={weight}>
+                    <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#15803d', display: 'block', marginBottom: '0.25rem' }}>{weight} (₹)</label>
+                    <input 
+                      type="number" 
+                      style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', border: '1px solid #eab8c8', background: '#fff', fontSize: '0.9rem', color: '#3f4247' }} 
+                      value={formData.prices.eggless[weight]} 
+                      onChange={(e) => setFormData({...formData, prices: {...formData.prices, eggless: {...formData.prices.eggless, [weight]: e.target.value}}})} 
+                      placeholder="e.g. 550" 
+                    />
+                  </div>
+                ))}
               </div>
             </div>
 
+
+
             <div>
               <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#888', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'block' }}>DESCRIPTION</label>
-              <textarea style={{ width: '100%', padding: '0.9rem 1.2rem', borderRadius: '12px', border: '1px solid #eab8c8', background: '#fdfafb', fontSize: '0.95rem', color: '#3f4247', fontFamily: 'inherit', minHeight: '100px', resize: 'none' }} value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} />
+              <textarea style={{ width: '100%', padding: '0.9rem 1.2rem', borderRadius: '12px', border: '1px solid #eab8c8', background: '#fdfafb', fontSize: '0.95rem', color: '#3f4247', fontFamily: 'inherit', minHeight: '100px', resize: 'none' }} value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} placeholder="Rich product description..." />
+            </div>
+
+            <div>
+              <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#888', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'block' }}>CARE / SPECIAL INSTRUCTIONS</label>
+              <textarea style={{ width: '100%', padding: '0.9rem 1.2rem', borderRadius: '12px', border: '1px solid #eab8c8', background: '#fdfafb', fontSize: '0.95rem', color: '#3f4247', fontFamily: 'inherit', minHeight: '80px', resize: 'none' }} value={formData.instructions} onChange={(e) => setFormData({...formData, instructions: e.target.value})} placeholder="e.g. Keep refrigerated until serving..." />
             </div>
           </div>
 

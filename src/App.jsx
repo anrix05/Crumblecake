@@ -13,6 +13,8 @@ import LoginPage from './pages/LoginPage';
 import AccountPage from './pages/AccountPage';
 import OrderDetailPage from './pages/OrderDetailPage';
 import CartPage from './pages/CartPage';
+import ProductPage from './pages/ProductPage';
+import CustomCakePage from './pages/CustomCakePage';
 import CustomerAuthModal from './components/CustomerAuthModal';
 import { useAuth } from './context/AuthContext';
 import Footer from './components/Footer';
@@ -32,6 +34,8 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/cart" element={<CartPage />} />
+        <Route path="/product/:id" element={<ProductPage />} />
+        <Route path="/custom-cake" element={<CustomCakePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/account" element={<AccountPage />} />
         <Route path="/account/order/:orderId" element={<OrderDetailPage />} />

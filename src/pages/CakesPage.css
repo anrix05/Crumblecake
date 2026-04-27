@@ -79,50 +79,44 @@
 }
 
 .cake-card {
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(10px);
-  border-radius: 28px;
+  background: #ffffff;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 15px 35px rgba(200, 150, 160, 0.1);
-  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  transition: box-shadow 0.2s ease;
   display: flex;
   flex-direction: column;
   position: relative;
-  border: 2px solid #ffffff;
-  height: 520px;
+  border: 1px solid #f0f0f0;
+  cursor: pointer;
+  height: 400px;
 }
 
 .cake-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 25px 50px rgba(200, 150, 160, 0.2);
-  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
 }
 
 /* Top Image Frame */
 .cake-image-section {
-  background-color: #ffffff; 
-  margin: 16px 16px 0 16px;
-  border-radius: 20px;
-  height: 280px;
+  background-color: #f9f9f9; 
+  height: 260px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   overflow: hidden;
   flex-shrink: 0;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.03);
 }
 
 .cake-img {
-  width: 90%;
-  height: 90%;
-  object-fit: contain;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   transition: transform 0.5s ease;
-  mix-blend-mode: darken;
 }
 
 .cake-card:hover .cake-img {
-  transform: scale(1.05);
+  transform: scale(1.02);
 }
 
 /* Pagination Dots */
@@ -152,110 +146,152 @@
 
 /* Lower Content Section */
 .cake-content {
-  padding: 1.5rem 1.5rem;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  flex: 1;
-}
-
-.cake-header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-  width: 100%;
+  gap: 8px;
 }
 
 .cake-title {
-  font-family: 'Noto Serif', serif;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #2a2c31;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: #333;
   margin: 0;
-  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cake-price-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cake-actual-price {
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  text-decoration: line-through;
+  color: #999;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.cake-price-tag {
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #000;
+}
+
+.cake-off-badge {
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  background: #dcfce7;
+  color: #16a34a;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
 }
 
 .cake-rating-box {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-weight: 800;
-  font-size: 0.85rem;
-  color: #333;
-  padding: 4px 10px;
-  background: #f7f7f7;
-  border-radius: 20px;
-  white-space: nowrap;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #666;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
 }
 
-.cake-meta {
-  font-size: 0.9rem;
+.rating-divider {
+  color: #e5e7eb;
+}
+
+.rating-count {
   color: #888;
-  margin-bottom: 1.5rem;
-  line-height: 1.4;
-  font-family: 'Manrope', sans-serif;
-}
-
-/* Price & Button Footer */
-.cake-footer {
-  margin-top: auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-
-.cake-price-tag {
-  font-size: 1.8rem;
-  font-weight: 800;
-  font-family: 'Manrope', sans-serif;
-  color: #2a2c31;
-  letter-spacing: -0.5px;
-}
-
-.buy-now-btn {
-  background: #2a6f4d; /* Deep green */
-  color: white;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 50px;
-  font-family: 'Manrope', sans-serif;
-  font-weight: 700;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(42, 111, 77, 0.2);
-}
-
-.buy-now-btn:hover {
-  background: #1f573a;
-  box-shadow: 0 6px 16px rgba(42, 111, 77, 0.3);
-  transform: translateY(-2px);
 }
 
 /* Custom Card Layout */
-.custom-cake-card .cake-image-section {
-  background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
+.custom-cake-card {
+  padding: 8px; /* Inner padding like the image */
+  background: #fbfbfb;
+  border: 1px solid #eaeaea;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.04);
 }
 
-.custom-cake-visual-alt {
-  color: #cd3d7a;
-  font-size: 3rem;
-  animation: float 3s ease-in-out infinite;
+.custom-cake-image-wrapper {
+  border-radius: 12px;
+  overflow: hidden;
+  height: 250px;
 }
 
-@keyframes float {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0); }
+.custom-cake-image-bg {
+  height: 100%;
+  width: 100%;
+  background: radial-gradient(circle at center, #ffffff 0%, #fae8ed 40%, #f6c8d4 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.design-more-link {
-  color: #cd3d7a;
-  font-weight: 800;
-  font-size: 1rem;
-  text-decoration: underline;
+.custom-cake-illustration {
+  height: 85%;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+}
+
+.custom-cake-content {
+  text-align: center;
+  align-items: center;
+  padding: 20px 10px;
+  gap: 4px;
+}
+
+.custom-cake-title {
+  font-family: 'Noto Serif', serif;
+  font-size: 1.5rem;
+  color: #3f4247;
+  margin: 0;
+  font-weight: 600;
+}
+
+.custom-cake-subtitle {
+  font-family: 'Manrope', 'Inter', sans-serif;
+  color: #5a4a52;
+  font-size: 0.95rem;
+  margin: 4px 0 16px 0;
+}
+
+.custom-cake-footer {
+  margin-top: auto;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.custom-cake-btn {
+  background: linear-gradient(135deg, #b8756d 0%, #d49a8f 50%, #9e5b51 100%);
+  color: white;
+  border-radius: 50px;
+  padding: 10px 24px;
+  font-family: 'Manrope', 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 0.95rem;
+  border: 1px solid rgba(255, 255, 255, 0.4);
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 12px rgba(184, 117, 109, 0.4);
+  transition: all 0.3s ease;
+}
+
+.custom-cake-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(184, 117, 109, 0.5);
 }
 
 /* Media Queries */
@@ -268,69 +304,4 @@
   }
 }
 
-/* Custom Modal Styles Kept as Before */
-.custom-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10000;
-  padding: 2rem;
-  animation: fadeIn 0.3s ease;
-}
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.custom-modal {
-  background: white;
-  border-radius: 32px;
-  width: 100%;
-  max-width: 560px;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.2);
-  position: relative;
-  animation: modalPop 0.4s cubic-bezier(0.17, 0.84, 0.44, 1);
-}
-
-@keyframes modalPop {
-  from { opacity: 0; transform: scale(0.95) translateY(20px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-/* Other modal classes unchanged */
-.custom-modal-header { padding: 2.5rem 2.5rem 1rem; display: flex; justify-content: space-between; align-items: flex-start; }
-.custom-modal-header h2 { font-family: 'Noto Serif', serif; font-size: 1.8rem; font-weight: 800; color: #111; margin: 0 0 0.25rem; }
-.custom-modal-header p { color: #666; font-size: 0.95rem; margin: 0; }
-.custom-close { background: #f5f5f5; border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #666; transition: all 0.2s ease; }
-.custom-close:hover { background: #eee; color: #111; transform: rotate(90deg); }
-.custom-modal-body { padding: 1rem 2.5rem 2.5rem; }
-.custom-upload-area { background: #f9f9f9; border: 2px dashed #ddd; border-radius: 20px; height: 220px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; margin-bottom: 2rem; overflow: hidden; position: relative; }
-.custom-upload-area:hover { border-color: #cd3d7a; background: #fef0f4; }
-.custom-upload-area.has-image { border-style: solid; border-color: #cd3d7a; }
-.upload-placeholder { text-align: center; color: #888; }
-.upload-placeholder p { font-weight: 700; color: #444; margin: 0.5rem 0 0.25rem; }
-.upload-placeholder span { font-size: 0.8rem; }
-.custom-preview { width: 100%; height: 100%; object-fit: cover; }
-.remove-image { position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.6); color: white; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
-.custom-form { display: flex; flex-direction: column; gap: 1.5rem; margin-bottom: 2rem; }
-.custom-field label { display: block; font-size: 0.85rem; font-weight: 700; color: #444; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px; }
-.custom-field input, .custom-field textarea { width: 100%; padding: 1rem 1.25rem; border: 1px solid #eee; border-radius: 12px; font-family: inherit; font-size: 1rem; background: #fff; transition: all 0.2s ease; }
-.custom-field input:focus, .custom-field textarea:focus { outline: none; border-color: #cd3d7a; box-shadow: 0 0 0 4px rgba(205, 61, 122, 0.1); }
-.size-options { display: flex; gap: 0.75rem; }
-.size-btn { flex: 1; padding: 0.75rem; border: 1px solid #eee; border-radius: 10px; background: white; font-weight: 700; cursor: pointer; transition: all 0.2s; color: #666; }
-.size-btn.active { background: #cd3d7a; color: white; border-color: #cd3d7a; }
-.custom-notice { background: #fff8f0; padding: 1rem 1.25rem; border-radius: 16px; display: flex; gap: 1rem; margin-bottom: 2rem; border: 1px solid #feeacf; }
-.custom-notice p { font-size: 0.85rem; color: #8a5312; margin: 0; line-height: 1.5; }
-.custom-submit-btn { width: 100%; padding: 1.25rem; background: #111; color: white; border: none; border-radius: 16px; font-weight: 800; font-size: 1rem; cursor: pointer; transition: all 0.3s ease; }
-.custom-submit-btn:hover:not(:disabled) { background: #000; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-.custom-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.custom-success { padding: 4rem 2rem; text-align: center; }
-.custom-success h2 { font-family: 'Noto Serif', serif; font-size: 1.8rem; font-weight: 800; color: #111; margin-bottom: 0.5rem; }
-.custom-success p { color: #666; font-size: 1rem; max-width: 320px; margin: 0 auto; line-height: 1.6; }

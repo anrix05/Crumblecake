@@ -208,25 +208,7 @@ export default function CheckoutPage() {
     <div className="checkout-page-wrapper">
       <Navbar />
       
-      {/* Stepper Breadcrumbs matching mockup */}
-      <div className="stepper-container">
-        <div className="stepper">
-          <span className="step" onClick={() => navigate('/cart')} style={{cursor:'pointer', color:'#a0a0a0'}}>
-            <span className="step-circle"></span>
-            Cart
-          </span>
-          <span className="step-divider">{'>'}</span>
-          <span className="step active" style={{color:'#111'}}>
-            <span className="step-circle active" style={{borderColor:'#111'}}></span>
-            Checkout
-          </span>
-          <span className="step-divider">{'>'}</span>
-          <span className="step" style={{color:'#a0a0a0'}}>
-            <span className="step-circle"></span>
-            Payment
-          </span>
-        </div>
-      </div>
+
 
       <div className="checkout-content">
         <div className="checkout-left-col">

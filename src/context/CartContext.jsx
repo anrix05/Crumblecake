@@ -42,6 +42,15 @@ export function CartProvider({ children }) {
     setCartItems(prev => prev.filter(item => item.id !== productId));
   };
 
+  const updateItemMessage = (productId, message) => {
+    setCartItems(prev => prev.map(item => 
+      item.id === productId ? { 
+        ...item, 
+        variant_details: { ...item.variant_details, message } 
+      } : item
+    ));
+  };
+
   const clearCart = () => {
     setCartItems([]);
     setDiscountPercent(0);
@@ -81,6 +90,7 @@ export function CartProvider({ children }) {
       addToCart, 
       removeFromCart, 
       updateQuantity,
+      updateItemMessage,
       clearCart,
       cartCount, 
       subtotal,

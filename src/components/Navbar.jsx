@@ -1,5 +1,5 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { Search, ShoppingBag, User } from 'lucide-react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Search, ShoppingBag, User, Truck } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useState } from 'react';
@@ -9,8 +9,10 @@ export default function Navbar() {
   const { cartCount, setIsCartOpen } = useCart();
   const { user, isAdmin, setIsAuthModalOpen } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const hideBanner = location.pathname === '/cart' || location.pathname === '/checkout';
 
   const handleAuthClick = () => {
     setIsMobileMenuOpen(false);
@@ -24,9 +26,29 @@ export default function Navbar() {
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
   return (
-    <nav className="navbar">
-      <a href="/#home" className="navbar-logo" onClick={closeMobileMenu}>
-        <span className="logo-text-crumble">crumblecakes</span>
+    <header className="header-wrapper">
+      {!hideBanner && (
+        <div className="promo-banner">
+          <Truck size={20} color="#ffe17c" style={{ zIndex: 1 }} />
+          <span className="promo-banner-text">
+            <span className="promo-banner-highlight">FREE DELIVERY!!!</span> 
+            Enjoy ₹0 shipping with our free delivery time slots
+          </span>
+          <Truck size={20} color="#ffe17c" style={{ zIndex: 1 }} />
+        </div>
+      )}
+      <nav className="navbar">
+        <a href="/#home" className="navbar-logo" onClick={closeMobileMenu}>
+        <svg width="34" height="34" viewBox="0 0 100 100" fill="none" stroke="#3b1f13" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" className="logo-icon">
+          <path d="M 22 55 L 55 35 C 65 35, 75 40, 75 45" />
+          <path d="M 22 62 L 75 52 C 82 50, 82 60, 75 62 L 22 72 C 16 73, 16 63, 22 62 Z" />
+          <path d="M 53 36 C 50 30, 56 22, 58 20 C 62 25, 64 30, 58 34" />
+          <path d="M 50 34 C 55 31, 60 31, 64 35" strokeWidth="4.5" />
+          <circle cx="58" cy="10" r="3" fill="#3b1f13" stroke="none" />
+          <circle cx="48" cy="18" r="2.5" fill="#3b1f13" stroke="none" />
+          <circle cx="68" cy="18" r="2.5" fill="#3b1f13" stroke="none" />
+        </svg>
+        <span className="logo-text-crumble">CRUMBLECAKE</span>
       </a>
       
       <div className={`navbar-overlay ${isMobileMenuOpen ? 'open' : ''}`} onClick={closeMobileMenu}></div>
@@ -60,5 +82,6 @@ export default function Navbar() {
         </button>
       </div>
     </nav>
+    </header>
   );
 }

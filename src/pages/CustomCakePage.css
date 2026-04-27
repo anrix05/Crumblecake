@@ -1,0 +1,364 @@
+.custom-cake-wrapper {
+  min-height: 100vh;
+  background-color: #fcf9fa;
+  display: flex;
+  flex-direction: column;
+}
+
+.custom-cake-main {
+  flex: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 8rem 2rem 4rem;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  color: #666;
+  cursor: pointer;
+  margin-bottom: 2rem;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.back-button:hover {
+  color: #cd3d7a;
+}
+
+.custom-cake-header {
+  margin-bottom: 3rem;
+}
+
+.custom-cake-header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem;
+  color: #1a1a1a;
+  margin: 0 0 1rem 0;
+}
+
+.custom-cake-header p {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.1rem;
+  color: #666;
+  max-width: 600px;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.custom-cake-container {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 4rem;
+}
+
+/* Form Styles */
+.dream-cake-form {
+  background: white;
+  padding: 3rem;
+  border-radius: 24px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.04);
+}
+
+.form-section {
+  margin-bottom: 3rem;
+}
+
+.form-section h2 {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.25rem;
+  color: #1a1a1a;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 0.75rem;
+}
+
+.input-group {
+  margin-bottom: 1.5rem;
+}
+
+.input-group label {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 0.5rem;
+}
+
+.input-group input[type="text"],
+.input-group textarea,
+.input-group select {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  color: #1a1a1a;
+  background: #f9fafb;
+  transition: all 0.2s;
+}
+
+.input-group input[type="text"]:focus,
+.input-group textarea:focus,
+.input-group select:focus {
+  outline: none;
+  border-color: #cd3d7a;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(205, 61, 122, 0.1);
+}
+
+.spec-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.pill-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pill-btn {
+  padding: 0.6rem 1.2rem;
+  border-radius: 50px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pill-btn:hover {
+  border-color: #cd3d7a;
+  color: #cd3d7a;
+}
+
+.pill-btn.active {
+  background: #cd3d7a;
+  color: white;
+  border-color: #cd3d7a;
+}
+
+.pill-btn.active.eggless {
+  background: #16a34a;
+  border-color: #16a34a;
+}
+.pill-btn.active.with-egg {
+  background: #ea580c;
+  border-color: #ea580c;
+}
+
+/* Submit Row */
+.form-submit-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 2px solid #f0f0f0;
+}
+
+.price-note {
+  font-family: 'Inter', sans-serif;
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.submit-dream-btn {
+  background: #cd3d7a;
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 50px;
+  font-family: 'Inter', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 8px 20px rgba(205, 61, 122, 0.2);
+}
+
+.submit-dream-btn:hover:not(:disabled) {
+  background: #b12d64;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 25px rgba(205, 61, 122, 0.3);
+}
+
+.submit-dream-btn:disabled {
+  background: #e5e7eb;
+  color: #9ca3af;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Visual Side */
+.custom-visual-side {
+  position: sticky;
+  top: 100px;
+  height: fit-content;
+}
+
+.upload-container {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 24px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.04);
+}
+
+.upload-container h3 {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.25rem;
+  color: #1a1a1a;
+  margin: 0 0 0.5rem 0;
+}
+
+.upload-container p {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  color: #666;
+  margin: 0 0 2rem 0;
+  line-height: 1.5;
+}
+
+.upload-dropzone {
+  border: 2px dashed #eab8c8;
+  border-radius: 16px;
+  height: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: #fdfafb;
+  position: relative;
+  overflow: hidden;
+}
+
+.upload-dropzone:hover {
+  border-color: #cd3d7a;
+  background: #fff;
+}
+
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: #cd3d7a;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+}
+
+.upload-hint {
+  font-size: 0.8rem;
+  color: #888;
+  font-weight: 400;
+}
+
+.reference-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.remove-img-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.remove-img-btn:hover {
+  background: rgba(0,0,0,0.8);
+}
+
+.inspiration-note {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: #f8fafe;
+  border-radius: 12px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  color: #4b5563;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* Success State */
+.custom-success-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+.custom-success-container h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5rem;
+  color: #1a1a1a;
+  margin: 1.5rem 0 1rem;
+}
+
+.custom-success-container p {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 2rem;
+  max-width: 500px;
+}
+
+/* Responsive */
+@media (max-width: 968px) {
+  .custom-cake-container {
+    grid-template-columns: 1fr;
+  }
+  .custom-visual-side {
+    position: static;
+  }
+}
+
+@media (max-width: 640px) {
+  .custom-cake-main {
+    padding: 6rem 1rem 2rem;
+  }
+  .dream-cake-form {
+    padding: 1.5rem;
+  }
+  .spec-grid {
+    grid-template-columns: 1fr;
+  }
+  .custom-cake-header h1 {
+    font-size: 2.2rem;
+  }
+}

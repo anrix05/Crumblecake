@@ -11,13 +11,21 @@ export default function CartPage() {
     cartItems, 
     updateQuantity, 
     removeFromCart, 
+    updateItemMessage,
     clearCart,
     subtotal, 
     discountAmount, 
     totalPrice,
-    applyPromoCode,
-    appliedPromo
+    appliedPromo,
+    addToCart
   } = useCart();
+
+  const addons = [
+    { id: 'addon1', name: 'Zig Zag Tall Candle Set of 6', price: 89, image: 'https://images.unsplash.com/photo-1558961363-a261a86a6096?w=200&h=200&fit=crop' },
+    { id: 'addon2', name: 'Glam Bday Cake Topper', price: 99, image: 'https://images.unsplash.com/photo-1530103862676-de8892796ac6?w=200&h=200&fit=crop' },
+    { id: 'addon3', name: '5 Dairy Milk Chocolates', price: 149, image: 'https://images.unsplash.com/photo-1621939514649-280e2af259d0?w=200&h=200&fit=crop' },
+    { id: 'addon4', name: '5 Nestle KitKat', price: 149, image: 'https://images.unsplash.com/photo-1582293041079-7814c2f12063?w=200&h=200&fit=crop' },
+  ];
   const navigate = useNavigate();
 
   const handleApplyPromo = () => {
@@ -31,24 +39,7 @@ export default function CartPage() {
     <div className="cart-page-wrapper">
       <Navbar />
       
-      <div className="stepper-container">
-        <div className="stepper">
-          <span className="step active">
-            <span className="step-circle active"></span>
-            Cart
-          </span>
-          <span className="step-divider">{'>'}</span>
-          <span className="step">
-            <span className="step-circle"></span>
-            Checkout
-          </span>
-          <span className="step-divider">{'>'}</span>
-          <span className="step">
-            <span className="step-circle"></span>
-            Payment
-          </span>
-        </div>
-      </div>
+
 
       <main className="cart-page-main">
         {cartItems.length === 0 ? (
@@ -59,99 +50,103 @@ export default function CartPage() {
         ) : (
           <div className="cart-content-grid">
             <div className="cart-left-col">
-              <div className="cart-header-box">
-                <div className="cart-title">
-                  <h2>Cart</h2>
-                  <span className="item-count">({cartItems.reduce((acc, item) => acc + item.quantity, 0)} products)</span>
-                </div>
-                <button className="btn-clear-cart" onClick={clearCart}>
-                  <X size={14} /> Clear cart
-                </button>
-              </div>
-
               <div className="cart-items-container">
-                <div className="cart-items-header">
-                  <span>Product</span>
-                  <span>Count</span>
-                  <span>Price</span>
-                </div>
-
                 {cartItems.map((item) => (
-                  <div key={item.id} className="cart-item-row">
-                    <div className="cart-item-primary">
+                  <div key={item.id} className="cart-item-box">
+                    <div className="cart-item-delivery-header">
+                      <strong>Express Delivery</strong> <span className="delivery-time">⚡ Same Day</span>
+                    </div>
+                    <div className="cart-item-row">
                       <div className="cart-item-img-container">
                          <img src={item.image} alt={item.name} />
                       </div>
                       <div className="cart-item-details">
                         <h4>{item.name}</h4>
-                        <span className="cart-item-variant">Classic Menu</span>
+                        <div className="cart-item-price-row">
+                          <span className="cart-item-price">₹{item.price.toFixed(2)}</span>
+                          <span className="cart-item-price-old">₹{(item.price + 115).toFixed(2)}</span>
+                        </div>
+                        <span className="cart-item-variant">Weight: {item.variant_details?.weight || '0.5 Kg'}</span>
+                        {item.category !== 'Add-on' && (
+                          <button 
+                            className="cart-item-message-btn"
+                            onClick={() => {
+                              const newMsg = prompt("Enter your message for the cake:", item.variant_details?.message || '');
+                              if (newMsg !== null) updateItemMessage(item.id, newMsg);
+                            }}
+                          >
+                            {item.variant_details?.message ? `✏️ ${item.variant_details.message}` : '+ Write your message ✏️'}
+                          </button>
+                        )}
                       </div>
-                    </div>
-                    
-                    <div className="cart-item-count">
-                      <div className="count-pill">
-                        <button onClick={() => updateQuantity(item.id, -1)}><Minus size={14} /></button>
-                        <span>{item.quantity}</span>
-                        <button onClick={() => updateQuantity(item.id, 1)}><Plus size={14} /></button>
+                      <div className="cart-item-controls">
+                        <div className="count-pill-dark">
+                          <button onClick={() => {
+                            if (item.quantity === 1) removeFromCart(item.id);
+                            else updateQuantity(item.id, -1);
+                          }}>-</button>
+                          <span>{item.quantity}</span>
+                          <button onClick={() => updateQuantity(item.id, 1)}>+</button>
+                        </div>
                       </div>
-                    </div>
-                    
-                    <div className="cart-item-price-col">
-                      <span className="cart-item-price">₹{(item.price * item.quantity).toFixed(2)}</span>
-                      <button className="btn-remove-item" onClick={() => removeFromCart(item.id)}>
-                        <X size={16} />
-                      </button>
                     </div>
                   </div>
                 ))}
               </div>
 
-              <div className="cart-banner-ad">
-                <div className="ad-content">
-                  <h3>Check the newest<br/>Crumble specials</h3>
-                  <p>Official Bakery retailer</p>
-                  <button onClick={() => navigate('/#cakes')}>Shop now</button>
+              <div className="cart-addons-section">
+                <h3 className="addons-title">Your last minute add-ons</h3>
+                <div className="addons-grid">
+                  {addons.map(addon => (
+                    <div key={addon.id} className="addon-card">
+                      <div className="addon-img-wrapper">
+                        <img src={addon.image} alt={addon.name} />
+                      </div>
+                      <div className="addon-info">
+                        <p className="addon-name">{addon.name}</p>
+                        <p className="addon-price">₹{addon.price}</p>
+                        <button className="btn-add-addon" onClick={() => addToCart({...addon, quantity: 1, category: 'Add-on'})}>
+                          Add to Cart
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
 
             <div className="cart-right-col">
               <div className="summary-box">
-                <h3 className="promo-title">Promo code</h3>
-                <div className="promo-input-group">
-                  <input 
-                    type="text" 
-                    placeholder="Type here..." 
-                    value={promoInput}
-                    onChange={(e) => setPromoInput(e.target.value)}
-                  />
-                  <button className="btn-apply" onClick={handleApplyPromo}>Apply</button>
+                <div className="savings-pill">
+                  You have saved ₹ 115 on this order
                 </div>
-                {appliedPromo && (
-                  <p style={{ color: '#146b43', fontSize: '0.8rem', fontWeight: 600, marginTop: '5px' }}>
-                    ✓ Code {appliedPromo} applied
-                  </p>
-                )}
+                
+                <div className="summary-header">
+                  <h3 className="summary-title">Bill Summary</h3>
+                  <span className="summary-items-count">{cartItems.reduce((acc, item) => acc + item.quantity, 0)} Item</span>
+                </div>
 
                 <div className="summary-breakdown">
                   <div className="summary-row">
-                    <span>Subtotal</span>
-                    <span>₹{subtotal.toFixed(2)}</span>
-                  </div>
-                  <div className="summary-row">
-                    <span>Discount</span>
-                    <span>-₹{discountAmount.toFixed(2)}</span>
+                    <span className="order-total-label"><span className="icon-list">🧾</span> Order Total</span>
+                    <span className="order-total-prices">
+                      <span className="price-old">₹{(subtotal + 115).toFixed(0)}</span> 
+                      <span className="price-new">₹{subtotal.toFixed(0)}</span>
+                    </span>
                   </div>
                 </div>
 
                 <div className="summary-row total">
-                  <span>Total</span>
-                  <span>₹{totalPrice.toFixed(2)}</span>
+                  <span>Grand Total</span>
+                  <span>₹{totalPrice.toFixed(0)}</span>
                 </div>
 
                 <button className="btn-continue-checkout" onClick={() => navigate('/checkout')}>
-                  Continue to checkout
+                  PLACE ORDER
                 </button>
+              </div>
+              <div className="coupon-info-text">
+                Have a Coupon Code? You can apply the discount<br/>coupon in the Checkout Process.
               </div>
             </div>
           </div>
