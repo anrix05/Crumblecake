@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { useProducts } from '../context/ProductContext';
 import { Minus, Plus, X } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import './CartPage.css';
@@ -20,7 +21,15 @@ export default function CartPage() {
     addToCart
   } = useCart();
 
-  const addons = [
+  const { products } = useProducts();
+  const dynamicAddons = products.filter(p => p.category === 'Combos & Gifts');
+  
+  const addons = dynamicAddons.length > 0 ? dynamicAddons.map(p => ({
+    id: p.id,
+    name: p.name,
+    price: p.price,
+    image: p.image || (Array.isArray(p.images) ? p.images[0] : (typeof p.images === 'string' && p.images.startsWith('[') ? JSON.parse(p.images)[0] : p.image)) || '/hero-cake.png'
+  })) : [
     { id: 'addon1', name: 'Zig Zag Tall Candle Set of 6', price: 89, image: 'https://images.unsplash.com/photo-1558961363-a261a86a6096?w=200&h=200&fit=crop' },
     { id: 'addon2', name: 'Glam Bday Cake Topper', price: 99, image: 'https://images.unsplash.com/photo-1530103862676-de8892796ac6?w=200&h=200&fit=crop' },
     { id: 'addon3', name: '5 Dairy Milk Chocolates', price: 149, image: 'https://images.unsplash.com/photo-1621939514649-280e2af259d0?w=200&h=200&fit=crop' },

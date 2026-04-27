@@ -12,7 +12,9 @@ export default function Navbar() {
   const location = useLocation();
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const hideBanner = location.pathname === '/cart' || location.pathname === '/checkout';
+  const hideBanner = ['/cart', '/checkout', '/account'].includes(location.pathname) || location.pathname.startsWith('/account/order/');
+  const isHome = location.pathname === '/';
+  const isProductPage = location.pathname.startsWith('/product/');
 
   const handleAuthClick = () => {
     setIsMobileMenuOpen(false);
@@ -26,7 +28,7 @@ export default function Navbar() {
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
   return (
-    <header className="header-wrapper">
+    <header className={`header-wrapper ${!isHome ? 'solid-bg' : ''} ${isProductPage ? 'product-navbar' : ''}`}>
       {!hideBanner && (
         <div className="promo-banner">
           <Truck size={20} color="#ffe17c" style={{ zIndex: 1 }} />

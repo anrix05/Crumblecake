@@ -66,12 +66,23 @@ export default function ProductPage() {
   const nextImg = () => setCurrentImgIndex((prev) => (prev + 1) % images.length);
   const prevImg = () => setCurrentImgIndex((prev) => (prev - 1 + images.length) % images.length);
 
-  const comboOptions = [
-    { id: 'candles', name: 'Magic Candles (Set of 10)', price: 49, img: 'https://img.icons8.com/color/48/000000/candles.png' },
-    { id: 'cap', name: 'Party Cap', price: 29, img: 'https://img.icons8.com/color/48/000000/party-hat.png' },
-    { id: 'roses', name: 'Red Rose Bouquet', price: 299, img: 'https://img.icons8.com/color/48/000000/rose.png' },
-    { id: 'sparkle', name: 'Sparkle Knife', price: 99, img: 'https://img.icons8.com/color/48/000000/knife.png' }
-  ];
+  const comboOptions = (products || [])
+    .filter(p => p.category === 'Combos & Gifts')
+    .map(p => ({
+      id: p.id,
+      name: p.name,
+      price: Number(p.price),
+      img: (() => {
+        try {
+          if (typeof p.image === 'string' && p.image.startsWith('[')) {
+            return JSON.parse(p.image)[0];
+          }
+          return p.image;
+        } catch (e) {
+          return p.image;
+        }
+      })() || 'https://img.icons8.com/color/48/000000/gift.png'
+    }));
 
   const handleComboToggle = (comboId) => {
     setSelectedCombos(prev => ({
@@ -216,6 +227,78 @@ export default function ProductPage() {
               </span>
             </div>
 
+            {/* WEIGHT SELECTION */}
+            {product.category !== 'Combos & Gifts' && (
+              <div className="option-group">
+                <label>Select Weight</label>
+                <div className="pill-selector">
+                  {(() => {
+                    if (!product.prices) return ['0.5kg', '1kg', '2kg'];
+                    const eggType = isEggless ? 'eggless' : 'egg';
+                    if (product.prices[eggType] && Object.values(product.prices[eggType]).some(p => p !== '')) {
+                      return Object.keys(product.prices[eggType]).filter(w => product.prices[eggType][w] !== '');
+                    } else if (Object.values(product.prices).some(p => typeof p === 'string' && p !== '')) {
+                      return Object.keys(product.prices).filter(w => typeof product.prices[w] === 'string' && product.prices[w] !== '');
+                    }
+                    return ['0.5kg', '1kg', '2kg'];
+                  })().map(w => (
+                    <button 
+                      key={w}
+                      className={`pill-btn ${selectedWeight === w ? 'active' : ''}`}
+                      onClick={() => setSelectedWeight(w)}
+                    >
+                      {w}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* EGG / EGGLESS TOGGLE */}
+            {product.category !== 'Combos & Gifts' && (
+              <div className="option-group" style={{ marginBottom: '1rem' }}>
+                <div className="food-type-toggles">
+                  <button 
+                    className={`food-btn with-egg ${!isEggless ? 'active' : ''}`}
+                    onClick={() => setIsEggless(false)}
+                  >
+                    <div className="food-icon red-icon">
+                      <div className="red-triangle"></div>
+                    </div>
+                    <span>WITH EGG</span>
+                  </button>
+
+                  <button 
+                    className={`food-btn eggless ${isEggless ? 'active' : ''}`}
+                    onClick={() => setIsEggless(true)}
+                  >
+                    <div className="food-icon green-icon">
+                      <div className="green-circle"></div>
+                    </div>
+                    <span>EGGLESS</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* MESSAGE ON CAKE */}
+            {product.category !== 'Combos & Gifts' && (
+              <div className="option-group">
+                <label>Message on Cake (Optional)</label>
+                <input 
+                  type="text" 
+                  className="cake-message-input"
+                  placeholder="e.g., Happy Birthday John!"
+                  value={messageOnCake}
+                  onChange={(e) => setMessageOnCake(e.target.value)}
+                  maxLength={30}
+                />
+                <span className="char-count">{messageOnCake.length}/30</span>
+              </div>
+            )}
+
+            <div className="options-divider"></div>
+
             <div className="about-product-header">
               <h3>About the product</h3>
               <span className="sku-code">REGCAKE03A</span>
@@ -231,26 +314,31 @@ export default function ProductPage() {
               <div className="tab-content scrollable-tab">
                 {activeTab === 'description' && (
                   <div className="tab-pane">
-                    <p className="tab-heading">Product Details:</p>
-                    <ul className="details-list">
-                      <li>Cake Flavour- {product.category || 'Truffle'}</li>
-                      <li>Shape- Round</li>
-                      <li>Weight: {selectedWeight}</li>
-                      <li>Net Quantity: 1 Cake</li>
-                      <li>Diameter: 19.05 cm</li>
-                      <li>Country of Origin: India</li>
-                      <li>FSSAI License No. 10019011006522</li>
-                      <li>Serves: {selectedWeight === '0.5kg' ? '4-6 People' : selectedWeight === '1kg' ? '8-10 People' : '15-20 People'}</li>
-                    </ul>
-                    <p className="tab-heading">Ingredients:</p>
-                    <p className="tab-text">Chocolate premix, Refined oil, Breakfast Sugar, Chocolate Truffle Base, Milk Chocolate compound, Chocolate Glaze</p>
-                    <p className="tab-heading">Please Note:</p>
-                    <ul className="details-list">
-                      <li>The cake stand, cutlery accessories used in the image are only for representation purposes. They are not delivered with the cake.</li>
-                      <li>This cake is hand delivered in a good quality cardboard box.</li>
-                    </ul>
+                    {product.category !== 'Combos & Gifts' && (
+                      <>
+                        <p className="tab-heading">Product Details:</p>
+                        <ul className="details-list">
+                          <li>Cake Flavour- {product.prices?.metadata?.flavor || product.flavor || product.category || 'Truffle'}</li>
+                          <li>Shape- {product.prices?.metadata?.shape || product.shape || 'Round'}</li>
+                          <li>Weight: {selectedWeight}</li>
+                          <li>Net Quantity: 1 Cake</li>
+                          <li>Diameter: {selectedWeight === '0.5kg' ? '15 cm' : selectedWeight === '1kg' ? '19.05 cm' : selectedWeight === '1.5kg' ? '22 cm' : '25 cm'}</li>
+                          <li>Country of Origin: India</li>
+                          <li>FSSAI License No. 10019011006522</li>
+                          <li>Serves: {product.prices?.metadata?.serves || product.serves || (selectedWeight === '0.5kg' ? '4-6 People' : selectedWeight === '1kg' ? '8-10 People' : selectedWeight === '1.5kg' ? '12-15 People' : selectedWeight === '2kg' ? '16-20 People' : '25+ People')}</li>
+                        </ul>
+                        <p className="tab-heading">Ingredients:</p>
+                        <p className="tab-text">Chocolate premix, Refined oil, Breakfast Sugar, Chocolate Truffle Base, Milk Chocolate compound, Chocolate Glaze</p>
+                        <p className="tab-heading">Please Note:</p>
+                        <ul className="details-list">
+                          <li>The cake stand, cutlery accessories used in the image are only for representation purposes. They are not delivered with the cake.</li>
+                          <li>This cake is hand delivered in a good quality cardboard box.</li>
+                        </ul>
+                      </>
+                    )}
+                    
                     <p className="tab-heading">Description:</p>
-                    <p className="tab-text">{(product.description && product.description.trim() !== product.name) ? product.description : "Indulge in our exquisite handcrafted cake, baked to perfection with the finest ingredients."}</p>
+                    <p className="tab-text" style={{ whiteSpace: 'pre-wrap' }}>{(product.description && product.description.trim() !== product.name) ? product.description : "Indulge in our exquisite handcrafted offering, prepared to perfection."}</p>
                   </div>
                 )}
                 {activeTab === 'instructions' && (
@@ -274,105 +362,46 @@ export default function ProductPage() {
 
             <div className="options-divider"></div>
 
-            {/* WEIGHT SELECTION */}
-            <div className="option-group">
-              <label>Select Weight</label>
-              <div className="pill-selector">
-                {(() => {
-                  if (!product.prices) return ['0.5kg', '1kg', '2kg'];
-                  const eggType = isEggless ? 'eggless' : 'egg';
-                  if (product.prices[eggType] && Object.values(product.prices[eggType]).some(p => p !== '')) {
-                    return Object.keys(product.prices[eggType]).filter(w => product.prices[eggType][w] !== '');
-                  } else if (Object.values(product.prices).some(p => typeof p === 'string' && p !== '')) {
-                    return Object.keys(product.prices).filter(w => typeof product.prices[w] === 'string' && product.prices[w] !== '');
-                  }
-                  return ['0.5kg', '1kg', '2kg'];
-                })().map(w => (
-                  <button 
-                    key={w}
-                    className={`pill-btn ${selectedWeight === w ? 'active' : ''}`}
-                    onClick={() => setSelectedWeight(w)}
-                  >
-                    {w}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* EGG / EGGLESS TOGGLE */}
-            <div className="option-group" style={{ marginBottom: '1rem' }}>
-              <div className="food-type-toggles">
-                <button 
-                  className={`food-btn with-egg ${!isEggless ? 'active' : ''}`}
-                  onClick={() => setIsEggless(false)}
-                >
-                  <div className="food-icon red-icon">
-                    <div className="red-triangle"></div>
-                  </div>
-                  <span>WITH EGG</span>
-                </button>
-
-                <button 
-                  className={`food-btn eggless ${isEggless ? 'active' : ''}`}
-                  onClick={() => setIsEggless(true)}
-                >
-                  <div className="food-icon green-icon">
-                    <div className="green-circle"></div>
-                  </div>
-                  <span>EGGLESS</span>
-                </button>
-              </div>
-            </div>
-
-            {/* MESSAGE ON CAKE */}
-            <div className="option-group">
-              <label>Message on Cake (Optional)</label>
-              <input 
-                type="text" 
-                className="cake-message-input"
-                placeholder="e.g., Happy Birthday John!"
-                value={messageOnCake}
-                onChange={(e) => setMessageOnCake(e.target.value)}
-                maxLength={30}
-              />
-              <span className="char-count">{messageOnCake.length}/30</span>
-            </div>
-
-            <div className="options-divider"></div>
-
             {/* COMBOS AND GIFTS */}
-            <div className="option-group combos-group">
-              <label>Make it Extra Special (Combos & Gifts)</label>
-              <div className="combos-grid">
-                {comboOptions.map(combo => (
-                  <div 
-                    key={combo.id} 
-                    className={`combo-card ${selectedCombos[combo.id] ? 'selected' : ''}`}
-                    onClick={() => handleComboToggle(combo.id)}
-                  >
-                    <div className="combo-check">
-                      {selectedCombos[combo.id] ? <Check size={14} color="#fff" /> : null}
+            {comboOptions.length > 0 && (
+              <div className="option-group combos-group">
+                <label>Make it Extra Special (Combos & Gifts)</label>
+                <div className="combos-grid">
+                  {comboOptions.map(combo => (
+                    <div 
+                      key={combo.id} 
+                      className={`combo-card ${selectedCombos[combo.id] ? 'selected' : ''}`}
+                      onClick={() => handleComboToggle(combo.id)}
+                    >
+                      <div className="combo-check">
+                        {selectedCombos[combo.id] ? <Check size={14} color="#fff" /> : null}
+                      </div>
+                      <img src={combo.img} alt={combo.name} className="combo-img" />
+                      <div className="combo-details">
+                        <span className="combo-name">{combo.name}</span>
+                        <span className="combo-price">+₹{combo.price}</span>
+                      </div>
                     </div>
-                    <img src={combo.img} alt={combo.name} className="combo-img" />
-                    <div className="combo-details">
-                      <span className="combo-name">{combo.name}</span>
-                      <span className="combo-price">+₹{combo.price}</span>
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* ACTION ROW */}
             <div className="checkout-action-row">
-              <div className="quantity-selector">
-                <button onClick={() => setQuantity(prev => Math.max(1, prev - 1))}><Minus size={18} /></button>
-                <span>{quantity}</span>
-                <button onClick={() => setQuantity(prev => prev + 1)}><Plus size={18} /></button>
+              <div className="checkout-action-inner">
+                <div className="checkout-action-left"></div>
+                <div className="checkout-action-right">
+                  <div className="quantity-selector">
+                    <button onClick={() => setQuantity(prev => Math.max(1, prev - 1))}><Minus size={18} /></button>
+                    <span>{quantity}</span>
+                    <button onClick={() => setQuantity(prev => prev + 1)}><Plus size={18} /></button>
+                  </div>
+                  <button className="btn-add-to-cart" onClick={handleAddToCart}>
+                    Add to Cart - ₹{totalDisplayPrice.toFixed(2)}
+                  </button>
+                </div>
               </div>
-              <button className="btn-add-to-cart" onClick={handleAddToCart}>
-                Add to Cart - ₹{totalDisplayPrice.toFixed(2)}
-              </button>
             </div>
 
           </div>

@@ -20,12 +20,47 @@ export default function CheckoutPage() {
   const [orderSnapshot, setOrderSnapshot] = useState(null);
   
   const todayDateStr = new Date().toISOString().split('T')[0];
+  const tmrw = new Date();
+  tmrw.setDate(tmrw.getDate() + 1);
+  const tomorrowDateStr = tmrw.toISOString().split('T')[0];
+
+  const [deliveryType, setDeliveryType] = useState('timeslot');
   const [deliveryDate, setDeliveryDate] = useState(todayDateStr);
   const [deliverySlot, setDeliverySlot] = useState('');
   const [availableSlots, setAvailableSlots] = useState([]);
   const navigate = useNavigate();
 
+  const getDeliveryFee = () => {
+    if (deliveryType === 'standard') return 0;
+    if (deliveryDate !== todayDateStr) return 10;
+    if (!deliverySlot) return 10;
+    
+    const match = deliverySlot.match(/^(\d+):00\s*(AM|PM)/i);
+    if (!match) return 10;
+    
+    let slotHour = parseInt(match[1]);
+    const ampm = match[2].toUpperCase();
+    if (ampm === 'PM' && slotHour !== 12) slotHour += 12;
+    if (ampm === 'AM' && slotHour === 12) slotHour = 0;
+    
+    const currentHour = new Date().getHours();
+    
+    if (slotHour - currentHour >= 1 && slotHour - currentHour <= 2) {
+      return 99;
+    }
+    return 10;
+  };
+
   useEffect(() => {
+    if (deliveryType === 'standard') {
+      const tmrw = new Date();
+      tmrw.setDate(tmrw.getDate() + 1);
+      setDeliveryDate(tmrw.toISOString().split('T')[0]);
+      setAvailableSlots([]);
+      setDeliverySlot('All Day');
+      return;
+    }
+
     const isToday = deliveryDate === todayDateStr;
     const currentHour = new Date().getHours();
     
@@ -58,7 +93,7 @@ export default function CheckoutPage() {
     } else {
       setDeliverySlot('');
     }
-  }, [deliveryDate, todayDateStr]);
+  }, [deliveryDate, todayDateStr, deliveryType]);
 
   // Update fields if saved profile changes (e.g. login sync)
   useEffect(() => {
@@ -78,7 +113,7 @@ export default function CheckoutPage() {
       customer: customerName,
       email: customerEmail,
       address: scheduledAddress,
-      total: totalPrice + 50,
+      total: totalPrice + getDeliveryFee(),
       status: 'Processing',
       items: [...cartItems]
     });
@@ -97,7 +132,8 @@ export default function CheckoutPage() {
       items: [...cartItems],
       subtotal,
       discountAmount,
-      totalPrice: totalPrice + 50,
+      deliveryFee: getDeliveryFee(),
+      totalPrice: totalPrice + getDeliveryFee(),
       customerName,
       customerEmail,
       customerPhone,
@@ -186,7 +222,7 @@ export default function CheckoutPage() {
                   )}
                   <div className="r-sum-row">
                     <span>Delivery</span>
-                    <span>₹50.00</span>
+                    <span>{orderSnapshot.deliveryFee === 0 ? 'FREE' : `₹${orderSnapshot.deliveryFee.toFixed(2)}`}</span>
                   </div>
                 </div>
 
@@ -238,37 +274,71 @@ export default function CheckoutPage() {
                 required 
               />
             </div>
-            <div className="form-group" style={{ flexDirection: 'row', gap: '1rem' }}>
-              <div style={{ flex: 1 }}>
+            <div className="form-group">
+              <label>Delivery Type</label>
+              <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
+                <label style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '1rem', border: '1px solid #ddd', borderRadius: 'var(--radius-md)', background: deliveryType === 'standard' ? '#fdf2f5' : 'white', borderColor: deliveryType === 'standard' ? 'var(--color-primary)' : '#ddd', cursor: 'pointer' }}>
+                  <input type="radio" name="deliveryType" checked={deliveryType === 'standard'} onChange={() => setDeliveryType('standard')} style={{ cursor: 'pointer' }} />
+                  <div>
+                    <strong style={{ display: 'block', fontSize: '0.95rem' }}>Standard Delivery</strong>
+                    <span style={{ fontSize: '0.8rem', color: '#666' }}>Next Day • Free</span>
+                  </div>
+                </label>
+                <label style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '1rem', border: '1px solid #ddd', borderRadius: 'var(--radius-md)', background: deliveryType === 'timeslot' ? '#fdf2f5' : 'white', borderColor: deliveryType === 'timeslot' ? 'var(--color-primary)' : '#ddd', cursor: 'pointer' }}>
+                  <input type="radio" name="deliveryType" checked={deliveryType === 'timeslot'} onChange={() => setDeliveryType('timeslot')} style={{ cursor: 'pointer' }} />
+                  <div>
+                    <strong style={{ display: 'block', fontSize: '0.95rem' }}>Time Slot Delivery</strong>
+                    <span style={{ fontSize: '0.8rem', color: '#666' }}>Same Day / Flexible • ₹10 - ₹99</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            {deliveryType === 'standard' ? (
+              <div className="form-group">
                 <label>Delivery Date</label>
                 <input 
                   type="date" 
-                  min={todayDateStr}
+                  min={tomorrowDateStr}
                   value={deliveryDate} 
                   onChange={(e) => setDeliveryDate(e.target.value)} 
                   required 
                   style={{ width: '100%', border: '1px solid #ddd', padding: '1.25rem 1.5rem', borderRadius: 'var(--radius-md)' }}
                 />
               </div>
-              <div style={{ flex: 1 }}>
-                <label>Time Slot</label>
-                <select 
-                  value={deliverySlot} 
-                  onChange={(e) => setDeliverySlot(e.target.value)} 
-                  required 
-                  disabled={availableSlots.length === 0}
-                  style={{ width: '100%', border: '1px solid #ddd', padding: '1.25rem 1.5rem', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-low)', fontFamily: 'inherit', color: 'inherit' }}
-                >
-                  {availableSlots.length === 0 ? (
-                    <option value="">No slots available</option>
-                  ) : (
-                    availableSlots.map(slot => (
-                      <option key={slot} value={slot}>{slot}</option>
-                    ))
-                  )}
-                </select>
+            ) : (
+              <div className="form-group" style={{ flexDirection: 'row', gap: '1rem' }}>
+                <div style={{ flex: 1 }}>
+                  <label>Delivery Date</label>
+                  <input 
+                    type="date" 
+                    min={todayDateStr}
+                    value={deliveryDate} 
+                    onChange={(e) => setDeliveryDate(e.target.value)} 
+                    required 
+                    style={{ width: '100%', border: '1px solid #ddd', padding: '1.25rem 1.5rem', borderRadius: 'var(--radius-md)' }}
+                  />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label>Time Slot</label>
+                  <select 
+                    value={deliverySlot} 
+                    onChange={(e) => setDeliverySlot(e.target.value)} 
+                    required 
+                    disabled={availableSlots.length === 0}
+                    style={{ width: '100%', border: '1px solid #ddd', padding: '1.25rem 1.5rem', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-low)', fontFamily: 'inherit', color: 'inherit' }}
+                  >
+                    {availableSlots.length === 0 ? (
+                      <option value="">No slots available</option>
+                    ) : (
+                      availableSlots.map(slot => (
+                        <option key={slot} value={slot}>{slot}</option>
+                      ))
+                    )}
+                  </select>
+                </div>
               </div>
-            </div>
+            )}
             <div className="form-group">
               <label>Delivery Address</label>
               <textarea placeholder="Enter full address" rows="3" value={customerAddress} onChange={(e) => setCustomerAddress(e.target.value)} required></textarea>
@@ -312,11 +382,11 @@ export default function CheckoutPage() {
               )}
               <div className="summary-row">
                 <span>Delivery Fee</span>
-                <span>₹50.00</span>
+                <span>{getDeliveryFee() === 0 ? 'FREE' : `₹${getDeliveryFee().toFixed(2)}`}</span>
               </div>
               <div className="summary-row total">
                 <span>Total</span>
-                <span>₹{(totalPrice + 50).toFixed(2)}</span>
+                <span>₹{(totalPrice + getDeliveryFee()).toFixed(2)}</span>
               </div>
             </div>
             <button type="submit" form="checkout-form" className="btn btn-primary place-order-btn">PLACE ORDER</button>

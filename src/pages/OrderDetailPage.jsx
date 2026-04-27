@@ -40,7 +40,8 @@ export default function OrderDetailPage() {
     );
   }
 
-  const subtotal = Number(currentOrder.total) > 50 ? Number(currentOrder.total) - 50 : Number(currentOrder.total);
+  const subtotal = currentOrder.items?.reduce((sum, item) => sum + (Number(item.price) * (item.quantity || 1)), 0) || Number(currentOrder.total);
+  const shippingFee = Number(currentOrder.total) - subtotal;
 
   const formatDate = (dateStr) => {
     return new Date(dateStr).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -126,9 +127,9 @@ export default function OrderDetailPage() {
                     <strong>{item.name}</strong><br/>
                     <small>Sold by CrumbleCakes Bakery</small>
                   </td>
-                  <td style={{textAlign: 'center'}}>1</td>
+                  <td style={{textAlign: 'center'}}>{item.quantity || 1}</td>
                   <td style={{textAlign: 'right'}}>₹{Number(item.price).toFixed(2)}</td>
-                  <td style={{textAlign: 'right'}}>₹{Number(item.price).toFixed(2)}</td>
+                  <td style={{textAlign: 'right'}}>₹{(Number(item.price) * (item.quantity || 1)).toFixed(2)}</td>
                 </tr>
               ))}
             </tbody>
@@ -136,7 +137,7 @@ export default function OrderDetailPage() {
 
           <div className="print-totals">
             <div className="pt-row"><span>Subtotal:</span><span>₹{subtotal.toFixed(2)}</span></div>
-            <div className="pt-row"><span>Shipping:</span><span>₹50.00</span></div>
+            <div className="pt-row"><span>Shipping:</span><span>{shippingFee === 0 ? 'FREE' : `₹${shippingFee.toFixed(2)}`}</span></div>
             <div className="pt-row pt-grand"><span>Grand Total:</span><span>₹{Number(currentOrder.total).toFixed(2)}</span></div>
           </div>
           
@@ -199,7 +200,7 @@ export default function OrderDetailPage() {
               </div>
               <div className="sum-row">
                 <span>Shipping:</span>
-                <span>₹50.00</span>
+                <span>{shippingFee === 0 ? 'FREE' : `₹${shippingFee.toFixed(2)}`}</span>
               </div>
               <div className="sum-row total">
                 <span>Grand Total:</span>
@@ -283,12 +284,6 @@ export default function OrderDetailPage() {
           ))}
         </div>
       </main>
-      
-      <footer className="amz-simple-footer">
-        <div className="amz-container">
-          <p>© 2026, CrumbleCakes Bakery</p>
-        </div>
-      </footer>
     </div>
   );
 }

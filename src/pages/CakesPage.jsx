@@ -72,6 +72,9 @@ function CakeCard({ cake, addToCart }) {
           <span className="rating-divider">|</span>
           <span className="rating-count">1.0K</span>
         </div>
+        <div className="cake-earliest-delivery">
+          Earliest Delivery : Today
+        </div>
       </div>
     </div>
   );
@@ -84,7 +87,7 @@ export default function CakesPage() {
   const [activeCategory, setActiveCategory] = useState('All');
   const navigate = useNavigate();
 
-  const categories = ['All', 'Fruit', 'Chocolate', 'Classic', 'Specialty'];
+  const categories = ['All', 'Fruit', 'Chocolate', 'Classic', 'Specialty', 'Combos & Gifts'];
 
   const filteredCakes = activeCategory === 'All' 
     ? CAKES 

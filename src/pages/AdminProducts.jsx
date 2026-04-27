@@ -21,6 +21,9 @@ export default function AdminProducts() {
     instructions: '',
     images: [],
     weight: '1kg',
+    flavor: '',
+    shape: '',
+    serves: '',
     prices: {
       egg: { '0.5kg': '', '1kg': '', '1.5kg': '', '2kg': '', '3kg': '' },
       eggless: { '0.5kg': '', '1kg': '', '1.5kg': '', '2kg': '', '3kg': '' }
@@ -29,7 +32,7 @@ export default function AdminProducts() {
     isFreshlyBaked: true
   });
 
-  const categories = ['All', 'Classic', 'Fruit', 'Chocolate', 'Specialty'];
+  const categories = ['All', 'Classic', 'Fruit', 'Chocolate', 'Specialty', 'Combos & Gifts'];
   const weightOptions = ['0.5kg', '1kg', '1.5kg', '2kg', '3kg', 'Custom'];
 
   const filteredProducts = products.filter(p => {
@@ -62,6 +65,9 @@ export default function AdminProducts() {
       description: product.description || '',
       instructions: product.instructions || '',
       weight: product.weight || '1kg',
+      flavor: product.flavor || product.prices?.metadata?.flavor || '',
+      shape: product.shape || product.prices?.metadata?.shape || '',
+      serves: product.serves || product.prices?.metadata?.serves || '',
       prices: (() => {
         let base = {
           egg: { '0.5kg': '', '1kg': product.price || '', '1.5kg': '', '2kg': '', '3kg': '' },
@@ -88,7 +94,7 @@ export default function AdminProducts() {
     setIsAddingNew(true);
     setFormData({
       name: '', price: '', actual_price: '', category: 'Classic', rating: 4.5, description: '', instructions: '', images: [],
-      weight: '1kg', 
+      weight: '1kg', flavor: '', shape: '', serves: '',
       prices: {
         egg: { '0.5kg': '', '1kg': '', '1.5kg': '', '2kg': '', '3kg': '' },
         eggless: { '0.5kg': '', '1kg': '', '1.5kg': '', '2kg': '', '3kg': '' }
@@ -161,7 +167,14 @@ export default function AdminProducts() {
       image: formData.images.length > 1 ? JSON.stringify(formData.images) : (formData.images[0] || '/hero-cake.png'),
       in_stock: true,
       weight: formData.weight,
-      prices: formData.prices,
+      prices: {
+        ...formData.prices,
+        metadata: {
+          flavor: formData.flavor,
+          shape: formData.shape,
+          serves: formData.serves
+        }
+      },
       is_eggless: formData.isEggless,
       is_freshly_baked: formData.isFreshlyBaked
     };
@@ -249,9 +262,11 @@ export default function AdminProducts() {
                   <td>
                     <div style={{display: 'flex', flexDirection: 'column', gap: '4px'}}>
                       <span style={{fontWeight: 800, fontSize: '1.05rem', color: '#1a1a1a'}}>{cake.name}</span>
-                      <span style={{fontSize: '0.8rem', color: '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '240px'}}>
-                        {cake.weight || '1kg'} • {cake.is_eggless ? 'Eggless' : 'Contains Egg'}
-                      </span>
+                      {cake.category !== 'Combos & Gifts' && (
+                        <span style={{fontSize: '0.8rem', color: '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '240px'}}>
+                          {cake.weight || '1kg'} • {cake.is_eggless ? 'Eggless' : 'Contains Egg'}
+                        </span>
+                      )}
                     </div>
                   </td>
                   <td>
@@ -323,6 +338,21 @@ export default function AdminProducts() {
                 <select style={{ width: '100%', padding: '0.9rem 1.2rem', borderRadius: '12px', border: '1px solid #eab8c8', background: '#fdfafb', fontSize: '0.95rem', color: '#3f4247', fontFamily: 'inherit' }} value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})}>
                   {categories.filter(c => c !== 'All').map(c => <option key={c}>{c}</option>)}
                 </select>
+              </div>
+            </div>
+
+            <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem'}}>
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#888', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'block' }}>FLAVOR</label>
+                <input type="text" style={{ width: '100%', padding: '0.9rem 1.2rem', borderRadius: '12px', border: '1px solid #eab8c8', background: '#fdfafb', fontSize: '0.95rem', color: '#3f4247', fontFamily: 'inherit' }} value={formData.flavor || ''} onChange={(e) => setFormData({...formData, flavor: e.target.value})} placeholder="e.g. Pineapple" />
+              </div>
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#888', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'block' }}>SHAPE</label>
+                <input type="text" style={{ width: '100%', padding: '0.9rem 1.2rem', borderRadius: '12px', border: '1px solid #eab8c8', background: '#fdfafb', fontSize: '0.95rem', color: '#3f4247', fontFamily: 'inherit' }} value={formData.shape || ''} onChange={(e) => setFormData({...formData, shape: e.target.value})} placeholder="e.g. Round" />
+              </div>
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#888', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'block' }}>SERVES</label>
+                <input type="text" style={{ width: '100%', padding: '0.9rem 1.2rem', borderRadius: '12px', border: '1px solid #eab8c8', background: '#fdfafb', fontSize: '0.95rem', color: '#3f4247', fontFamily: 'inherit' }} value={formData.serves || ''} onChange={(e) => setFormData({...formData, serves: e.target.value})} placeholder="e.g. 4-6 People" />
               </div>
             </div>
 

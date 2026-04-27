@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useOrders } from '../context/OrderContext';
@@ -10,6 +10,10 @@ export default function CustomCakePage() {
   const navigate = useNavigate();
   const { user, savedName, savedAddress, setIsAuthModalOpen } = useAuth();
   const { addOrder } = useOrders();
+  
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({

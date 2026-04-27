@@ -56,6 +56,16 @@ export default function AdminOrders() {
     return match ? match[0] : '';
   };
 
+  const extractDeliveryDetails = (address) => {
+    if (!address) return { date: '', slot: '' };
+    const dateMatch = address.match(/\[Delivery:\s*([^|\]]+)/);
+    const slotMatch = address.match(/\|\s*Slot:\s*([^|\]]+)/);
+    return {
+      date: dateMatch ? dateMatch[1].trim() : '',
+      slot: slotMatch ? slotMatch[1].trim() : ''
+    };
+  };
+
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this order forever?')) {
       await deleteOrder(id);
@@ -128,7 +138,14 @@ export default function AdminOrders() {
                       <div className="avatar-mini">
                         {order.customer ? order.customer.charAt(0).toUpperCase() : 'G'}
                       </div>
-                      <span style={{fontWeight: 600}}>{order.customer || 'Guest'}</span>
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <span style={{fontWeight: 600}}>{order.customer || 'Guest'}</span>
+                        {extractDeliveryDetails(order.address).date && (
+                          <span style={{fontSize: '0.75rem', color: '#bc024d', fontWeight: 600}}>
+                            {extractDeliveryDetails(order.address).date} ({extractDeliveryDetails(order.address).slot})
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </td>
                   <td onClick={e => e.stopPropagation()}>
@@ -225,6 +242,17 @@ export default function AdminOrders() {
                  </button>
                </div>
             </div>
+
+            {(() => {
+              const deliveryDetails = extractDeliveryDetails(selectedOrder.address);
+              return deliveryDetails.date ? (
+                <div style={{ background: '#fdf2f5', border: '1px solid #eab8c8', padding: '1rem', borderRadius: '12px', marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                  <span style={{ fontSize: '0.75rem', color: '#7a7a7a', textTransform: 'uppercase', fontWeight: 700 }}>Chosen Delivery Schedule</span>
+                  <span style={{ fontSize: '0.95rem', fontWeight: 700, color: '#3f4247' }}>Date: {deliveryDetails.date}</span>
+                  <span style={{ fontSize: '0.95rem', fontWeight: 700, color: '#cd3d7a' }}>Slot: {deliveryDetails.slot}</span>
+                </div>
+              ) : null;
+            })()}
 
             <div className="items-list-detail">
               <h5 style={{fontSize: '0.75rem', textTransform: 'uppercase', color: '#7a7a7a', letterSpacing: '0.05em', marginBottom: '1.5rem'}}>Order items</h5>

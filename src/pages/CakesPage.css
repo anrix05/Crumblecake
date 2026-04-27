@@ -72,33 +72,32 @@
    ========================================= */
 .cakes-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 2.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.5rem;
   max-width: 1400px;
   margin: 0 auto;
 }
 
 .cake-card {
   background: #ffffff;
-  border-radius: 12px;
+  border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  box-shadow: none;
   transition: box-shadow 0.2s ease;
   display: flex;
   flex-direction: column;
   position: relative;
-  border: 1px solid #f0f0f0;
+  border: 1px solid #e5e7eb;
   cursor: pointer;
-  height: 400px;
 }
 
 .cake-card:hover {
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
 /* Top Image Frame */
 .cake-image-section {
-  background-color: #f9f9f9; 
+  background-color: transparent; 
   height: 260px;
   display: flex;
   align-items: center;
@@ -146,15 +145,16 @@
 
 /* Lower Content Section */
 .cake-content {
-  padding: 16px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
+  flex: 1;
 }
 
 .cake-title {
   font-family: 'Inter', 'Segoe UI', sans-serif;
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   font-weight: 500;
   color: #333;
   margin: 0;
@@ -166,51 +166,59 @@
 .cake-price-group {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
 }
 
 .cake-actual-price {
   font-family: 'Inter', 'Segoe UI', sans-serif;
   text-decoration: line-through;
-  color: #999;
-  font-size: 0.85rem;
+  color: #888;
+  font-size: 0.8rem;
   font-weight: 500;
 }
 
 .cake-price-tag {
   font-family: 'Inter', 'Segoe UI', sans-serif;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 700;
-  color: #000;
+  color: #111;
 }
 
 .cake-off-badge {
   font-family: 'Inter', 'Segoe UI', sans-serif;
   background: #dcfce7;
   color: #16a34a;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 0.75rem;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-size: 0.7rem;
   font-weight: 700;
 }
 
 .cake-rating-box {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.8rem;
-  font-weight: 500;
+  gap: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
   color: #666;
   font-family: 'Inter', 'Segoe UI', sans-serif;
+  margin-top: 2px;
 }
 
 .rating-divider {
-  color: #e5e7eb;
+  color: #ccc;
 }
 
 .rating-count {
   color: #888;
+}
+
+.cake-earliest-delivery {
+  font-size: 0.75rem;
+  color: #2563eb;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  margin-top: 4px;
 }
 
 /* Custom Card Layout */
