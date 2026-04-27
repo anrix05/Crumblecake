@@ -16,7 +16,7 @@ export default function Hero() {
       <div className="hero-content-area">
         <h1 className="hero-title-main">
           <span className="text-dark">Everyone </span>
-          <span className="text-pink">Loves</span><span className="desktop-br"><br/></span>
+          <span className="text-pink">Loves </span><span className="desktop-br"><br/></span>
           <span className="text-dark">Natural and </span><span className="desktop-br"><br/></span>
           <span className="text-pink">healthy Cakes.</span>
         </h1>

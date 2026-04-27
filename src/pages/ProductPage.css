@@ -672,7 +672,7 @@
 
 @media (max-width: 600px) {
   .product-page-wrapper {
-    padding-top: 6rem;
+    padding-top: 11rem;
   }
   
   .product-main-title {
@@ -694,5 +694,15 @@
   
   .product-details-container {
     margin-bottom: 8rem; /* space for fixed bottom bar */
+  }
+
+  .tabs-header {
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
+  .tab-btn {
+    font-size: 0.8rem;
+    padding: 0.5rem 0.25rem;
   }
 }

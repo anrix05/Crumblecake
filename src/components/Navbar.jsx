@@ -34,7 +34,7 @@ export default function Navbar() {
           <Truck size={20} color="#ffe17c" style={{ zIndex: 1 }} />
           <span className="promo-banner-text">
             <span className="promo-banner-highlight">FREE DELIVERY!!!</span> 
-            Enjoy ₹0 shipping with our free delivery time slots
+            On eligible delivery time slots.
           </span>
           <Truck size={20} color="#ffe17c" style={{ zIndex: 1 }} />
         </div>

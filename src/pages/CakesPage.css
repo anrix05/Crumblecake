@@ -305,10 +305,41 @@
 /* Media Queries */
 @media (max-width: 768px) {
   .cakes-main {
-    padding: 2rem 1rem;
+    padding: 2rem 0.5rem;
   }
   .cakes-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+  .cake-image-section {
+    height: 160px;
+  }
+  .custom-cake-image-wrapper {
+    height: 160px;
+  }
+  .cake-title {
+    font-size: 0.85rem;
+  }
+  .cake-price-tag {
+    font-size: 0.85rem;
+  }
+  .cake-actual-price {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .category-filters {
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    gap: 0.5rem;
+  }
+  .filter-btn {
+    flex-shrink: 0;
+    padding: 0.5rem 1.25rem;
   }
 }
 
