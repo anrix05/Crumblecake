@@ -76,7 +76,9 @@ export default function CartPage() {
                           <span className="cart-item-price">₹{item.price.toFixed(2)}</span>
                           <span className="cart-item-price-old">₹{(item.price + 115).toFixed(2)}</span>
                         </div>
-                        <span className="cart-item-variant">Weight: {item.variant_details?.weight || '0.5 Kg'}</span>
+                        {item.variant_details?.weight && (
+                          <span className="cart-item-variant">Weight: {item.variant_details.weight}</span>
+                        )}
                         {item.category !== 'Add-on' && (
                           <button 
                             className="cart-item-message-btn"

@@ -45,8 +45,9 @@ export function OrderProvider({ children }) {
   }, []);
 
   const addOrder = async (order) => {
+    const { phone, ...orderPayload } = order;
     const newOrder = { 
-      ...order, 
+      ...orderPayload, 
       id: `ORD-${Date.now().toString().slice(-6)}`, 
       date: new Date().toISOString(),
       status: 'Ordered'

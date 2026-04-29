@@ -117,7 +117,6 @@ export default function ProductPage() {
   const totalDisplayPrice = finalUnitPrice * quantity;
 
     const handleAddToCart = () => {
-    // Add custom metadata to the product before adding to cart
     const activeCombos = comboOptions.filter(c => selectedCombos[c.id]).map(c => c.name);
     const hasCakeOptions = product.category !== 'Combos & Gifts';
     
@@ -125,7 +124,7 @@ export default function ProductPage() {
       ...product,
       id: hasCakeOptions ? `${product.id}-${selectedWeight}-${isEggless ? 'eggless' : 'egg'}` : product.id,
       name: hasCakeOptions ? `${product.name} (${selectedWeight}, ${isEggless ? 'Eggless' : 'With Egg'})` : product.name,
-      price: finalUnitPrice,
+      price: basePrice,
       base_product_id: product.id,
       quantity: quantity,
       variant_details: {
@@ -137,6 +136,16 @@ export default function ProductPage() {
     };
 
     addToCart(cartItem);
+
+    comboOptions.filter(c => selectedCombos[c.id]).forEach(combo => {
+      const fullComboProduct = products.find(p => p.id === combo.id);
+      if (fullComboProduct) {
+        addToCart({
+          ...fullComboProduct,
+          quantity: quantity
+        });
+      }
+    });
     
     // Optional: Show a toast or immediately open cart drawer
     // In this app, Cart is usually a page. Navigate to cart.
@@ -195,7 +204,7 @@ export default function ProductPage() {
 
             <div className="price-section" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
               <span className="price-amount" style={{ fontSize: '1.8rem', fontWeight: 800, color: '#1a1a1a' }}>
-                ₹{Math.round(finalUnitPrice)}
+                ₹{Math.round(basePrice)}
               </span>
               
               {(() => {
@@ -203,7 +212,7 @@ export default function ProductPage() {
                 const actualPrice = Number(product.actual_price || product.price);
                 if (actualPrice > offerPrice) {
                   const percentOff = Math.round(((actualPrice - offerPrice) / actualPrice) * 100);
-                  const currentActual = Math.round(finalUnitPrice * (actualPrice / offerPrice));
+                  const currentActual = Math.round(basePrice * (actualPrice / offerPrice));
                   return (
                     <>
                       <span className="actual-price-strikethrough" style={{ fontSize: '1.2rem', textDecoration: 'line-through', color: '#6b7280', fontWeight: 600 }}>
