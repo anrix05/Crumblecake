@@ -35,6 +35,10 @@ export const AuthProvider = ({ children }) => {
           setSavedAddress(session.user.user_metadata?.address || '');
           setSavedName(session.user.user_metadata?.full_name || '');
           setSavedPhone(session.user.user_metadata?.phone || '');
+        } else {
+          setSavedAddress('');
+          setSavedName('');
+          setSavedPhone('');
         }
       }
     );

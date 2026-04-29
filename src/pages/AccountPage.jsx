@@ -111,13 +111,14 @@ export default function AccountPage() {
   }, []);
 
   useEffect(() => {
+    if (!user) return;
     const initial = {};
     const myOrders = orders.filter(o => o.email === user.email);
     myOrders.forEach(o => {
       if (checkCancellable(o)) initial[o.id] = true;
     });
     setCancellableOrders(initial);
-  }, [orders, user.email, checkCancellable]);
+  }, [orders, user, checkCancellable]);
 
   if (!user) {
     navigate('/');
@@ -196,13 +197,7 @@ export default function AccountPage() {
               </button>
             </nav>
 
-            <div className="need-help-card">
-              <div className="help-icon">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="#cfd8dc"><path d="M12 2C6.48 2 2 5.58 2 10c0 2.5 1.45 4.7 3.73 6.09-.32 1.58-1.12 3.14-1.24 3.36a.48.48 0 00.56.66c2.81-.69 4.88-2.22 5.86-3.05a11.53 11.53 0 001.09.05c5.52 0 10-3.58 10-8s-4.48-8-10-8zm0 14c-.45 0-.91-.04-1.35-.1a.5.5 0 00-.47.16c-1.14 1.15-3.02 2.39-5.18 2.87.52-1.22 1.14-2.88 1.14-4.42a.5.5 0 00-.23-.42C4.1 12.87 3 11.51 3 10c0-3.86 4.03-7 9-7s9 3.14 9 7-4.03 7-9 7z"/></svg>
-              </div>
-              <h4>Need Help?</h4>
-              <p>Have questions or concerns regarding your account?</p>
-            </div>
+
           </aside>
 
           <main className="account-main">
@@ -277,7 +272,7 @@ export default function AccountPage() {
                               )}
                               <div className="b-product-details">
                                 <h4>{firstItem?.name || 'Assorted Cakes'}</h4>
-                                <span className="b-product-qty">₹{firstItem?.price} × {totalQty}</span>
+                                <span className="b-product-qty">Qty: {totalQty}</span>
                               </div>
                             </div>
                             

@@ -18,7 +18,8 @@ export default function CartPage() {
     discountAmount, 
     totalPrice,
     appliedPromo,
-    addToCart
+    addToCart,
+    applyPromoCode
   } = useCart();
 
   const { products } = useProducts();

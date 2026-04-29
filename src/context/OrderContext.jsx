@@ -22,7 +22,7 @@ export function OrderProvider({ children }) {
       ...order, 
       id: `ORD-${Date.now().toString().slice(-6)}`, 
       date: new Date().toISOString(),
-      status: 'Processing'
+      status: 'Ordered'
     };
 
     const { data, error } = await supabase.from('orders').insert([newOrder]).select();
@@ -80,6 +80,8 @@ export function OrderProvider({ children }) {
       
       let totalRating = 0;
       let count = 0;
+
+      if (!allOrders) return;
 
       allOrders.forEach(o => {
         if (Array.isArray(o.items)) {

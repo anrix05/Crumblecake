@@ -23,8 +23,10 @@ export default function CustomCakePage() {
     isEggless: true,
     shape: 'Round',
     flavor: 'Chocolate Truffle',
-    message: ''
+    message: '',
+    budget: '₹1000 - ₹2000'
   });
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [customImage, setCustomImage] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -46,7 +48,7 @@ export default function CustomCakePage() {
     reader.readAsDataURL(file);
   };
 
-  const handleSubmit = async (e) => {
+  const handlePreSubmit = (e) => {
     e.preventDefault();
     if (!user) {
       setIsAuthModalOpen(true);
@@ -56,8 +58,13 @@ export default function CustomCakePage() {
       alert('Please fill in all details');
       return;
     }
+    setShowConfirmModal(true);
+  };
 
+  const handleConfirmSubmit = async () => {
+    setShowConfirmModal(false);
     setSubmitting(true);
+
 
     const customOrder = {
       customer: savedName || user.email.split('@')[0],
@@ -74,7 +81,8 @@ export default function CustomCakePage() {
           isEggless: formData.isEggless,
           shape: formData.shape,
           flavor: formData.flavor,
-          message: formData.message
+          message: formData.message,
+          budget: formData.budget
         },
         quantity: 1,
         price: 0
@@ -86,7 +94,7 @@ export default function CustomCakePage() {
     setSubmitted(true);
 
     setTimeout(() => {
-      navigate('/orders');
+      navigate('/account');
     }, 3000);
   };
 
@@ -98,7 +106,7 @@ export default function CustomCakePage() {
           <CheckCircle2 size={80} color="#22c55e" />
           <h1>Dream Cake Request Submitted!</h1>
           <p>Our expert bakers will review your design and contact you with a quote shortly.</p>
-          <button className="btn-primary" onClick={() => navigate('/orders')}>View My Orders</button>
+          <button className="btn-primary" onClick={() => navigate('/account')}>View My Orders</button>
         </div>
       </div>
     );
@@ -109,9 +117,22 @@ export default function CustomCakePage() {
       <Navbar />
       
       <main className="custom-cake-main">
-        <button className="back-button" onClick={() => navigate(-1)}>
-          <ArrowLeft size={18} /> Back
-        </button>
+
+        {showConfirmModal && (
+          <div className="modal-overlay" style={{position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+            <div className="modal-content confirm-modal" style={{background: 'white', padding: '2rem', borderRadius: '16px', maxWidth: '400px', textAlign: 'center'}}>
+              <h2 style={{color: '#bc024d', marginBottom: '1rem'}}>Confirm Quote Request</h2>
+              <p style={{marginBottom: '1rem', color: '#4b5563', fontSize: '0.95rem'}}>You are about to submit a request for a custom cake quote.</p>
+              <p style={{marginBottom: '1.5rem', color: '#4b5563', fontSize: '0.95rem'}}>Our admin will review your details, including your budget range (<strong>{formData.budget}</strong>), and set a final price for your order.</p>
+              <p style={{marginBottom: '2rem', color: '#4b5563', fontSize: '0.95rem'}}>Once the price is set, you can review it in your account and choose to <strong>Accept</strong> or <strong>Cancel</strong> the order.</p>
+              <div className="modal-actions" style={{display: 'flex', gap: '1rem', justifyContent: 'center'}}>
+                <button className="btn-secondary" style={{padding: '0.75rem 1.5rem', borderRadius: '50px', border: '1px solid #ccc', background: 'white'}} onClick={() => setShowConfirmModal(false)}>Go Back</button>
+                <button className="btn-primary" style={{padding: '0.75rem 1.5rem', borderRadius: '50px', border: 'none', background: '#cd3d7a', color: 'white'}} onClick={handleConfirmSubmit}>Submit Request</button>
+              </div>
+            </div>
+          </div>
+        )}
+
 
         <div className="custom-cake-header">
           <h1>Build Your Dream Cake</h1>
@@ -120,7 +141,7 @@ export default function CustomCakePage() {
 
         <div className="custom-cake-container">
           <div className="custom-form-side">
-            <form onSubmit={handleSubmit} className="dream-cake-form">
+            <form onSubmit={handlePreSubmit} className="dream-cake-form">
               
               {/* Basic Details */}
               <div className="form-section">
@@ -204,6 +225,17 @@ export default function CustomCakePage() {
                       <option>Pineapple</option>
                       <option>Mixed Fruit</option>
                       <option>Custom/Other</option>
+                    </select>
+                  </div>
+
+                  <div className="input-group">
+                    <label>Estimated Budget</label>
+                    <select value={formData.budget} onChange={(e) => handleInputChange('budget', e.target.value)}>
+                      <option>Under ₹1000</option>
+                      <option>₹1000 - ₹2000</option>
+                      <option>₹2000 - ₹3000</option>
+                      <option>₹3000 - ₹5000</option>
+                      <option>₹5000+</option>
                     </select>
                   </div>
                 </div>

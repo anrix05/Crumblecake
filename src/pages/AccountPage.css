@@ -155,36 +155,7 @@
   background: #fff5f5 !important;
 }
 
-/* NEED HELP CARD */
-.need-help-card {
-  background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
-  border-radius: 20px;
-  padding: 2rem 1.5rem;
-  text-align: center;
-  color: #cd3d7a;
-  border: 1px solid white;
-  box-shadow: 0 10px 30px rgba(220, 150, 170, 0.15);
-}
 
-.need-help-card .help-icon svg {
-  fill: #c23368;
-  margin-bottom: 0.5rem;
-}
-
-.need-help-card h4 {
-  font-family: 'Noto Serif', serif;
-  font-size: 1.2rem;
-  font-weight: 700;
-  margin: 0 0 0.5rem 0;
-  color: #c23368;
-}
-
-.need-help-card p {
-  font-size: 0.85rem;
-  font-weight: 600;
-  margin: 0;
-  color: #d44d7d;
-}
 
 /* MAIN CONTENT PANE */
 .account-main {
@@ -193,6 +164,7 @@
   padding: 2.5rem;
   border: 1px solid rgba(230, 190, 200, 0.3);
   box-shadow: 0 10px 30px rgba(220, 150, 170, 0.08);
+  min-width: 0; /* Fixes grid item blowout on mobile */
 }
 
 .pane-header-brand {
@@ -304,6 +276,8 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .b-status-badge {
@@ -538,6 +512,7 @@
 @media (max-width: 900px) {
   .account-content-brand {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
 }
 
@@ -545,8 +520,30 @@
   .account-header-elegant {
     padding: 2rem 1rem;
   }
+  .account-header-elegant h2 {
+    font-size: 2rem;
+  }
+  .account-container-brand {
+    padding: 0 1rem;
+    margin-bottom: 2rem;
+  }
+  .sidebar-profile-card {
+    padding: 1.25rem;
+    border-radius: 16px;
+  }
+  .brand-nav-list {
+    border-radius: 16px;
+  }
+  .brand-nav-list button {
+    padding: 1rem;
+  }
   .account-main {
-    padding: 1.5rem;
+    padding: 1.25rem;
+    border-radius: 16px;
+  }
+  .brand-order-card {
+    padding: 1.25rem;
+    border-radius: 12px;
   }
   .order-filter-tabs {
     overflow-x: auto;

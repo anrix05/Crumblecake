@@ -142,7 +142,7 @@ body {
 }
 
 .admin-view-content.has-selection {
-  grid-template-columns: 1fr 420px;
+  grid-template-columns: 1fr;
 }
 
 .list-section {
@@ -342,18 +342,28 @@ body {
 /* Right Panel - Details Section */
 .details-section {
   display: none;
-  background-color: white;
-  border-left: 1px solid var(--admin-border);
+  background-color: var(--admin-bg);
   flex-direction: column;
-  padding: 2.5rem;
+  padding: 3rem 4rem;
   height: 100%;
   overflow-y: auto;
-  z-index: 10;
-  box-shadow: -10px 0 30px rgba(220, 150, 170, 0.05);
+  z-index: 100;
 }
 
 .admin-view-content.has-selection .details-section {
   display: flex;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  animation: slideInPanel 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideInPanel {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .details-header {
@@ -450,8 +460,8 @@ body {
 }
 
 .item-img-frame {
-  width: 64px;
-  height: 64px;
+  width: 120px;
+  height: 120px;
   border-radius: 16px;
   background: white;
   overflow: hidden;
@@ -474,10 +484,10 @@ body {
 
 .item-info-main .name {
   display: block;
-  font-weight: 700;
-  font-size: 1rem;
+  font-weight: 800;
+  font-size: 1.25rem;
   color: var(--admin-text-main);
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
 }
 
 .item-info-main .qty-price {
@@ -562,23 +572,12 @@ body {
 
 /* RESPONSIVE QUERIES */
 @media (max-width: 1024px) {
-  .admin-view-content.has-selection {
-    grid-template-columns: 1fr 320px;
-  }
+  /* No special grid layout needed since it's full screen */
 }
 
 @media (max-width: 900px) {
-  .admin-view-content.has-selection {
-    grid-template-columns: 1fr;
-  }
-  
   .details-section {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 100% !important;
-    z-index: 50;
+    padding: 2rem 1.5rem;
   }
 }
 

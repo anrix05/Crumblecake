@@ -17,6 +17,7 @@ export default function AdminProducts() {
     actual_price: '',
     category: 'Classic',
     rating: 4.5,
+    rating_count: 128,
     description: '',
     instructions: '',
     images: [],
@@ -62,6 +63,8 @@ export default function AdminProducts() {
       ...product, 
       images,
       actual_price: product.actual_price || product.price || '',
+      rating: product.rating || 4.5,
+      rating_count: product.rating_count || 128,
       description: product.description || '',
       instructions: product.instructions || '',
       weight: product.weight || '1kg',
@@ -93,7 +96,7 @@ export default function AdminProducts() {
     setSelectedProduct(null);
     setIsAddingNew(true);
     setFormData({
-      name: '', price: '', actual_price: '', category: 'Classic', rating: 4.5, description: '', instructions: '', images: [],
+      name: '', price: '', actual_price: '', category: 'Classic', rating: 4.5, rating_count: 128, description: '', instructions: '', images: [],
       weight: '1kg', flavor: '', shape: '', serves: '',
       prices: {
         egg: { '0.5kg': '', '1kg': '', '1.5kg': '', '2kg': '', '3kg': '' },
@@ -164,6 +167,7 @@ export default function AdminProducts() {
       description: formData.description || '',
       instructions: formData.instructions || '',
       rating: parseFloat(formData.rating) || 4.5,
+      rating_count: parseInt(formData.rating_count, 10) || 128,
       image: formData.images.length > 1 ? JSON.stringify(formData.images) : (formData.images[0] || '/hero-cake.png'),
       in_stock: true,
       weight: formData.weight,
@@ -353,6 +357,17 @@ export default function AdminProducts() {
               <div>
                 <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#888', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'block' }}>SERVES</label>
                 <input type="text" style={{ width: '100%', padding: '0.9rem 1.2rem', borderRadius: '12px', border: '1px solid #eab8c8', background: '#fdfafb', fontSize: '0.95rem', color: '#3f4247', fontFamily: 'inherit' }} value={formData.serves || ''} onChange={(e) => setFormData({...formData, serves: e.target.value})} placeholder="e.g. 4-6 People" />
+              </div>
+            </div>
+
+            <div style={{display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem'}}>
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#888', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'block' }}>RATING (OUT OF 5)</label>
+                <input type="number" step="0.1" min="0" max="5" style={{ width: '100%', padding: '0.9rem 1.2rem', borderRadius: '12px', border: '1px solid #eab8c8', background: '#fdfafb', fontSize: '0.95rem', color: '#3f4247', fontFamily: 'inherit' }} value={formData.rating || ''} onChange={(e) => setFormData({...formData, rating: e.target.value})} />
+              </div>
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#888', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'block' }}>REVIEWS COUNT</label>
+                <input type="number" min="0" style={{ width: '100%', padding: '0.9rem 1.2rem', borderRadius: '12px', border: '1px solid #eab8c8', background: '#fdfafb', fontSize: '0.95rem', color: '#3f4247', fontFamily: 'inherit' }} value={formData.rating_count || ''} onChange={(e) => setFormData({...formData, rating_count: e.target.value})} />
               </div>
             </div>
 

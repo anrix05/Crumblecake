@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Search, Filter, Trash2, Eye, CheckCircle, Clock, Truck, Palette, X, Phone, Mail, MessageSquare, Download, Trash, ShoppingBag, Cake, Bell, User } from 'lucide-react';
 import { useOrders } from '../context/OrderContext';
 import { useAuth } from '../context/AuthContext';
@@ -10,11 +11,22 @@ export default function AdminOrders() {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('Any status');
   const [sortOrder, setSortOrder] = useState('newest'); 
-  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const orderIdParam = searchParams.get('orderId');
+  const selectedOrder = orders.find(o => o.id === orderIdParam) || null;
+
+  const setSelectedOrder = (order) => {
+    if (order) {
+      setSearchParams({ orderId: order.id });
+    } else {
+      searchParams.delete('orderId');
+      setSearchParams(searchParams);
+    }
+  };
   const [priceInput, setPriceInput] = useState('');
   const [editingPrice, setEditingPrice] = useState(false);
 
-  const statuses = ['Any status', 'Ordered', 'Packed', 'On its way', 'Delivered', 'Cancelled'];
+  const statuses = ['Any status', 'Ordered', 'Accepted', 'Packed', 'On its way', 'Delivered', 'Cancelled'];
 
   const filteredOrders = orders
     .filter(o => {
@@ -33,6 +45,7 @@ export default function AdminOrders() {
   const getStatusClass = (status) => {
     switch (status) {
       case 'Ordered': return 'tag-paid';
+      case 'Accepted': return 'tag-paid';
       case 'Packed': return 'tag-processing';
       case 'On its way': return 'tag-delivered';
       case 'Delivered': return 'tag-completed';
@@ -47,7 +60,6 @@ export default function AdminOrders() {
     await updateOrderPrice(orderId, price);
     setEditingPrice(false);
     setPriceInput('');
-    setSelectedOrder(prev => ({...prev, total: price}));
   };
 
   const extractPhone = (address) => {
@@ -222,7 +234,7 @@ export default function AdminOrders() {
                    className="icon-circle" 
                    title="Call Customer"
                    onClick={() => {
-                     const phone = extractPhone(selectedOrder.address);
+                     const phone = selectedOrder.phone || extractPhone(selectedOrder.address);
                      if (phone) window.location.href = `tel:${phone}`;
                      else alert('No phone number found in address');
                    }}
@@ -233,7 +245,7 @@ export default function AdminOrders() {
                    className="icon-circle" 
                    title="Message on WhatsApp"
                    onClick={() => {
-                     const phone = extractPhone(selectedOrder.address);
+                     const phone = selectedOrder.phone || extractPhone(selectedOrder.address);
                      if (phone) window.open(`https://wa.me/91${phone}`, '_blank');
                      else alert('No phone number found in address');
                    }}
@@ -257,22 +269,57 @@ export default function AdminOrders() {
             <div className="items-list-detail">
               <h5 style={{fontSize: '0.75rem', textTransform: 'uppercase', color: '#7a7a7a', letterSpacing: '0.05em', marginBottom: '1.5rem'}}>Order items</h5>
               {selectedOrder.items?.map((item, idx) => (
-                <div key={idx} className="detail-item-row">
-                  <div className="item-img-frame">
-                    {item.image ? (
-                      <img src={item.image} alt={item.name} />
+                <div key={idx} className="detail-item-row" style={{flexDirection: 'column', alignItems: 'stretch', gap: '1.5rem', padding: '2rem 0'}}>
+                  <div style={{display: 'flex', gap: '2rem', width: '100%', alignItems: 'flex-start'}}>
+                    {item.type === 'custom' && item.image ? (
+                      <div style={{width: '240px', height: '240px', borderRadius: '16px', overflow: 'hidden', border: '1px solid #eab8c8', flexShrink: 0, background: '#fffafb'}}>
+                        <a href={item.image} target="_blank" rel="noreferrer" title="Click to view full image">
+                          <img src={item.image} alt={item.name} style={{width: '100%', height: '100%', display: 'block', objectFit: 'cover'}} />
+                        </a>
+                      </div>
                     ) : (
-                      <Cake size={24} color="#bc024d" />
+                      <div className="item-img-frame" style={{width: '160px', height: '160px', flexShrink: 0, borderRadius: '16px'}}>
+                        {item.image ? (
+                          <img src={item.image} alt={item.name} style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+                        ) : (
+                          <Cake size={40} color="#bc024d" />
+                        )}
+                      </div>
+                    )}
+                    <div className="item-info-main" style={{display: 'flex', flexDirection: 'column', gap: '0.5rem', paddingTop: '0.5rem'}}>
+                      <span className="name" style={{fontSize: '1.6rem', fontWeight: 800, margin: 0}}>{item.name}</span>
+                      <span className="qty-price" style={{fontSize: '1.1rem', color: '#64748b', fontWeight: 600}}>
+                        {item.type === 'custom' ? `Size: ${item.size}` : `₹${item.price} x ${item.quantity}`}
+                      </span>
+                    </div>
+                    {item.type !== 'custom' && (
+                      <span className="item-price-final" style={{fontSize: '1.8rem', fontWeight: 800, marginLeft: 'auto', paddingTop: '0.5rem', color: '#1e293b'}}>₹{item.price * item.quantity}</span>
                     )}
                   </div>
-                  <div className="item-info-main">
-                    <span className="name">{item.name}</span>
-                    <span className="qty-price">
-                      {item.type === 'custom' ? `Size: ${item.size}` : `₹${item.price} x ${item.quantity}`}
-                    </span>
-                  </div>
-                  {item.type !== 'custom' && (
-                    <span className="item-price-final">₹{item.price * item.quantity}</span>
+                  
+                  {item.type === 'custom' && item.details && (
+                    <div style={{background: '#fffafb', padding: '1.5rem 2rem', borderRadius: '16px', border: '1px solid #fce7f3'}}>
+                      <h6 style={{margin: '0 0 1rem', color: '#bc024d', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em'}}>Custom Details</h6>
+                      <ul style={{listStyle: 'none', padding: 0, margin: 0, fontSize: '1.05rem', color: '#4b5563', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem'}}>
+                        <li style={{gridColumn: '1 / -1'}}><strong>Description:</strong> {item.description}</li>
+                        <li><strong>Flavor:</strong> {item.details.flavor}</li>
+                        <li><strong>Shape:</strong> {item.details.shape}</li>
+                        <li><strong>Type:</strong> {item.details.isEggless ? 'Eggless' : 'With Egg'}</li>
+                        <li><strong>Budget:</strong> {item.details.budget || 'Not specified'}</li>
+                        {item.details.message && <li style={{gridColumn: '1 / -1'}}><strong>Message:</strong> {item.details.message}</li>}
+                      </ul>
+                    </div>
+                  )}
+                  {item.type !== 'custom' && item.variant_details && (
+                    <div style={{background: '#f8fafc', padding: '1.5rem 2rem', borderRadius: '16px', border: '1px solid #e2e8f0'}}>
+                      <h6 style={{margin: '0 0 1rem', color: '#475569', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.05em'}}>Selected Options</h6>
+                      <ul style={{listStyle: 'none', padding: 0, margin: 0, fontSize: '1.05rem', color: '#334155', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem'}}>
+                        {item.variant_details.weight && <li><strong>Weight:</strong> {item.variant_details.weight}</li>}
+                        {item.variant_details.is_eggless !== undefined && <li><strong>Type:</strong> {item.variant_details.is_eggless ? 'Eggless' : 'With Egg'}</li>}
+                        {item.variant_details.combos && item.variant_details.combos.length > 0 && <li><strong>Combos:</strong> {item.variant_details.combos.join(', ')}</li>}
+                        {item.variant_details.message && <li style={{gridColumn: '1 / -1'}}><strong>Message on Cake:</strong> {item.variant_details.message}</li>}
+                      </ul>
+                    </div>
                   )}
                 </div>
               ))}

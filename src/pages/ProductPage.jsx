@@ -126,6 +126,7 @@ export default function ProductPage() {
       name: `${product.name} (${selectedWeight}, ${isEggless ? 'Eggless' : 'With Egg'})`,
       price: finalUnitPrice,
       base_product_id: product.id,
+      quantity: quantity,
       variant_details: {
         weight: selectedWeight,
         is_eggless: isEggless,
@@ -134,11 +135,7 @@ export default function ProductPage() {
       }
     };
 
-    // Because the addToCart function expects a generic object, we might need to loop if quantity > 1.
-    // Assuming addToCart just adds +1. We can loop, or modify CartContext later. For now, we will loop.
-    for(let i=0; i<quantity; i++) {
-      addToCart(cartItem);
-    }
+    addToCart(cartItem);
     
     // Optional: Show a toast or immediately open cart drawer
     // In this app, Cart is usually a page. Navigate to cart.
@@ -150,9 +147,7 @@ export default function ProductPage() {
       <Navbar />
       
       <main className="product-details-container">
-        <button className="btn-back-link" onClick={() => navigate(-1)}>
-          <ArrowLeft size={18} /> Back to Products
-        </button>
+
 
         <div className="product-grid">
           {/* LEFT: Image Gallery */}
@@ -194,7 +189,7 @@ export default function ProductPage() {
                 <Star size={16} fill="#fff" />
                 <span>{product.rating || 4.5}</span>
               </div>
-              <span className="review-count">128 Reviews</span>
+              <span className="review-count">{product.rating_count || 128} Reviews</span>
             </div>
 
             <div className="price-section" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>

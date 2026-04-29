@@ -350,16 +350,20 @@
 
 @media (max-width: 640px) {
   .custom-cake-main {
-    padding: 11rem 1rem 2rem;
+    padding: 15rem 0rem 2rem;
   }
   .dream-cake-form {
-    padding: 1.5rem;
+    padding: 1.25rem 1rem;
+    border-radius: 0;
   }
   .spec-grid {
     grid-template-columns: 1fr;
   }
   .custom-cake-header h1 {
     font-size: 2.2rem;
+  }
+  .custom-cake-header {
+    padding: 0 1.25rem;
   }
   .pill-selector {
     overflow-x: auto;

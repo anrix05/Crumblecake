@@ -7,7 +7,7 @@ import { ShoppingBag, Star, Plus, Upload, X, Palette, Info, Cake, ChevronLeft, C
 import { useNavigate } from 'react-router-dom';
 import './CakesPage.css';
 
-function CakeCard({ cake, addToCart }) {
+function CakeCard({ cake }) {
   const [currentImgIndex, setCurrentImgIndex] = useState(0);
   
   // Parse images from the workaround JSON string or fallback
@@ -68,9 +68,13 @@ function CakeCard({ cake, addToCart }) {
 
         <div className="cake-rating-box">
           <Star size={12} fill="#22c55e" color="#22c55e" />
-          <span>{cake.rating || '5'}</span>
+          <span>{cake.rating || '4.5'}</span>
           <span className="rating-divider">|</span>
-          <span className="rating-count">1.0K</span>
+          <span className="rating-count">
+            {cake.rating_count !== undefined 
+              ? (cake.rating_count > 999 ? (cake.rating_count/1000).toFixed(1) + 'K' : cake.rating_count) 
+              : '1.0K'}
+          </span>
         </div>
         <div className="cake-earliest-delivery">
           Earliest Delivery : Today
@@ -82,7 +86,6 @@ function CakeCard({ cake, addToCart }) {
 
 export default function CakesPage() {
   const { products: CAKES } = useProducts();
-  const { addToCart } = useCart();
   const { user, setIsAuthModalOpen } = useAuth();
   const [activeCategory, setActiveCategory] = useState('All');
   const navigate = useNavigate();
@@ -138,7 +141,7 @@ export default function CakesPage() {
           </div>
 
           {filteredCakes.map(cake => (
-            <CakeCard key={cake.id} cake={cake} addToCart={addToCart} />
+            <CakeCard key={cake.id} cake={cake} />
           ))}
         </div>
       </main>

@@ -21,7 +21,7 @@ import './OrderDetailPage.css';
 export default function OrderDetailPage() {
   const { orderId } = useParams();
   const navigate = useNavigate();
-  const { orders, rateOrderItem } = useOrders();
+  const { orders, rateOrderItem, updateOrderStatus } = useOrders();
   const { user } = useAuth();
   const { addToCart } = useCart();
 
@@ -41,7 +41,7 @@ export default function OrderDetailPage() {
   }
 
   const subtotal = currentOrder.items?.reduce((sum, item) => sum + (Number(item.price) * (item.quantity || 1)), 0) || Number(currentOrder.total);
-  const shippingFee = Number(currentOrder.total) - subtotal;
+  const shippingFee = Math.max(0, Number(currentOrder.total) - subtotal);
 
   const formatDate = (dateStr) => {
     return new Date(dateStr).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -68,6 +68,7 @@ export default function OrderDetailPage() {
 
   const statusSteps = [
     { label: 'Ordered', icon: <Clock size={16} /> },
+    { label: 'Accepted', icon: <CheckCircle size={16} /> },
     { label: 'Packed', icon: <Package size={16} /> },
     { label: 'On its way', icon: <Truck size={16} /> },
     { label: 'Delivered', icon: <CheckCircle size={16} /> }
@@ -76,10 +77,11 @@ export default function OrderDetailPage() {
   const getStatusIndex = (status) => {
     switch (status) {
       case 'Ordered': return 1;
-      case 'Packed': return 2;
-      case 'On its way': return 3;
-      case 'Delivered': return 4;
-      case 'Completed': return 4;
+      case 'Accepted': return 2;
+      case 'Packed': return 3;
+      case 'On its way': return 4;
+      case 'Delivered': return 5;
+      case 'Completed': return 5;
       default: return 1;
     }
   };
@@ -170,6 +172,17 @@ export default function OrderDetailPage() {
           </div>
         </section>
 
+        {currentOrder.items?.some(i => i.type === 'custom') && Number(currentOrder.total) > 0 && currentOrder.status === 'Ordered' && (
+          <div className="quote-action-bar" style={{background: '#fdf2f5', border: '1px solid #eab8c8', borderRadius: '16px', padding: '1.5rem', marginBottom: '2rem'}}>
+            <h3 style={{color: '#bc024d', margin: '0 0 0.5rem 0'}}>Your Custom Cake Quote is Ready: ₹{Number(currentOrder.total).toFixed(2)}</h3>
+            <p style={{margin: 0, color: '#4b5563', fontSize: '0.95rem'}}>Please accept the quote to proceed with your order, or cancel if you changed your mind.</p>
+            <div style={{display: 'flex', gap: '1rem', marginTop: '1rem'}}>
+              <button style={{padding: '0.75rem 1.5rem', borderRadius: '50px', border: 'none', background: '#cd3d7a', color: 'white', fontWeight: 600, cursor: 'pointer'}} onClick={() => updateOrderStatus(currentOrder.id, 'Accepted')}>Accept Quote & Proceed</button>
+              <button style={{padding: '0.75rem 1.5rem', borderRadius: '50px', border: '1px solid #eab8c8', background: 'white', color: '#cd3d7a', fontWeight: 600, cursor: 'pointer'}} onClick={() => updateOrderStatus(currentOrder.id, 'Cancelled')}>Decline & Cancel</button>
+            </div>
+          </div>
+        )}
+
         {/* Info Grid */}
         <div className="amz-info-card-grid">
           <div className="amz-info-card">
@@ -204,7 +217,9 @@ export default function OrderDetailPage() {
               </div>
               <div className="sum-row total">
                 <span>Grand Total:</span>
-                <span>₹{Number(currentOrder.total).toFixed(2)}</span>
+                <span>
+                  {Number(currentOrder.total) === 0 ? 'Awaiting Quote' : `₹${Number(currentOrder.total).toFixed(2)}`}
+                </span>
               </div>
             </div>
           </div>
@@ -253,7 +268,9 @@ export default function OrderDetailPage() {
                 <div className="item-info">
                   <h4 className="item-title">{item.name}</h4>
                   <p className="item-meta">Sold by: CrumbleCakes Bakery</p>
-                  <p className="item-price">₹{Number(item.price).toFixed(2)}</p>
+                  <p className="item-price">
+                    {item.type === 'custom' ? (Number(currentOrder.total) === 0 ? 'Awaiting Quote' : `₹${Number(currentOrder.total).toFixed(2)}`) : `₹${Number(item.price).toFixed(2)}`}
+                  </p>
                 </div>
 
                 <div className="item-sidebar">

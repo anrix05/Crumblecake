@@ -45,9 +45,12 @@ export default function CheckoutPage() {
     
     const currentHour = new Date().getHours();
     
-    if (slotHour - currentHour >= 1 && slotHour - currentHour <= 2) {
-      return 99;
-    }
+    const diff = slotHour - currentHour;
+    if (diff === 1) return 99;
+    if (diff === 2) return 50;
+    if (diff === 3) return 40;
+    if (diff === 4) return 30;
+    
     return 10;
   };
 
@@ -106,7 +109,7 @@ export default function CheckoutPage() {
     e.preventDefault();
     
     const promoTag = appliedPromo ? ` [Promo Used: ${appliedPromo}]` : '';
-    const scheduledAddress = `[Delivery: ${deliveryDate} | Slot: ${deliverySlot || 'N/A'}]${promoTag}\n${customerAddress}`;
+    const scheduledAddress = `[Delivery: ${deliveryDate} | Slot: ${deliverySlot || 'N/A'}]${promoTag}\n${customerAddress}\nPhone: ${customerPhone}`;
 
     // Add to orders context
     addOrder({
@@ -114,7 +117,7 @@ export default function CheckoutPage() {
       email: customerEmail,
       address: scheduledAddress,
       total: totalPrice + getDeliveryFee(),
-      status: 'Processing',
+      status: 'Ordered',
       items: [...cartItems]
     });
 
@@ -162,7 +165,7 @@ export default function CheckoutPage() {
               <span className="b-value">{orderSnapshot.customerName}</span>
               
               <span className="b-label">Address</span>
-              <span className="b-value">{orderSnapshot.customerAddress.substring(0,60)}...</span>
+              <span className="b-value">{orderSnapshot.customerAddress.length > 60 ? orderSnapshot.customerAddress.substring(0,60) + '...' : orderSnapshot.customerAddress}</span>
               
               <span className="b-label">Phone</span>
               <span className="b-value">{orderSnapshot.customerPhone}</span>
