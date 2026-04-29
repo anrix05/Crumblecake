@@ -14,7 +14,34 @@ export function OrderProvider({ children }) {
       else setOrders(data || []);
       setLoading(false);
     };
+    
     loadOrders();
+
+    // 15-second polling fallback
+    const pollInterval = setInterval(() => {
+      loadOrders();
+    }, 15000);
+
+    const channel = supabase
+      .channel('admin_orders_realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, (payload) => {
+        if (payload.eventType === 'INSERT') {
+          setOrders(prev => {
+            if (prev.some(o => o.id === payload.new.id)) return prev;
+            return [payload.new, ...prev];
+          });
+        } else if (payload.eventType === 'UPDATE') {
+          setOrders(prev => prev.map(order => order.id === payload.new.id ? payload.new : order));
+        } else if (payload.eventType === 'DELETE') {
+          setOrders(prev => prev.filter(order => order.id !== payload.old.id));
+        }
+      })
+      .subscribe();
+
+    return () => {
+      clearInterval(pollInterval);
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const addOrder = async (order) => {

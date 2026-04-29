@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useOrders } from '../context/OrderContext';
 import { useAuth } from '../context/AuthContext';
+import { useProducts } from '../context/ProductContext';
 import { CheckCircle, ShoppingBag } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import './CheckoutPage.css';
@@ -11,6 +12,68 @@ export default function CheckoutPage() {
   const { cartItems, subtotal, discountAmount, appliedPromo, totalPrice, clearCart } = useCart();
   const { addOrder } = useOrders();
   const { user, savedAddress, savedName, savedPhone, updateProfile } = useAuth();
+  const { products } = useProducts();
+
+  const getExpandedItems = (orderItems) => {
+    if (!orderItems) return [];
+    let expanded = [];
+
+    orderItems.forEach((item) => {
+      let totalComboPrice = 0;
+      let comboItemsToPush = [];
+
+      if (item.variant_details && item.variant_details.combos && Array.isArray(item.variant_details.combos)) {
+        item.variant_details.combos.forEach(comboName => {
+          const comboProduct = products?.find(p => p.name.toLowerCase() === comboName.toLowerCase());
+          const comboPrice = comboProduct?.price || 0;
+          const comboImage = comboProduct?.image || '';
+
+          totalComboPrice += comboPrice;
+
+          comboItemsToPush.push({
+            name: comboName,
+            price: comboPrice,
+            image: comboImage,
+            quantity: item.quantity,
+            isCombo: true,
+            type: 'combo'
+          });
+        });
+      }
+
+      const basePrice = item.type !== 'custom' ? Math.max(0, item.price - totalComboPrice) : item.price;
+
+      expanded.push({
+        ...item,
+        price: basePrice,
+        isCombo: false
+      });
+
+      expanded = [...expanded, ...comboItemsToPush];
+    });
+
+    return expanded;
+  };
+  const isCakeProduct = (item) => {
+    if (item.type === 'custom') return true;
+    if (item.type === 'combo' || item.isCombo) return false;
+    
+    const cleanName = item.name.split(' (')[0].trim().toLowerCase();
+    const productObj = products?.find(p => 
+      p.id === item.base_product_id || 
+      p.id === item.id || 
+      p.name.toLowerCase() === cleanName
+    );
+
+    if (productObj) {
+      const nonCakeCategories = ['Combos & Gifts', 'Add-on'];
+      return !nonCakeCategories.includes(productObj.category);
+    }
+
+    const nonCakeKeywords = ['bouquet', 'candle', 'balloon', 'chocolate box', 'teddy'];
+    return !nonCakeKeywords.some(keyword => cleanName.includes(keyword));
+  };
+
   const [isOrdered, setIsOrdered] = useState(false);
   const [customerName, setCustomerName] = useState(savedName || '');
   const [customerEmail, setCustomerEmail] = useState(user?.email || '');
@@ -116,6 +179,7 @@ export default function CheckoutPage() {
       customer: customerName,
       email: customerEmail,
       address: scheduledAddress,
+      phone: customerPhone,
       total: totalPrice + getDeliveryFee(),
       status: 'Ordered',
       items: [...cartItems]
@@ -165,7 +229,7 @@ export default function CheckoutPage() {
               <span className="b-value">{orderSnapshot.customerName}</span>
               
               <span className="b-label">Address</span>
-              <span className="b-value">{orderSnapshot.customerAddress.length > 60 ? orderSnapshot.customerAddress.substring(0,60) + '...' : orderSnapshot.customerAddress}</span>
+              <span className="b-value">{orderSnapshot.customerAddress.length > 60 ? orderSnapshot.customerAddress.substring(0, 60) + '...' : orderSnapshot.customerAddress}</span>
               
               <span className="b-label">Phone</span>
               <span className="b-value">{orderSnapshot.customerPhone}</span>
@@ -198,13 +262,13 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="receipt-items">
-                  {orderSnapshot.items.map((item) => (
-                    <div key={item.id} className="receipt-item">
+                  {getExpandedItems(orderSnapshot.items).map((item, idx) => (
+                    <div key={idx} className="receipt-item">
                       <div className="r-item-img">
                          <img src={item.image} alt={item.name} />
                       </div>
                       <div className="r-item-details">
-                        <h4>{item.name}</h4>
+                        <h4>{!isCakeProduct(item) ? item.name.split(' (')[0] : item.name} {item.isCombo && <span style={{ color: '#e11d48', background: '#ffe4e6', padding: '2px 8px', borderRadius: '4px', fontSize: '0.65rem', verticalAlign: 'middle', marginLeft: '6px' }}>Combo</span>}</h4>
                         <span className="r-item-variant">Qty: {item.quantity}</span>
                       </div>
                       <div className="r-item-price">₹{(item.price * item.quantity).toFixed(2)}</div>
@@ -365,9 +429,11 @@ export default function CheckoutPage() {
           <h2 className="section-title">Order Summary</h2>
           <div className="summary-box">
             <div className="order-items">
-              {cartItems.map((item) => (
-                <div key={item.id} className="order-item">
-                  <span className="item-name">{item.name} x {item.quantity}</span>
+              {getExpandedItems(cartItems).map((item, idx) => (
+                <div key={idx} className="order-item">
+                  <span className="item-name">
+                    {!isCakeProduct(item) ? item.name.split(' (')[0] : item.name} {item.isCombo && <span style={{ color: '#e11d48', background: '#ffe4e6', padding: '2px 6px', borderRadius: '4px', fontSize: '0.75rem', marginLeft: '6px' }}>Combo</span>} x {item.quantity}
+                  </span>
                   <span className="item-price">₹{(item.price * item.quantity).toFixed(2)}</span>
                 </div>
               ))}

@@ -248,9 +248,9 @@ export default function AdminProducts() {
               <tr>
                 <th style={{width: '100px'}}>Preview</th>
                 <th>Product Details</th>
-                <th style={{width: '140px'}}>Category</th>
+                <th style={{width: '140px'}} className="hide-mobile">Category</th>
                 <th style={{width: '120px'}}>Price</th>
-                <th style={{width: '100px'}}>Rating</th>
+                <th style={{width: '100px'}} className="hide-mobile">Rating</th>
               </tr>
             </thead>
             <tbody>
@@ -273,13 +273,13 @@ export default function AdminProducts() {
                       )}
                     </div>
                   </td>
-                  <td>
+                  <td className="hide-mobile">
                     <span className="status-tag" style={{background: '#f1f5f9', color: '#475569', fontSize: '0.75rem'}}>
                       {cake.category}
                     </span>
                   </td>
                   <td style={{fontWeight: 900, fontSize: '1.15rem', color: '#1a1a1a'}}>₹{Number(cake.price).toLocaleString()}</td>
-                  <td>
+                  <td className="hide-mobile">
                     <div style={{display: 'flex', alignItems: 'center', gap: '6px', color: '#ca8a04', fontWeight: 800}}>
                       <Star size={16} fill="#ca8a04" strokeWidth={0} /> {cake.rating}
                     </div>
@@ -328,7 +328,7 @@ export default function AdminProducts() {
               <input type="text" style={{ width: '100%', padding: '0.9rem 1.2rem', borderRadius: '12px', border: '1px solid #eab8c8', background: '#fdfafb', fontSize: '0.95rem', color: '#3f4247', fontFamily: 'inherit' }} value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} required />
             </div>
 
-            <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem'}}>
+            <div className="admin-form-grid-3">
               <div>
                 <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#888', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'block' }}>ACTUAL PRICE (₹)</label>
                 <input type="number" style={{ width: '100%', padding: '0.9rem 1.2rem', borderRadius: '12px', border: '1px solid #eab8c8', background: '#fdfafb', fontSize: '0.95rem', color: '#3f4247', fontFamily: 'inherit' }} value={formData.actual_price} onChange={(e) => setFormData({...formData, actual_price: e.target.value})} required />
@@ -345,7 +345,7 @@ export default function AdminProducts() {
               </div>
             </div>
 
-            <div style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem'}}>
+            <div className="admin-form-grid-3">
               <div>
                 <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#888', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'block' }}>FLAVOR</label>
                 <input type="text" style={{ width: '100%', padding: '0.9rem 1.2rem', borderRadius: '12px', border: '1px solid #eab8c8', background: '#fdfafb', fontSize: '0.95rem', color: '#3f4247', fontFamily: 'inherit' }} value={formData.flavor || ''} onChange={(e) => setFormData({...formData, flavor: e.target.value})} placeholder="e.g. Pineapple" />
@@ -360,7 +360,7 @@ export default function AdminProducts() {
               </div>
             </div>
 
-            <div style={{display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem'}}>
+            <div className="admin-form-grid-2">
               <div>
                 <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#888', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'block' }}>RATING (OUT OF 5)</label>
                 <input type="number" step="0.1" min="0" max="5" style={{ width: '100%', padding: '0.9rem 1.2rem', borderRadius: '12px', border: '1px solid #eab8c8', background: '#fdfafb', fontSize: '0.95rem', color: '#3f4247', fontFamily: 'inherit' }} value={formData.rating || ''} onChange={(e) => setFormData({...formData, rating: e.target.value})} />
@@ -373,7 +373,7 @@ export default function AdminProducts() {
 
             <div>
               <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#888', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'block' }}>PRICING BY WEIGHT (WITH EGG)</label>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '1.5rem' }}>
+              <div className="admin-form-grid-3" style={{ marginBottom: '1.5rem' }}>
                 {Object.keys(formData.prices.egg).map(weight => (
                   <div key={weight}>
                     <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#c2410c', display: 'block', marginBottom: '0.25rem' }}>{weight} (₹)</label>
@@ -389,7 +389,7 @@ export default function AdminProducts() {
               </div>
 
               <label style={{ fontSize: '0.8rem', fontWeight: 800, color: '#888', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '0.5rem', display: 'block' }}>PRICING BY WEIGHT (EGGLESS)</label>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
+              <div className="admin-form-grid-3">
                 {Object.keys(formData.prices.eggless).map(weight => (
                   <div key={weight}>
                     <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#15803d', display: 'block', marginBottom: '0.25rem' }}>{weight} (₹)</label>

@@ -10,8 +10,9 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [resetMessage, setResetMessage] = useState('');
   
-  const { signIn } = useAuth();
+  const { signIn, resetPassword } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -26,6 +27,24 @@ export default function LoginPage() {
       setIsLoading(false);
     } else {
       navigate('/admin');
+    }
+  };
+  
+  const handleForgotPassword = async () => {
+    if (!email) {
+      setError('Please enter your admin email first.');
+      return;
+    }
+    setIsLoading(true);
+    setError('');
+    setResetMessage('');
+    
+    const { error: resetError } = await resetPassword(email);
+    setIsLoading(false);
+    if (resetError) {
+      setError(resetError.message);
+    } else {
+      setResetMessage('A secure password reset link has been dispatched to your email.');
     }
   };
 
@@ -66,6 +85,29 @@ export default function LoginPage() {
                 required
               />
             </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '-0.5rem', marginBottom: '1.5rem' }}>
+              <button 
+                type="button" 
+                onClick={handleForgotPassword}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#cd3d7a',
+                  fontSize: '0.85rem',
+                  fontWeight: 600,
+                  cursor: 'pointer'
+                }}
+              >
+                Forgot Password?
+              </button>
+            </div>
+
+            {resetMessage && (
+              <div style={{ color: '#16a34a', background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '0.75rem', borderRadius: '12px', fontSize: '0.85rem', marginBottom: '1.5rem', fontWeight: 600 }}>
+                {resetMessage}
+              </div>
+            )}
             
             <button 
               type="submit" 

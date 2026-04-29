@@ -19,10 +19,11 @@ export function CartProvider({ children }) {
     navigate('/cart');
     setCartItems(prev => {
       const existing = prev.find(item => item.id === product.id);
+      const qtyToAdd = product.quantity || 1;
       if (existing) {
-        return prev.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
+        return prev.map(item => item.id === product.id ? { ...item, quantity: item.quantity + qtyToAdd } : item);
       }
-      return [...prev, { ...product, quantity: 1 }];
+      return [...prev, { ...product, quantity: qtyToAdd }];
     });
   };
 

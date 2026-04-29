@@ -116,20 +116,21 @@ export default function ProductPage() {
   const finalUnitPrice = basePrice + combosPrice;
   const totalDisplayPrice = finalUnitPrice * quantity;
 
-  const handleAddToCart = () => {
+    const handleAddToCart = () => {
     // Add custom metadata to the product before adding to cart
     const activeCombos = comboOptions.filter(c => selectedCombos[c.id]).map(c => c.name);
+    const hasCakeOptions = product.category !== 'Combos & Gifts';
     
     const cartItem = {
       ...product,
-      id: `${product.id}-${selectedWeight}-${isEggless ? 'eggless' : 'egg'}`, // Unique ID for variants
-      name: `${product.name} (${selectedWeight}, ${isEggless ? 'Eggless' : 'With Egg'})`,
+      id: hasCakeOptions ? `${product.id}-${selectedWeight}-${isEggless ? 'eggless' : 'egg'}` : product.id,
+      name: hasCakeOptions ? `${product.name} (${selectedWeight}, ${isEggless ? 'Eggless' : 'With Egg'})` : product.name,
       price: finalUnitPrice,
       base_product_id: product.id,
       quantity: quantity,
       variant_details: {
-        weight: selectedWeight,
-        is_eggless: isEggless,
+        weight: hasCakeOptions ? selectedWeight : undefined,
+        is_eggless: hasCakeOptions ? isEggless : undefined,
         message: messageOnCake,
         combos: activeCombos
       }

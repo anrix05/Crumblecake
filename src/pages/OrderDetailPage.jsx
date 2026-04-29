@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useOrders } from '../context/OrderContext';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { useProducts } from '../context/ProductContext';
 import { 
   ChevronRight, 
   Package, 
@@ -24,9 +25,69 @@ export default function OrderDetailPage() {
   const { orders, rateOrderItem, updateOrderStatus } = useOrders();
   const { user } = useAuth();
   const { addToCart } = useCart();
+  const { products } = useProducts();
 
   const currentOrder = orders.find(o => o.id === orderId);
 
+  const getExpandedItems = (orderItems) => {
+    if (!orderItems) return [];
+    let expanded = [];
+
+    orderItems.forEach((item) => {
+      let totalComboPrice = 0;
+      let comboItemsToPush = [];
+
+      if (item.variant_details && item.variant_details.combos && Array.isArray(item.variant_details.combos)) {
+        item.variant_details.combos.forEach(comboName => {
+          const comboProduct = products?.find(p => p.name.toLowerCase() === comboName.toLowerCase());
+          const comboPrice = comboProduct?.price || 0;
+          const comboImage = comboProduct?.image || '';
+
+          totalComboPrice += comboPrice;
+
+          comboItemsToPush.push({
+            name: comboName,
+            price: comboPrice,
+            image: comboImage,
+            quantity: item.quantity,
+            isCombo: true,
+            type: 'combo'
+          });
+        });
+      }
+
+      const basePrice = item.type !== 'custom' ? Math.max(0, item.price - totalComboPrice) : item.price;
+
+      expanded.push({
+        ...item,
+        price: basePrice,
+        isCombo: false
+      });
+
+      expanded = [...expanded, ...comboItemsToPush];
+    });
+
+    return expanded;
+  };
+  const isCakeProduct = (item) => {
+    if (item.type === 'custom') return true;
+    if (item.type === 'combo' || item.isCombo) return false;
+    
+    const cleanName = item.name.split(' (')[0].trim().toLowerCase();
+    const productObj = products?.find(p => 
+      p.id === item.base_product_id || 
+      p.id === item.id || 
+      p.name.toLowerCase() === cleanName
+    );
+
+    if (productObj) {
+      const nonCakeCategories = ['Combos & Gifts', 'Add-on'];
+      return !nonCakeCategories.includes(productObj.category);
+    }
+
+    const nonCakeKeywords = ['bouquet', 'candle', 'balloon', 'chocolate box', 'teddy'];
+    return !nonCakeKeywords.some(keyword => cleanName.includes(keyword));
+  };
   if (!currentOrder) {
     return (
       <div className="order-details-loading">
@@ -123,10 +184,10 @@ export default function OrderDetailPage() {
               </tr>
             </thead>
             <tbody>
-              {currentOrder.items && currentOrder.items.map((item, idx) => (
+              {currentOrder.items && getExpandedItems(currentOrder.items).map((item, idx) => (
                 <tr key={idx}>
                   <td>
-                    <strong>{item.name}</strong><br/>
+                    <strong>{!isCakeProduct(item) ? item.name.split(' (')[0] : item.name} {item.isCombo && <span style={{ color: '#e11d48', fontSize: '0.8rem', marginLeft: '4px' }}>(Combo)</span>}</strong><br/>
                     <small>Sold by CrumbleCakes Bakery</small>
                   </td>
                   <td style={{textAlign: 'center'}}>{item.quantity || 1}</td>
@@ -254,7 +315,7 @@ export default function OrderDetailPage() {
 
         {/* Order Items */}
         <div className="amz-order-items-list">
-          {currentOrder.items && currentOrder.items.map((item, idx) => (
+          {currentOrder.items && getExpandedItems(currentOrder.items).map((item, idx) => (
             <div key={idx} className="amz-order-item-box">
               <div className="item-header">
                 <h3>{currentOrder.status} {formatDate(currentOrder.date)}</h3>
@@ -266,7 +327,9 @@ export default function OrderDetailPage() {
                 </div>
                 
                 <div className="item-info">
-                  <h4 className="item-title">{item.name}</h4>
+                  <h4 className="item-title">
+                    {!isCakeProduct(item) ? item.name.split(' (')[0] : item.name} {item.isCombo && <span style={{ color: '#e11d48', background: '#ffe4e6', padding: '2px 8px', borderRadius: '4px', fontSize: '0.75rem', verticalAlign: 'middle', marginLeft: '6px' }}>Combo</span>}
+                  </h4>
                   <p className="item-meta">Sold by: CrumbleCakes Bakery</p>
                   <p className="item-price">
                     {item.type === 'custom' ? (Number(currentOrder.total) === 0 ? 'Awaiting Quote' : `₹${Number(currentOrder.total).toFixed(2)}`) : `₹${Number(item.price).toFixed(2)}`}

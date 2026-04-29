@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useOrders } from '../context/OrderContext';
-import { useCart } from '../context/CartContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { 
   Package, 

@@ -65,7 +65,7 @@ export default function AdminDashboard() {
   }));
 
   return (
-    <div className="admin-view-content" style={{ display: 'block', padding: '2.5rem', overflowY: 'auto' }}>
+    <div className="admin-view-content admin-scrollable-view">
       <header className="view-header" style={{ marginBottom: '2.5rem' }}>
         <div>
           <h2 style={{ fontFamily: "'Noto Serif', serif", fontSize: '2.2rem', fontWeight: 700, color: '#3f4247' }}>Dashboard Overview</h2>
@@ -89,11 +89,12 @@ export default function AdminDashboard() {
         ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '2rem' }}>
+      <div className="dashboard-layout-grid">
         {/* Recent Orders Card */}
-        <div style={{ background: 'white', borderRadius: '24px', border: '1px solid rgba(230, 190, 200, 0.4)', padding: '2rem', boxShadow: '0 10px 30px rgba(220, 150, 170, 0.08)' }}>
+        <div style={{ background: 'white', borderRadius: '24px', border: '1px solid rgba(230, 190, 200, 0.4)', padding: '2rem', boxShadow: '0 10px 30px rgba(220, 150, 170, 0.08)', overflowHidden: 'hidden' }}>
           <h4 style={{ fontFamily: "'Noto Serif', serif", fontSize: '1.4rem', fontWeight: 700, marginBottom: '1.5rem', color: '#3f4247' }}>Recent Orders</h4>
-          <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: '0 12px' }}>
+          <div style={{ overflowX: 'auto', width: '100%' }}>
+            <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: '0 12px', minWidth: '400px' }}>
             <thead>
               <tr style={{ textAlign: 'left', fontSize: '0.8rem', color: '#888', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 800 }}>
                 <th style={{ paddingBottom: '1rem', borderBottom: '1px solid #f0d5df' }}>Order</th>
@@ -122,6 +123,7 @@ export default function AdminDashboard() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
 
         {/* Sales Trends Chart */}

@@ -10,7 +10,7 @@
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
-  padding: 8rem 2rem 4rem;
+  padding: 14rem 2rem 4rem;
 }
 
 .back-button {
@@ -163,12 +163,30 @@
 
 /* Submit Row */
 .form-submit-row {
+  grid-column: 1 / -1;
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-top: 2rem;
   padding-top: 2rem;
   border-top: 2px solid #f0f0f0;
+}
+
+.desktop-submit-row {
+  display: flex !important;
+}
+
+.mobile-submit-row {
+  display: none !important;
+}
+
+@media (max-width: 1024px), (max-height: 600px) {
+  .desktop-submit-row {
+    display: none !important;
+  }
+  .mobile-submit-row {
+    display: flex !important;
+  }
 }
 
 .price-note {
@@ -348,9 +366,9 @@
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 1024px), (max-height: 600px) {
   .custom-cake-main {
-    padding: 15rem 0rem 2rem;
+    padding: 14rem 1.25rem 2rem;
   }
   .dream-cake-form {
     padding: 1.25rem 1rem;

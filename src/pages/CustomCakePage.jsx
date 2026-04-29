@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useOrders } from '../context/OrderContext';
 import Navbar from '../components/Navbar';
-import { Upload, X, ArrowLeft, Cake, CheckCircle2, ChevronRight, Image as ImageIcon } from 'lucide-react';
+import { X, ArrowLeft, Cake, CheckCircle2, ChevronRight, Image as ImageIcon } from 'lucide-react';
 import './CustomCakePage.css';
 
 export default function CustomCakePage() {
@@ -15,7 +15,6 @@ export default function CustomCakePage() {
     window.scrollTo(0, 0);
   }, []);
   
-  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -141,7 +140,7 @@ export default function CustomCakePage() {
 
         <div className="custom-cake-container">
           <div className="custom-form-side">
-            <form onSubmit={handlePreSubmit} className="dream-cake-form">
+            <form id="dream-cake-form" onSubmit={handlePreSubmit} className="dream-cake-form">
               
               {/* Basic Details */}
               <div className="form-section">
@@ -251,7 +250,7 @@ export default function CustomCakePage() {
                 </div>
               </div>
 
-              <div className="form-submit-row">
+              <div className="form-submit-row desktop-submit-row">
                 <p className="price-note">Price will be quoted upon review</p>
                 <button type="submit" className="submit-dream-btn" disabled={submitting}>
                   {submitting ? 'Submitting...' : 'Request Quote'} <ChevronRight size={18} />
@@ -300,6 +299,13 @@ export default function CustomCakePage() {
                 <span>Our chefs specialize in fondant, fresh floral arrangements, and intricate structural cakes.</span>
               </div>
             </div>
+          </div>
+
+          <div className="form-submit-row mobile-submit-row">
+            <p className="price-note">Price will be quoted upon review</p>
+            <button type="submit" form="dream-cake-form" className="submit-dream-btn" disabled={submitting}>
+              {submitting ? 'Submitting...' : 'Request Quote'} <ChevronRight size={18} />
+            </button>
           </div>
         </div>
       </main>

@@ -34,7 +34,7 @@ export default function AdminLayout() {
             </NavLink>
 
 
-            <div style={{marginTop: 'auto', paddingTop: '2rem'}}>
+            <div className="admin-settings-nav-item">
                <NavLink to="/admin/settings">
                 <Settings size={20} />
                 Settings

@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, Save, Store, Shield } from 'lucide-react';
+import { LogOut, Save, Store, Shield, Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 
 export default function AdminSettings() {
   const { user, signOut } = useAuth();
@@ -9,22 +10,68 @@ export default function AdminSettings() {
   
   const [storeInfo, setStoreInfo] = useState({
     name: 'Crumblecakes Bakery',
-    email: user?.email || 'chef@crumblecakes.in',
-    currency: 'INR (₹)'
+    email: user?.email || 'chef@crumblecakes.in'
   });
+  const [newEmail, setNewEmail] = useState(user?.email || '');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPasswords, setShowPasswords] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
 
   const handleLogout = async () => {
     await signOut();
     navigate('/login');
   };
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
-    alert('Settings saved successfully!');
+    setErrorMsg('');
+    setSuccessMsg('');
+
+    try {
+      const updates = {};
+      if (newEmail && newEmail !== user?.email) {
+        updates.email = newEmail;
+      }
+      if (newPassword) {
+        if (newPassword !== confirmPassword) {
+          setErrorMsg('New passwords do not match!');
+          return;
+        }
+        updates.password = newPassword;
+      }
+
+      if (Object.keys(updates).length > 0) {
+        if (user?.id === 'admin-mock-id') {
+          if (updates.password) {
+            localStorage.setItem('admin_bypass_password', updates.password);
+            setSuccessMsg('Admin login password updated successfully! Use your new password for your subsequent logins.');
+            setNewPassword('');
+            setConfirmPassword('');
+          }
+          if (updates.email) {
+            setErrorMsg('Bypass login email must remain chef@crumblecakes.in');
+          }
+          return;
+        }
+        const { error } = await supabase.auth.updateUser(updates);
+        if (error) {
+          setErrorMsg(error.message);
+        } else {
+          setSuccessMsg('Security updates applied! If you changed the email address, please check your old and new addresses for verification prompts.');
+          setNewPassword('');
+        }
+      } else {
+        alert('Bakery profile updated!');
+      }
+    } catch (err) {
+      setErrorMsg(err.message || 'An unexpected error occurred.');
+    }
   };
 
   return (
-    <div className="admin-view-content" style={{ display: 'block', padding: '2.5rem', overflowY: 'auto' }}>
+    <div className="admin-view-content admin-scrollable-view">
       <header className="view-header" style={{ marginBottom: '2.5rem' }}>
         <div>
           <h2 style={{ fontFamily: "'Noto Serif', serif", fontSize: '2.2rem', fontWeight: 700, color: '#3f4247' }}>Store Settings</h2>
@@ -32,7 +79,7 @@ export default function AdminSettings() {
         </div>
       </header>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '2rem' }}>
+      <div className="settings-layout-grid">
         
         {/* General Settings Panel */}
         <div style={{ background: 'white', borderRadius: '24px', border: '1px solid rgba(230, 190, 200, 0.4)', padding: '2.5rem', boxShadow: '0 10px 30px rgba(220, 150, 170, 0.08)' }}>
@@ -60,19 +107,72 @@ export default function AdminSettings() {
             </div>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <label style={{ fontSize: '0.85rem', fontWeight: 800, color: '#888', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Admin Contact</label>
+              <label style={{ fontSize: '0.85rem', fontWeight: 800, color: '#888', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Admin Email</label>
               <input 
                 type="email" 
-                value={storeInfo.email}
-                onChange={(e) => setStoreInfo({...storeInfo, email: e.target.value})}
-                disabled
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
                 style={{ 
-                  width: '100%', padding: '1rem 1.25rem', borderRadius: '12px', border: '1px solid #f0d5df', 
-                  background: '#f9f9f9', fontSize: '1rem', color: '#aaa', fontFamily: 'inherit', cursor: 'not-allowed'
+                  width: '100%', padding: '1rem 1.25rem', borderRadius: '12px', border: '1px solid #eab8c8', 
+                  background: '#fdfafb', fontSize: '1rem', color: '#3f4247', fontFamily: 'inherit', transition: 'all 0.2s'
                 }}
+                onFocus={(e) => { e.target.style.borderColor = '#cd3d7a'; e.target.style.boxShadow = '0 0 0 4px rgba(205, 61, 122, 0.1)'; e.target.style.background = 'white'; }}
+                onBlur={(e) => { e.target.style.borderColor = '#eab8c8'; e.target.style.boxShadow = 'none'; e.target.style.background = '#fdfafb'; }}
               />
-              <span style={{ fontSize: '0.8rem', color: '#888', fontWeight: 600 }}>Admin email is bound to your Supabase account.</span>
             </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label style={{ fontSize: '0.85rem', fontWeight: 800, color: '#888', letterSpacing: '0.05em', textTransform: 'uppercase' }}>New Password</label>
+                <button 
+                  type="button" 
+                  onClick={() => setShowPasswords(!showPasswords)} 
+                  style={{ background: 'none', border: 'none', color: '#cd3d7a', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.85rem', fontWeight: 600 }}
+                >
+                  {showPasswords ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {showPasswords ? 'Hide' : 'Show'}
+                </button>
+              </div>
+              <input 
+                type={showPasswords ? 'text' : 'password'} 
+                placeholder="Leave blank to keep current password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                style={{ 
+                  width: '100%', padding: '1rem 1.25rem', borderRadius: '12px', border: '1px solid #eab8c8', 
+                  background: '#fdfafb', fontSize: '1rem', color: '#3f4247', fontFamily: 'inherit', transition: 'all 0.2s'
+                }}
+                onFocus={(e) => { e.target.style.borderColor = '#cd3d7a'; e.target.style.boxShadow = '0 0 0 4px rgba(205, 61, 122, 0.1)'; e.target.style.background = 'white'; }}
+                onBlur={(e) => { e.target.style.borderColor = '#eab8c8'; e.target.style.boxShadow = 'none'; e.target.style.background = '#fdfafb'; }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <label style={{ fontSize: '0.85rem', fontWeight: 800, color: '#888', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Confirm New Password</label>
+              <input 
+                type={showPasswords ? 'text' : 'password'} 
+                placeholder="Retype your new password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                style={{ 
+                  width: '100%', padding: '1rem 1.25rem', borderRadius: '12px', border: '1px solid #eab8c8', 
+                  background: '#fdfafb', fontSize: '1rem', color: '#3f4247', fontFamily: 'inherit', transition: 'all 0.2s'
+                }}
+                onFocus={(e) => { e.target.style.borderColor = '#cd3d7a'; e.target.style.boxShadow = '0 0 0 4px rgba(205, 61, 122, 0.1)'; e.target.style.background = 'white'; }}
+                onBlur={(e) => { e.target.style.borderColor = '#eab8c8'; e.target.style.boxShadow = 'none'; e.target.style.background = '#fdfafb'; }}
+              />
+            </div>
+
+            {errorMsg && (
+              <div style={{ padding: '1rem', background: '#fff1f2', border: '1px solid #fecdd3', color: '#e11d48', borderRadius: '12px', fontSize: '0.9rem', fontWeight: 600 }}>
+                {errorMsg}
+              </div>
+            )}
+            {successMsg && (
+              <div style={{ padding: '1rem', background: '#f0fdf4', border: '1px solid #bbf7d0', color: '#16a34a', borderRadius: '12px', fontSize: '0.9rem', fontWeight: 600 }}>
+                {successMsg}
+              </div>
+            )}
 
             <button type="submit" style={{ 
               marginTop: '1rem', padding: '1rem 2rem', background: 'linear-gradient(135deg, #d44d7d 0%, #c43369 100%)', 
