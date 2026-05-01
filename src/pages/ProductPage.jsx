@@ -302,6 +302,33 @@ export default function ProductPage() {
 
             <div className="options-divider"></div>
 
+            {/* COMBOS AND GIFTS */}
+            {comboOptions.length > 0 && (
+              <div className="option-group combos-group">
+                <label>Make it Extra Special (Combos & Gifts)</label>
+                <div className="combos-grid">
+                  {comboOptions.map(combo => (
+                    <div 
+                      key={combo.id} 
+                      className={`combo-card ${selectedCombos[combo.id] ? 'selected' : ''}`}
+                      onClick={() => handleComboToggle(combo.id)}
+                    >
+                      <div className="combo-check">
+                        {selectedCombos[combo.id] ? <Check size={14} color="#fff" /> : null}
+                      </div>
+                      <img src={combo.img} alt={combo.name} className="combo-img" />
+                      <div className="combo-details">
+                        <span className="combo-name">{combo.name}</span>
+                        <span className="combo-price">+₹{combo.price}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="options-divider"></div>
+
             <div className="about-product-header">
               <h3>About the product</h3>
               <span className="sku-code">REGCAKE03A</span>
@@ -362,33 +389,6 @@ export default function ProductPage() {
                 )}
               </div>
             </div>
-
-            <div className="options-divider"></div>
-
-            {/* COMBOS AND GIFTS */}
-            {comboOptions.length > 0 && (
-              <div className="option-group combos-group">
-                <label>Make it Extra Special (Combos & Gifts)</label>
-                <div className="combos-grid">
-                  {comboOptions.map(combo => (
-                    <div 
-                      key={combo.id} 
-                      className={`combo-card ${selectedCombos[combo.id] ? 'selected' : ''}`}
-                      onClick={() => handleComboToggle(combo.id)}
-                    >
-                      <div className="combo-check">
-                        {selectedCombos[combo.id] ? <Check size={14} color="#fff" /> : null}
-                      </div>
-                      <img src={combo.img} alt={combo.name} className="combo-img" />
-                      <div className="combo-details">
-                        <span className="combo-name">{combo.name}</span>
-                        <span className="combo-price">+₹{combo.price}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
 
             {/* ACTION ROW */}
             <div className="checkout-action-row">
