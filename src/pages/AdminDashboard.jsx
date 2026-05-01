@@ -158,18 +158,40 @@ export default function AdminDashboard() {
         <div style={{ background: 'white', borderRadius: '24px', border: '1px solid rgba(230, 190, 200, 0.4)', padding: '2rem', boxShadow: '0 10px 30px rgba(220, 150, 170, 0.08)' }}>
           <h4 style={{ fontFamily: "'Noto Serif', serif", fontSize: '1.4rem', fontWeight: 700, marginBottom: '1.5rem', color: '#3f4247' }}>Daily Volume</h4>
           <div style={{ display: 'flex', alignItems: 'flex-end', height: '180px', gap: '12px', paddingBottom: '1rem', borderBottom: '1px solid #f0d5df' }}>
-            {chartData.map(item => (
-              <div key={item.day} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
-                <div style={{ 
-                  height: `${item.percent}%`, width: '100%', 
-                  background: 'linear-gradient(to top, #d44d7d, #f8bbd0)', 
-                  borderRadius: '12px 12px 0 0', minHeight: '8px' 
-                }}></div>
-                <span style={{ fontSize: '0.8rem', color: '#888', fontWeight: 700 }}>{item.day}</span>
-              </div>
-            ))}
+            {chartData.map(item => {
+              const isToday = new Date().getDay() === days.indexOf(item.day);
+              return (
+                <div key={item.day} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', height: '100%', justifyContent: 'flex-end' }}>
+                  {item.count > 0 && (
+                    <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#cd3d7a', marginBottom: '2px' }}>{item.count}</span>
+                  )}
+                  <div 
+                    title={`${item.count} orders on ${item.day}`}
+                    style={{ 
+                      height: `${Math.max(item.percent, item.count > 0 ? 5 : 0)}%`, 
+                      width: '100%', 
+                      background: isToday 
+                        ? 'linear-gradient(to top, #cd3d7a, #ec4899)' 
+                        : 'linear-gradient(to top, #f472b6, #fbcfe8)', 
+                      borderRadius: '8px 8px 0 0',
+                      transition: 'height 0.5s ease-out',
+                      cursor: 'help',
+                      border: isToday ? '2px solid #fff' : 'none',
+                      boxShadow: isToday ? '0 4px 12px rgba(205, 61, 122, 0.2)' : 'none'
+                    }}
+                  ></div>
+                  <span style={{ 
+                    fontSize: '0.8rem', 
+                    color: isToday ? '#cd3d7a' : '#888', 
+                    fontWeight: isToday ? 800 : 700 
+                  }}>{item.day}</span>
+                </div>
+              );
+            })}
           </div>
-          <p style={{ marginTop: '1rem', fontSize: '0.85rem', color: '#888', textAlign: 'center', fontWeight: 600 }}>Total order count per day (excluding cancelled)</p>
+          <p style={{ marginTop: '1rem', fontSize: '0.85rem', color: '#888', textAlign: 'center', fontWeight: 600 }}>
+            {orders.length > 0 ? `Busiest day: ${days[dailyCounts.indexOf(Math.max(...dailyCounts))]}` : "No order data to display yet."}
+          </p>
         </div>
 
         {/* Top Searches Analytics */}

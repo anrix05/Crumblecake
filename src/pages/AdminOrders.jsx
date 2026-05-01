@@ -145,6 +145,14 @@ export default function AdminOrders() {
     };
   };
 
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this order permanently from Supabase?")) {
+      await deleteOrder(id);
+      setSelectedOrder(null);
+      alert("Order deleted successfully.");
+    }
+  };
+
   const handleBulkDelete = async () => {
     if (window.confirm(`Are you sure you want to permanently delete ${checkedOrderIds.length} orders from Supabase?`)) {
       const { error } = await supabase.from('orders').delete().in('id', checkedOrderIds);
