@@ -13,11 +13,16 @@ export default function Navbar() {
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const hideBanner = ['/cart', '/checkout', '/account'].includes(location.pathname) || location.pathname.startsWith('/account/order/');
+  const isHome = location.pathname === '/';
+  const isProductPage = location.pathname.startsWith('/product/');
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/#cakes?search=${encodeURIComponent(searchQuery.trim())}`);
+      navigate(`/?search=${encodeURIComponent(searchQuery.trim())}#cakes`);
       setIsSearchOpen(false);
       setSearchQuery('');
     }
