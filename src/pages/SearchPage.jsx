@@ -42,14 +42,42 @@ function CakeCard({ cake }) {
 
 export default function SearchPage() {
   const { products: CAKES } = useProducts();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const query = searchParams.get('q') || '';
+  const force = searchParams.get('force') === 'true';
+
+  // Fuzzy matching for "Did you mean?" functionality
+  const getCorrection = (q) => {
+    if (!q || q.length < 3 || force) return null;
+    const lowerQ = q.toLowerCase();
+    
+    // If we have actual results for this query, don't correct
+    const hasActualResults = CAKES.some(cake => 
+      cake.name.toLowerCase().includes(lowerQ) ||
+      (cake.category && cake.category.toLowerCase().includes(lowerQ))
+    );
+    if (hasActualResults) return null;
+
+    const keywords = ['chocolate', 'fruit', 'classic', 'specialty', 'combo', 'gift', 'dutch', 'truffle', 'red velvet', 'vanilla', 'strawberry', 'cake', 'eggless'];
+    
+    for (const key of keywords) {
+      if (key.includes(lowerQ) || lowerQ.includes(key)) return key;
+      let dist = 0;
+      for (let i=0; i<Math.min(key.length, lowerQ.length); i++) if (key[i] !== lowerQ[i]) dist++;
+      dist += Math.abs(key.length - lowerQ.length);
+      if (dist <= 2) return key;
+    }
+    return null;
+  };
+
+  const correction = getCorrection(query);
+  const activeQuery = (correction && !force) ? correction : query;
 
   const filteredCakes = CAKES.filter(cake => 
-    cake.name.toLowerCase().includes(query.toLowerCase()) ||
-    (cake.description && cake.description.toLowerCase().includes(query.toLowerCase())) ||
-    (cake.category && cake.category.toLowerCase().includes(query.toLowerCase()))
+    cake.name.toLowerCase().includes(activeQuery.toLowerCase()) ||
+    (cake.description && cake.description.toLowerCase().includes(activeQuery.toLowerCase())) ||
+    (cake.category && cake.category.toLowerCase().includes(activeQuery.toLowerCase()))
   );
 
   const otherCakes = CAKES.filter(cake => !filteredCakes.find(f => f.id === cake.id)).slice(0, 8);
@@ -67,7 +95,20 @@ export default function SearchPage() {
           <button className="back-to-shop" onClick={() => navigate('/')}>
             <ArrowLeft size={18} /> Back to Home
           </button>
-          <h1>Search Results for "<span className="text-pink">{query}</span>"</h1>
+          
+          {correction && !force ? (
+            <div className="correction-info">
+              <h1 className="showing-results-text">
+                Showing results for <span className="text-pink italic">"{correction}"</span>
+              </h1>
+              <p className="search-instead-text">
+                Search instead for <button className="force-search-link" onClick={() => setSearchParams({q: query, force: 'true'})}>{query}</button>
+              </p>
+            </div>
+          ) : (
+            <h1>Search Results for "<span className="text-pink">{query}</span>"</h1>
+          )}
+          
           <p>{filteredCakes.length} results found</p>
         </div>
 
