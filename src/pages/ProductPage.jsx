@@ -400,7 +400,7 @@ export default function ProductPage() {
                     <span>{quantity}</span>
                     <button onClick={() => setQuantity(prev => prev + 1)}><Plus size={18} /></button>
                   </div>
-                  {cartItems.some(item => item.productId === product.id || item.id.startsWith(product.id)) ? (
+                  {cartItems.some(item => item.id === (product.category !== 'Combos & Gifts' ? `${product.id}-${selectedWeight}-${isEggless ? 'eggless' : 'egg'}` : product.id)) ? (
                     <button className="btn-add-to-cart" onClick={() => navigate('/cart')} style={{background: '#25D366'}}>
                       Go to Cart
                     </button>
