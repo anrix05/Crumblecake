@@ -2,12 +2,14 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Search, ShoppingBag, User, Truck } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { useProducts } from '../context/ProductContext';
 import { useState } from 'react';
 import './Navbar.css';
 
 export default function Navbar() {
   const { cartCount, setIsCartOpen } = useCart();
   const { user, isAdmin, setIsAuthModalOpen } = useAuth();
+  const { products } = useProducts();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -19,6 +21,10 @@ export default function Navbar() {
   const isHome = location.pathname === '/';
   const isProductPage = location.pathname.startsWith('/product/');
 
+  const suggestions = searchQuery.trim().length >= 2 
+    ? products.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 5)
+    : [];
+
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -26,6 +32,12 @@ export default function Navbar() {
       setIsSearchOpen(false);
       setSearchQuery('');
     }
+  };
+
+  const handleSuggestionClick = (productId) => {
+    navigate(`/product/${productId}`);
+    setIsSearchOpen(false);
+    setSearchQuery('');
   };
 
   const handleAuthClick = () => {
@@ -77,17 +89,42 @@ export default function Navbar() {
 
       <div className="navbar-actions">
         {isSearchOpen ? (
-          <form className="search-expand-form" onSubmit={handleSearchSubmit}>
-            <input 
-              autoFocus
-              type="text" 
-              placeholder="Search cakes..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onBlur={() => !searchQuery && setIsSearchOpen(false)}
-              className="search-input-field"
-            />
-          </form>
+          <div className="search-container-relative">
+            <form className="search-expand-form" onSubmit={handleSearchSubmit}>
+              <input 
+                autoFocus
+                type="text" 
+                placeholder="Search cakes..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onBlur={() => {
+                  // Small timeout to allow clicking suggestions
+                  setTimeout(() => {
+                    if (!searchQuery) setIsSearchOpen(false);
+                  }, 200);
+                }}
+                className="search-input-field"
+              />
+            </form>
+            
+            {suggestions.length > 0 && (
+              <div className="search-suggestions-dropdown">
+                {suggestions.map(p => (
+                  <div 
+                    key={p.id} 
+                    className="suggestion-item"
+                    onClick={() => handleSuggestionClick(p.id)}
+                  >
+                    <Search size={14} className="suggestion-icon" />
+                    <span>{p.name}</span>
+                  </div>
+                ))}
+                <div className="suggestion-item view-all" onClick={handleSearchSubmit}>
+                  View all results for "{searchQuery}"
+                </div>
+              </div>
+            )}
+          </div>
         ) : (
           <>
             <a href="#cakes" className="navbar-order-btn">
