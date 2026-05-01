@@ -157,9 +157,7 @@ export default function CartPage() {
                   PLACE ORDER
                 </button>
               </div>
-              <div className="coupon-info-text">
-                Have a Coupon Code? You can apply the discount<br/>coupon in the Checkout Process.
-              </div>
+
             </div>
           </div>
         )}
