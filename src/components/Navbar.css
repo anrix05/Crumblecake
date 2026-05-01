@@ -430,6 +430,23 @@
     padding: 0.35rem;
   }
 
+  .search-expand-form {
+    width: 140px;
+    padding: 2px 8px;
+    margin-right: 0.2rem;
+  }
+
+  .search-input-field {
+    font-size: 0.8rem;
+  }
+
+  .search-suggestions-dropdown {
+    width: 200px;
+    left: auto;
+    right: -40px;
+    top: calc(100% + 10px);
+  }
+
   .promo-banner {
     padding: 12px 10px;
     font-size: 0.75rem;
