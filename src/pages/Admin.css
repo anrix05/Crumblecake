@@ -334,10 +334,13 @@ body {
   text-transform: uppercase;
 }
 
-.tag-paid { background: #fff3cd; color: #856404; }
-.tag-delivered { background: #ffedd5; color: #9a3412; }
-.tag-completed { background: #e8f7ed; color: #25D366; }
-.tag-processing { background: #fef0f4; color: var(--admin-primary); }
+.tag-paid { background: #f1f5f9; color: #475569; }
+.tag-baking { background: #fef0f4; color: #cd3d7a; border: 1px solid #fce4ec; }
+.tag-packing { background: #fdf2f5; color: #cd3d7a; border: 1px solid #f8bbd0; }
+.tag-out-for-delivery { background: #e0f2fe; color: #0369a1; }
+.tag-delivered, .tag-completed { background: #e8f7ed; color: #25D366; }
+.tag-processing { background: #fff3cd; color: #856404; }
+.tag-cancelled { background: #fef0f4; color: #df725a; }
 
 /* Right Panel - Details Section */
 .details-section {

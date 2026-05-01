@@ -291,8 +291,11 @@
 
 /* Status colors */
 .b-status-badge.processing { background: #fff3cd; color: #856404; }
+.b-status-badge.ordered { background: #f1f5f9; color: #475569; }
+.b-status-badge.baking { background: #fef0f4; color: #cd3d7a; border: 1px solid #fce4ec; }
+.b-status-badge.packing { background: #fdf2f5; color: #cd3d7a; border: 1px solid #f8bbd0; }
 .b-status-badge.shipped { background: #cce5ff; color: #004085; }
-.b-status-badge.out-for-delivery { background: #d4edda; color: #155724; }
+.b-status-badge.out-for-delivery { background: #e0f2fe; color: #0369a1; }
 .b-status-badge.delivered, .b-status-badge.completed { background: #e8f7ed; color: #25D366; }
 .b-status-badge.cancelled { background: #fef0f4; color: #df725a; }
 

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useOrders } from '../context/OrderContext';
 import { useAuth } from '../context/AuthContext';
@@ -14,7 +15,8 @@ import {
   CreditCard,
   MapPin,
   HelpCircle,
-  Star
+  Star,
+  Palette
 } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import './OrderDetailPage.css';
@@ -26,6 +28,9 @@ export default function OrderDetailPage() {
   const { user } = useAuth();
   const { addToCart } = useCart();
   const { products } = useProducts();
+  
+  const [reviewingItem, setReviewingItem] = useState(null);
+  const [reviewComment, setReviewComment] = useState('');
 
   const currentOrder = orders.find(o => o.id === orderId);
 
@@ -129,31 +134,75 @@ export default function OrderDetailPage() {
 
   const statusSteps = [
     { label: 'Ordered', icon: <Clock size={16} /> },
-    { label: 'Accepted', icon: <CheckCircle size={16} /> },
-    { label: 'Packed', icon: <Package size={16} /> },
-    { label: 'On its way', icon: <Truck size={16} /> },
+    { label: 'Baking', icon: <Palette size={16} /> },
+    { label: 'Packing', icon: <Package size={16} /> },
+    { label: 'Out for Delivery', icon: <Truck size={16} /> },
     { label: 'Delivered', icon: <CheckCircle size={16} /> }
   ];
 
   const getStatusIndex = (status) => {
     switch (status) {
       case 'Ordered': return 1;
-      case 'Accepted': return 2;
-      case 'Packed': return 3;
-      case 'On its way': return 4;
+      case 'Baking': return 2;
+      case 'Packing': return 3;
+      case 'Out for Delivery': return 4;
       case 'Delivered': return 5;
       case 'Completed': return 5;
+      case 'Accepted': return 1;
       default: return 1;
     }
   };
 
   const activeIndex = getStatusIndex(currentOrder.status || 'Ordered');
 
+  const submitReview = async () => {
+    if (!reviewingItem) return;
+    await rateOrderItem(reviewingItem.orderId, reviewingItem.itemIndex, reviewingItem.rating, reviewComment);
+    setReviewingItem(null);
+    setReviewComment('');
+    alert("Thank you for your review!");
+  };
+
   return (
     <div className="order-details-page">
       <Navbar />
       
+      {/* Review Modal / Overlay */}
+      {reviewingItem && (
+        <div className="review-overlay" style={{position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem'}}>
+          <div className="review-modal" style={{background: 'white', borderRadius: '20px', padding: '2rem', width: '100%', maxWidth: '500px', boxShadow: '0 20px 40px rgba(0,0,0,0.2)'}}>
+            <h3 style={{margin: '0 0 1rem 0', fontFamily: 'Noto Serif'}}>How was the cake?</h3>
+            <p style={{color: '#666', fontSize: '0.9rem', marginBottom: '1.5rem'}}>You gave it {reviewingItem.rating} stars. Tell us more about your experience!</p>
+            
+            <textarea 
+              style={{width: '100%', borderRadius: '12px', border: '1px solid #eab8c8', padding: '1rem', minHeight: '120px', fontFamily: 'inherit', marginBottom: '1.5rem'}}
+              placeholder="Was it tasty? How was the delivery? (Optional)"
+              value={reviewComment}
+              onChange={(e) => setReviewComment(e.target.value)}
+            />
+            
+            <div style={{display: 'flex', gap: '1rem'}}>
+              <button 
+                onClick={submitReview}
+                style={{flex: 1, padding: '0.85rem', borderRadius: '50px', border: 'none', background: '#cd3d7a', color: 'white', fontWeight: 700, cursor: 'pointer'}}
+              >
+                Submit Review
+              </button>
+              <button 
+                onClick={() => setReviewingItem(null)}
+                style={{flex: 1, padding: '0.85rem', borderRadius: '50px', border: '1px solid #eab8c8', background: 'white', color: '#cd3d7a', fontWeight: 700, cursor: 'pointer'}}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <main className="amz-container">
+        {/* ... (rest of existing code) ... */}
+        {/* Update the star click handler in the items list */}
+        {/* (Searching for the star loop in TargetContent below) */}
         {/* Dedicated Hidden Print Invoice */}
         <div className="print-only-invoice">
           <div className="print-header">
@@ -343,19 +392,24 @@ export default function OrderDetailPage() {
                   
                   {['Completed', 'Delivered'].includes(currentOrder.status) && (
                     <div className="rating-invite">
-                      <h5>Write a product review</h5>
+                      <h5>{item.user_rating ? 'Your Review' : 'Write a product review'}</h5>
                       <div className="stars-row">
                         {[1,2,3,4,5].map(star => (
                           <Star 
                             key={star} 
                             size={20} 
-                            onClick={() => rateOrderItem(currentOrder.id, idx, star)}
+                            onClick={() => !item.user_rating && setReviewingItem({ orderId: currentOrder.id, itemIndex: idx, rating: star })}
                             fill={star <= (item.user_rating || 0) ? "#ca8a04" : "transparent"}
                             color={star <= (item.user_rating || 0) ? "#ca8a04" : "#eab8c8"}
-                            style={{cursor: 'pointer'}}
+                            style={{cursor: item.user_rating ? 'default' : 'pointer'}}
                           />
                         ))}
                       </div>
+                      {item.user_comment && (
+                        <p style={{fontSize: '0.8rem', color: '#666', marginTop: '0.5rem', fontStyle: 'italic'}}>
+                          "{item.user_comment}"
+                        </p>
+                      )}
                     </div>
                   )}
                 </div>

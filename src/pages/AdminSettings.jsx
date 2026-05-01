@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, Save, Store, Shield, Eye, EyeOff } from 'lucide-react';
+import { LogOut, Save, Store, Shield, Eye, EyeOff, Package, Palette } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
@@ -18,6 +18,57 @@ export default function AdminSettings() {
   const [showPasswords, setShowPasswords] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+  const [isCleaning, setIsCleaning] = useState(false);
+
+  const fixTypos = async () => {
+    if (!window.confirm("This will scan all products and permanently fix common spelling errors (e.g., 'Choclate', 'Vanila', 'Pineaple') in your database. Proceed?")) return;
+    
+    setIsCleaning(true);
+    const typosMap = {
+      'Choclate': 'Chocolate',
+      'Vanila': 'Vanilla',
+      'Pineaple': 'Pineapple',
+      'Strowberry': 'Strawberry',
+      'Eggles': 'Eggless',
+      'Chocoalte': 'Chocolate',
+      'Strawbery': 'Strawberry'
+    };
+
+    try {
+      const { data: products, error } = await supabase.from('products').select('*');
+      if (error) throw error;
+
+      let fixCount = 0;
+      for (const product of products) {
+        let newName = product.name;
+        let newDesc = product.description || '';
+        let newCat = product.category || '';
+
+        let changed = false;
+        Object.entries(typosMap).forEach(([typo, correct]) => {
+          const regex = new RegExp(typo, 'gi');
+          if (newName.match(regex)) { newName = newName.replace(regex, correct); changed = true; }
+          if (newDesc.match(regex)) { newDesc = newDesc.replace(regex, correct); changed = true; }
+          if (newCat.match(regex)) { newCat = newCat.replace(regex, correct); changed = true; }
+        });
+
+        if (changed) {
+          const { error: updateError } = await supabase.from('products').update({
+            name: newName,
+            description: newDesc,
+            category: newCat
+          }).eq('id', product.id);
+          if (!updateError) fixCount++;
+        }
+      }
+      alert(`Success! Fixed typos in ${fixCount} products.`);
+      window.location.reload();
+    } catch (err) {
+      alert("Error during cleanup: " + err.message);
+    } finally {
+      setIsCleaning(false);
+    }
+  };
 
   const handleLogout = async () => {
     await signOut();
@@ -228,6 +279,47 @@ export default function AdminSettings() {
           >
             <LogOut size={18} /> SECURE LOG OUT
           </button>
+
+          {/* Maintenance Tools */}
+          <div style={{ 
+            background: '#fff', borderRadius: '24px', 
+            border: '1px solid #e2e8f0', padding: '2.5rem', boxShadow: '0 10px 30px rgba(0,0,0,0.02)',
+            marginTop: '2rem'
+          }}>
+            <h4 style={{ fontFamily: "'Noto Serif', serif", fontSize: '1.4rem', fontWeight: 700, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#334155' }}>
+              <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}>
+                <Package size={20} />
+              </div>
+              System Tools
+            </h4>
+            <p style={{ fontSize: '0.9rem', color: '#64748b', marginBottom: '1.5rem', lineHeight: '1.6' }}>
+              Use these tools to keep your product database clean and accurate.
+            </p>
+
+            <button 
+              disabled={isCleaning}
+              onClick={fixTypos}
+              style={{
+                background: '#f8fafc', 
+                color: '#334155', 
+                width: '100%', 
+                padding: '1rem', 
+                borderRadius: '12px', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                gap: '0.75rem', 
+                fontWeight: '700',
+                fontSize: '0.9rem',
+                border: '1px solid #e2e8f0',
+                cursor: isCleaning ? 'not-allowed' : 'pointer',
+                opacity: isCleaning ? 0.6 : 1,
+                transition: 'all 0.2s'
+              }}
+            >
+              {isCleaning ? 'Cleaning Up...' : <><Palette size={18} /> Fix Spelling Errors in Database</>}
+            </button>
+          </div>
         </div>
 
       </div>

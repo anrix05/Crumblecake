@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useProducts } from '../context/ProductContext';
 import Navbar from '../components/Navbar';
 import { Star, SearchX, ChevronRight, ArrowLeft } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 import './SearchPage.css';
 
 function CakeCard({ cake }) {
@@ -117,7 +118,16 @@ export default function SearchPage() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [query]);
+    
+    // Log search query for analytics
+    if (query && query.length > 1) {
+      supabase.from('search_logs').insert([{
+        query: query,
+        results_count: filteredCakes.length,
+        created_at: new Date().toISOString()
+      }]).then(() => {}).catch(() => {});
+    }
+  }, [query, filteredCakes.length]);
 
   return (
     <div className="search-page-wrapper">

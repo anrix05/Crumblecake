@@ -156,8 +156,11 @@ export default function AdminProducts() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     
     const dbData = {
       name: formData.name,
@@ -183,12 +186,32 @@ export default function AdminProducts() {
       is_freshly_baked: formData.isFreshlyBaked
     };
 
-    if (selectedProduct) {
-      updateProduct({ ...dbData, id: selectedProduct.id });
-    } else {
-      addProduct(dbData);
+    console.log("Submitting product payload:", dbData);
+
+    try {
+      if (selectedProduct) {
+        const result = await updateProduct({ ...dbData, id: selectedProduct.id });
+        if (result?.error) throw result.error;
+        alert("Product updated successfully!");
+      } else {
+        const result = await addProduct(dbData);
+        if (result?.error) throw result.error;
+        alert("New product added to inventory!");
+      }
+      closePanel();
+    } catch (err) {
+      console.error("Submission failed:", err);
+      alert(`Failed to save product: ${err.message || 'Unknown error'}\n\nTip: If you're using high-res images, try smaller ones. Check if all required fields are filled.`);
+    } finally {
+      setIsSubmitting(false);
     }
-    closePanel();
+  };
+
+  const handleDelete = () => {
+    if (window.confirm(`Are you sure you want to delete "${selectedProduct.name}"? This action cannot be undone.`)) {
+      deleteProduct(selectedProduct.id);
+      closePanel();
+    }
   };
 
   const isPanelOpen = selectedProduct || isAddingNew;
@@ -418,13 +441,33 @@ export default function AdminProducts() {
             </div>
           </div>
 
-          <div style={{ marginTop: 'auto', paddingTop: '1.5rem', paddingBottom: '1rem', borderTop: '1px solid #fdf2f5' }}>
-            <button type="submit" style={{ 
-              width: '100%', padding: '1rem', background: 'linear-gradient(135deg, #d44d7d 0%, #c43369 100%)', 
-              color: 'white', border: 'none', borderRadius: '50px', fontWeight: 700, fontSize: '1rem', fontFamily: 'inherit',
-              cursor: 'pointer', boxShadow: '0 8px 24px rgba(200, 50, 100, 0.2)', transition: 'all 0.2s'
-            }}>
-              {selectedProduct ? 'Save Changes' : 'Create Product'}
+          <div style={{ marginTop: 'auto', paddingTop: '1.5rem', paddingBottom: '1rem', borderTop: '1px solid #fdf2f5', display: 'flex', gap: '1rem' }}>
+            {selectedProduct && (
+              <button 
+                type="button" 
+                onClick={handleDelete}
+                style={{ 
+                  flex: '0 0 50px', height: '50px', background: '#fef2f2', 
+                  color: '#ef4444', border: '1px solid #fee2e2', borderRadius: '50%', 
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer', transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => { e.target.style.background = '#fee2e2'; }}
+                onMouseLeave={(e) => { e.target.style.background = '#fef2f2'; }}
+              >
+                <Trash2 size={20} />
+              </button>
+            )}
+            <button 
+              type="submit" 
+              disabled={isSubmitting}
+              style={{ 
+                flex: 1, padding: '1rem', background: isSubmitting ? '#94a3b8' : 'linear-gradient(135deg, #d44d7d 0%, #c43369 100%)', 
+                color: 'white', border: 'none', borderRadius: '50px', fontWeight: 700, fontSize: '1rem', fontFamily: 'inherit',
+                cursor: isSubmitting ? 'not-allowed' : 'pointer', boxShadow: '0 8px 24px rgba(200, 50, 100, 0.2)', transition: 'all 0.2s'
+              }}
+            >
+              {isSubmitting ? 'Processing...' : (selectedProduct ? 'Save Changes' : 'Create Product')}
             </button>
           </div>
         </form>

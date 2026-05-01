@@ -9,10 +9,11 @@ import './ProductPage.css';
 export default function ProductPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { products } = useProducts();
+  const { products, fetchReviews } = useProducts();
   const { addToCart, cartItems } = useCart();
   
   const [product, setProduct] = useState(null);
+  const [reviews, setReviews] = useState([]);
   const [currentImgIndex, setCurrentImgIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isEggless, setIsEggless] = useState(true);
@@ -36,8 +37,11 @@ export default function ProductPage() {
       if (found.weight) {
         setSelectedWeight(found.weight);
       }
+      
+      // Fetch reviews
+      fetchReviews(id).then(data => setReviews(data || []));
     }
-  }, [id, products]);
+  }, [id, products, fetchReviews]);
 
   if (!product) {
     return (
@@ -197,7 +201,7 @@ export default function ProductPage() {
                 <Star size={16} fill="#fff" />
                 <span>{product.rating || 4.5}</span>
               </div>
-              <span className="review-count">{product.rating_count || 128} Reviews</span>
+              <span className="review-count">{reviews.length > 0 ? reviews.length : (product.rating_count || 0)} Reviews</span>
             </div>
 
             <div className="price-section" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
@@ -339,6 +343,9 @@ export default function ProductPage() {
                 <button className={`tab-btn ${activeTab === 'description' ? 'active' : ''}`} onClick={() => setActiveTab('description')}>Description</button>
                 <button className={`tab-btn ${activeTab === 'instructions' ? 'active' : ''}`} onClick={() => setActiveTab('instructions')}>Instructions</button>
                 <button className={`tab-btn ${activeTab === 'delivery' ? 'active' : ''}`} onClick={() => setActiveTab('delivery')}>Delivery Info</button>
+                <button className={`tab-btn ${activeTab === 'reviews' ? 'active' : ''}`} onClick={() => setActiveTab('reviews')}>
+                  Reviews ({reviews.length > 0 ? reviews.length : (product.rating_count || 0)})
+                </button>
               </div>
               
               <div className="tab-content scrollable-tab">
@@ -385,6 +392,50 @@ export default function ProductPage() {
                       <li>The chosen delivery time is an estimate and depends on the availability of the product and the destination to which you want the product to be delivered.</li>
                       <li>Since cakes are perishable in nature, we attempt delivery of your order only once. The delivery cannot be redirected to any other address.</li>
                     </ul>
+                  </div>
+                )}
+                {activeTab === 'reviews' && (
+                  <div className="tab-pane">
+                    <div className="reviews-summary-mini" style={{marginBottom: '1.5rem', padding: '1rem', background: '#fdf2f5', borderRadius: '12px'}}>
+                      <h4 style={{margin: '0 0 0.5rem 0', color: '#cd3d7a'}}>Customer Happiness</h4>
+                      <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                        <div style={{display: 'flex', color: '#fbbf24'}}>
+                          {[1,2,3,4,5].map(i => <Star key={i} size={16} fill={i <= Math.round(product.rating || 4.5) ? "currentColor" : "none"} />)}
+                        </div>
+                        <span style={{fontWeight: 700, fontSize: '1.1rem'}}>{product.rating || 4.5} / 5</span>
+                        <span style={{color: '#6b7280', fontSize: '0.9rem'}}>({reviews.length > 0 ? reviews.length : (product.rating_count || 0)} total reviews)</span>
+                      </div>
+                    </div>
+
+                    <div className="reviews-list-compact" style={{display: 'flex', flexDirection: 'column', gap: '1rem'}}>
+                      {reviews.length === 0 ? (
+                        <div style={{textAlign: 'center', padding: '2rem', color: '#9ca3af'}}>
+                          <Star size={32} style={{marginBottom: '0.5rem', opacity: 0.3}} />
+                          <p>
+                            {(reviews.length > 0 ? reviews.length : (product.rating_count || 0)) > 0 
+                              ? `Verified star ratings are available. Be the first to leave a detailed review!` 
+                              : "No reviews yet for this cake. Be the first to rate it!"}
+                          </p>
+                        </div>
+                      ) : (
+                        reviews.map((rev, idx) => (
+                          <div key={rev.id || idx} style={{padding: '1rem', borderBottom: '1px solid #f3f4f6'}}>
+                            <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem'}}>
+                              <span style={{fontWeight: 700, fontSize: '0.95rem'}}>{rev.customer_name}</span>
+                              <div style={{display: 'flex', color: '#fbbf24'}}>
+                                {[1,2,3,4,5].map(i => <Star key={i} size={12} fill={i <= rev.rating ? "currentColor" : "none"} />)}
+                              </div>
+                            </div>
+                            <p style={{margin: 0, fontSize: '0.9rem', color: '#4b5563', fontStyle: rev.comment ? 'normal' : 'italic'}}>
+                              {rev.comment || "Verified Purchase - Loved the cake!"}
+                            </p>
+                            <span style={{fontSize: '0.75rem', color: '#9ca3af', marginTop: '0.5rem', display: 'block'}}>
+                              {new Date(rev.created_at).toLocaleDateString()}
+                            </span>
+                          </div>
+                        ))
+                      )}
+                    </div>
                   </div>
                 )}
               </div>

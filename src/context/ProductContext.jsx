@@ -19,23 +19,29 @@ export function ProductProvider({ children }) {
   }, []);
 
   const addProduct = async (product) => {
-    // Generate an ID if needed, or let Supabase default to uuid
-    const newProduct = { ...product };
-    // Wait for insertion
-    const { data, error } = await supabase.from('products').insert([newProduct]).select();
-    if (error) {
+    try {
+      const { data, error } = await supabase.from('products').insert([product]).select();
+      if (error) throw error;
+      if (data && data.length > 0) {
+        setProducts(prev => [data[0], ...prev]);
+        return { success: true, data: data[0] };
+      }
+      return { success: false, error: { message: 'No data returned' } };
+    } catch (error) {
       console.error("Error adding product:", error);
-    } else if (data && data.length > 0) {
-      setProducts(prev => [data[0], ...prev]);
+      return { success: false, error };
     }
   };
 
   const updateProduct = async (updatedProduct) => {
-    const { error } = await supabase.from('products').update(updatedProduct).eq('id', updatedProduct.id);
-    if (error) {
-      console.error("Error updating product:", error);
-    } else {
+    try {
+      const { error } = await supabase.from('products').update(updatedProduct).eq('id', updatedProduct.id);
+      if (error) throw error;
       setProducts(prev => prev.map(p => p.id === updatedProduct.id ? updatedProduct : p));
+      return { success: true };
+    } catch (error) {
+      console.error("Error updating product:", error);
+      return { success: false, error };
     }
   };
 
@@ -48,8 +54,30 @@ export function ProductProvider({ children }) {
     }
   };
 
+  const fetchReviews = async (productId) => {
+    try {
+      const { data, error } = await supabase.from('reviews').select('*').eq('product_id', productId).order('created_at', { ascending: false });
+      if (error) throw error;
+      return data || [];
+    } catch (e) {
+      console.error("Error fetching reviews:", e);
+      return [];
+    }
+  };
+
+  const addReview = async (review) => {
+    try {
+      const { data, error } = await supabase.from('reviews').insert([review]).select();
+      if (error) throw error;
+      return data?.[0] || null;
+    } catch (e) {
+      console.error("Error adding review:", e);
+      return null;
+    }
+  };
+
   return (
-    <ProductContext.Provider value={{ products, addProduct, updateProduct, deleteProduct, loading }}>
+    <ProductContext.Provider value={{ products, addProduct, updateProduct, deleteProduct, fetchReviews, addReview, loading }}>
       {children}
     </ProductContext.Provider>
   );

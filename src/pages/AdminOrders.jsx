@@ -93,7 +93,7 @@ export default function AdminOrders() {
   const [priceInput, setPriceInput] = useState('');
   const [editingPrice, setEditingPrice] = useState(false);
 
-  const statuses = ['Any status', 'Ordered', 'Accepted', 'Packed', 'On its way', 'Delivered', 'Cancelled'];
+  const statuses = ['Any status', 'Ordered', 'Baking', 'Packing', 'Out for Delivery', 'Delivered', 'Cancelled'];
 
   const filteredOrders = orders
     .filter(o => {
@@ -112,9 +112,9 @@ export default function AdminOrders() {
   const getStatusClass = (status) => {
     switch (status) {
       case 'Ordered': return 'tag-paid';
-      case 'Accepted': return 'tag-paid';
-      case 'Packed': return 'tag-processing';
-      case 'On its way': return 'tag-delivered';
+      case 'Baking': return 'tag-baking';
+      case 'Packing': return 'tag-packing';
+      case 'Out for Delivery': return 'tag-out-for-delivery';
       case 'Delivered': return 'tag-completed';
       case 'Cancelled': return 'tag-cancelled';
       default: return 'tag-paid';

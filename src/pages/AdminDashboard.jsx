@@ -1,11 +1,39 @@
-import { TrendingUp, Users, DollarSign, Package, BarChart, AlertCircle, ShoppingBag, CheckCircle, XCircle } from 'lucide-react';
+import { TrendingUp, Users, DollarSign, Package, BarChart, AlertCircle, ShoppingBag, CheckCircle, XCircle, Search } from 'lucide-react';
 import { useOrders } from '../context/OrderContext';
 import { useProducts } from '../context/ProductContext';
+import { supabase } from '../lib/supabase';
+import { useState, useEffect } from 'react';
 import './Admin.css';
 
 export default function AdminDashboard() {
   const { orders } = useOrders();
   const { products } = useProducts();
+  const [topSearches, setTopSearches] = useState([]);
+
+  useEffect(() => {
+    const fetchTopSearches = async () => {
+      try {
+        const { data, error } = await supabase.from('search_logs').select('query');
+        if (error) throw error;
+        
+        const counts = (data || []).reduce((acc, curr) => {
+          const q = curr.query.toLowerCase().trim();
+          acc[q] = (acc[q] || 0) + 1;
+          return acc;
+        }, {});
+
+        const sorted = Object.entries(counts)
+          .map(([query, count]) => ({ query, count }))
+          .sort((a, b) => b.count - a.count)
+          .slice(0, 5);
+          
+        setTopSearches(sorted);
+      } catch (err) {
+        console.error("Error fetching search analytics:", err);
+      }
+    };
+    fetchTopSearches();
+  }, []);
 
   // Logic: Revenue only from DELIVERED orders. Cancelled excluded.
   const deliveredOrders = orders.filter(order => order.status === 'Delivered');
@@ -142,6 +170,29 @@ export default function AdminDashboard() {
             ))}
           </div>
           <p style={{ marginTop: '1rem', fontSize: '0.85rem', color: '#888', textAlign: 'center', fontWeight: 600 }}>Total order count per day (excluding cancelled)</p>
+        </div>
+
+        {/* Top Searches Analytics */}
+        <div style={{ background: 'white', borderRadius: '24px', border: '1px solid rgba(230, 190, 200, 0.4)', padding: '2rem', boxShadow: '0 10px 30px rgba(220, 150, 170, 0.08)' }}>
+          <h4 style={{ fontFamily: "'Noto Serif', serif", fontSize: '1.4rem', fontWeight: 700, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem', color: '#3f4247' }}>
+            <Search size={20} color="#cd3d7a" /> Top Search Trends
+          </h4>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {topSearches.length > 0 ? topSearches.map((item, idx) => (
+              <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.75rem 1rem', background: '#fdf2f5', borderRadius: '12px' }}>
+                <span style={{ fontWeight: 700, color: '#3f4247', textTransform: 'capitalize' }}>{item.query}</span>
+                <span style={{ background: 'white', padding: '4px 10px', borderRadius: '50px', fontSize: '0.8rem', fontWeight: 800, color: '#cd3d7a', border: '1px solid #f0d5df' }}>
+                  {item.count} searches
+                </span>
+              </div>
+            )) : (
+              <div style={{ textAlign: 'center', padding: '2rem', color: '#888' }}>
+                <Search size={32} style={{ opacity: 0.3, marginBottom: '1rem' }} />
+                <p>No search data available yet.</p>
+              </div>
+            )}
+          </div>
+          <p style={{ marginTop: '1.5rem', fontSize: '0.85rem', color: '#888', fontWeight: 600 }}>Use these keywords to plan your inventory and marketing.</p>
         </div>
       </div>
     </div>

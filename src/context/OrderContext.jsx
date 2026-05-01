@@ -82,13 +82,13 @@ export function OrderProvider({ children }) {
     }
   };
 
-  const rateOrderItem = async (orderId, itemIndex, rating) => {
+  const rateOrderItem = async (orderId, itemIndex, rating, comment = '') => {
     const order = orders.find(o => o.id === orderId);
     if (!order) return;
 
     const updatedItems = [...order.items];
     const ratedItem = updatedItems[itemIndex];
-    updatedItems[itemIndex] = { ...ratedItem, user_rating: rating };
+    updatedItems[itemIndex] = { ...ratedItem, user_rating: rating, user_comment: comment };
 
     // 1. Update the order itself
     const { error: orderError } = await supabase.from('orders').update({ items: updatedItems }).eq('id', orderId);
@@ -102,7 +102,6 @@ export function OrderProvider({ children }) {
     setOrders(prev => prev.map(o => o.id === orderId ? { ...o, items: updatedItems } : o));
 
     // 2. Sync with the Product's global rating
-    // We search all orders to find all ratings for this specific product ID
     if (ratedItem.id) {
       const { data: allOrders } = await supabase.from('orders').select('items');
       
@@ -124,9 +123,21 @@ export function OrderProvider({ children }) {
 
       if (count > 0) {
         const averageRating = parseFloat((totalRating / count).toFixed(1));
-        // Update the products table
-        await supabase.from('products').update({ rating: averageRating }).eq('id', ratedItem.id);
+        await supabase.from('products').update({ 
+          rating: averageRating,
+          rating_count: count 
+        }).eq('id', ratedItem.id);
       }
+
+      // 3. Create a public review record
+      await supabase.from('reviews').insert([{
+        product_id: ratedItem.id,
+        order_id: orderId,
+        rating: rating,
+        customer_name: order.customer || 'Guest',
+        comment: comment,
+        created_at: new Date().toISOString()
+      }]);
     }
   };
 
