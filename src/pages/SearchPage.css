@@ -1,0 +1,135 @@
+.search-page-wrapper {
+  min-height: 100vh;
+  background-color: #fdfafb;
+  padding-top: 100px;
+}
+
+.search-results-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.search-header-context {
+  margin-bottom: 3rem;
+}
+
+.back-to-shop {
+  background: none;
+  border: none;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-family: 'Manrope', sans-serif;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  transition: color 0.2s;
+}
+
+.back-to-shop:hover {
+  color: #cd3d7a;
+}
+
+.search-header-context h1 {
+  font-family: 'Noto Serif', serif;
+  font-size: 2.5rem;
+  color: #3f4247;
+  margin-bottom: 0.5rem;
+}
+
+.search-header-context p {
+  color: #7a7a7a;
+  font-family: 'Manrope', sans-serif;
+  font-size: 1.1rem;
+}
+
+.search-results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-bottom: 5rem;
+}
+
+.no-search-results {
+  text-align: center;
+  padding: 6rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+}
+
+.no-search-results h2 {
+  font-family: 'Noto Serif', serif;
+  font-size: 2rem;
+  color: #3f4247;
+}
+
+.no-search-results p {
+  max-width: 500px;
+  color: #7a7a7a;
+  line-height: 1.6;
+}
+
+.btn-explore {
+  background: #cd3d7a;
+  color: white;
+  border: none;
+  padding: 1rem 2.5rem;
+  border-radius: 50px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(205, 61, 122, 0.2);
+}
+
+.suggested-categories {
+  border-top: 1px solid #eee;
+  padding-top: 3rem;
+  margin-top: 3rem;
+}
+
+.suggested-categories h3 {
+  font-family: 'Noto Serif', serif;
+  margin-bottom: 1.5rem;
+  color: #3f4247;
+}
+
+.suggestion-pills {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.suggestion-pills button {
+  background: white;
+  border: 1px solid #ddd;
+  padding: 0.6rem 1.5rem;
+  border-radius: 50px;
+  font-family: 'Manrope', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.suggestion-pills button:hover {
+  border-color: #cd3d7a;
+  color: #cd3d7a;
+}
+
+@media (max-width: 768px) {
+  .search-results-container {
+    padding: 1rem;
+  }
+  .search-header-context h1 {
+    font-size: 1.8rem;
+  }
+  .search-results-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}

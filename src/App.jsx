@@ -13,6 +13,7 @@ import OrderDetailPage from './pages/OrderDetailPage';
 import CartPage from './pages/CartPage';
 import ProductPage from './pages/ProductPage';
 import CustomCakePage from './pages/CustomCakePage';
+import SearchPage from './pages/SearchPage';
 import CustomerAuthModal from './components/CustomerAuthModal';
 import { useAuth } from './context/AuthContext';
 import Footer from './components/Footer';
@@ -34,6 +35,7 @@ function App() {
         <Route path="/cart" element={<CartPage />} />
         <Route path="/product/:id" element={<ProductPage />} />
         <Route path="/custom-cake" element={<CustomCakePage />} />
+        <Route path="/search" element={<SearchPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/account" element={<AccountPage />} />
         <Route path="/account/order/:orderId" element={<OrderDetailPage />} />
