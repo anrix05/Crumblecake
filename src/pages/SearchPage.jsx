@@ -52,36 +52,40 @@ export default function SearchPage() {
     if (!q || q.length < 3 || force) return null;
     const lowerQ = q.toLowerCase();
     
-    // If original query already has results, don't correct anything
-    const hasActualResults = CAKES.some(cake => 
-      cake.name.toLowerCase().includes(lowerQ) ||
-      (cake.category && cake.category.toLowerCase().includes(lowerQ))
-    );
-    if (hasActualResults) return null;
+    // Check if we find results even with minor typos
+    const getFuzzyResults = (searchTerm) => {
+      const s = searchTerm.toLowerCase();
+      return CAKES.filter(cake => {
+        const name = cake.name.toLowerCase();
+        const cat = (cake.category || '').toLowerCase();
+        if (name.includes(s) || cat.includes(s)) return true;
+        
+        // Match "Choclate" with "chocolate"
+        if (s === 'chocolate' && name.includes('choclate')) return true;
+        if (s === 'choclate' && name.includes('chocolate')) return true;
+        if (s === 'vanilla' && name.includes('vanila')) return true;
+        if (s === 'vanila' && name.includes('vanilla')) return true;
+
+        return false;
+      });
+    };
+
+    const initialResults = getFuzzyResults(lowerQ);
+    if (initialResults.length > 0) return null;
 
     const keywords = ['chocolate', 'fruit', 'classic', 'specialty', 'combo', 'gift', 'dutch', 'truffle', 'red velvet', 'vanilla', 'strawberry', 'eggless'];
     const words = lowerQ.split(/\s+/);
     
-    // Check each word in the user's query against our high-value keywords
     for (const word of words) {
       if (word.length < 3) continue;
-      
       for (const key of keywords) {
-        // Exact match within a word (e.g. "choc" in "chocolate")
         if (key.includes(word)) return key;
-        
-        // Basic Levenshtein-like distance check for typos
         let diff = 0;
         const maxLen = Math.max(key.length, word.length);
         const minLen = Math.min(key.length, word.length);
-        
         if (Math.abs(key.length - word.length) > 2) continue;
-
-        for (let i = 0; i < minLen; i++) {
-          if (key[i] !== word[i]) diff++;
-        }
+        for (let i = 0; i < minLen; i++) if (key[i] !== word[i]) diff++;
         diff += (maxLen - minLen);
-
         if (diff <= 2) return key;
       }
     }
@@ -91,11 +95,23 @@ export default function SearchPage() {
   const correction = getCorrection(query);
   const activeQuery = (correction && !force) ? correction : query;
 
-  const filteredCakes = CAKES.filter(cake => 
-    cake.name.toLowerCase().includes(activeQuery.toLowerCase()) ||
-    (cake.description && cake.description.toLowerCase().includes(activeQuery.toLowerCase())) ||
-    (cake.category && cake.category.toLowerCase().includes(activeQuery.toLowerCase()))
-  );
+  const filteredCakes = CAKES.filter(cake => {
+    const s = activeQuery.toLowerCase();
+    const name = cake.name.toLowerCase();
+    const desc = (cake.description || '').toLowerCase();
+    const cat = (cake.category || '').toLowerCase();
+
+    // Standard match
+    if (name.includes(s) || desc.includes(s) || cat.includes(s)) return true;
+
+    // Resilient match for common DB typos
+    if (s.includes('chocolate') && (name.includes('choclate') || desc.includes('choclate'))) return true;
+    if (s.includes('choclate') && (name.includes('chocolate') || desc.includes('chocolate'))) return true;
+    if (s.includes('vanilla') && (name.includes('vanila') || desc.includes('vanila'))) return true;
+    if (s.includes('vanila') && (name.includes('vanilla') || desc.includes('vanilla'))) return true;
+
+    return false;
+  });
 
   const otherCakes = CAKES.filter(cake => !filteredCakes.find(f => f.id === cake.id)).slice(0, 8);
 
