@@ -117,21 +117,19 @@ export default function ProductPage() {
   const totalDisplayPrice = finalUnitPrice * quantity;
 
     const handleAddToCart = () => {
-    const activeCombos = comboOptions.filter(c => selectedCombos[c.id]).map(c => c.name);
     const hasCakeOptions = product.category !== 'Combos & Gifts';
     
     const cartItem = {
       ...product,
       id: hasCakeOptions ? `${product.id}-${selectedWeight}-${isEggless ? 'eggless' : 'egg'}` : product.id,
+      productId: product.id,
       name: hasCakeOptions ? `${product.name} (${selectedWeight}, ${isEggless ? 'Eggless' : 'With Egg'})` : product.name,
       price: basePrice,
-      base_product_id: product.id,
       quantity: quantity,
       variant_details: {
         weight: hasCakeOptions ? selectedWeight : undefined,
-        is_eggless: hasCakeOptions ? isEggless : undefined,
-        message: messageOnCake,
-        combos: activeCombos
+        isEggless: hasCakeOptions ? isEggless : undefined,
+        message: messageOnCake
       }
     };
 
@@ -142,6 +140,7 @@ export default function ProductPage() {
       if (fullComboProduct) {
         addToCart({
           ...fullComboProduct,
+          productId: fullComboProduct.id,
           quantity: quantity
         });
       }
@@ -401,7 +400,7 @@ export default function ProductPage() {
                     <span>{quantity}</span>
                     <button onClick={() => setQuantity(prev => prev + 1)}><Plus size={18} /></button>
                   </div>
-                  {cartItems.some(item => item.id.split('-')[0] === product.id) ? (
+                  {cartItems.some(item => item.productId === product.id || item.id.startsWith(product.id)) ? (
                     <button className="btn-add-to-cart" onClick={() => navigate('/cart')} style={{background: '#25D366'}}>
                       Go to Cart
                     </button>
