@@ -8,15 +8,24 @@ const CartContext = createContext();
 export function CartProvider({ children }) {
   const { user } = useAuth();
   const { orders } = useOrders();
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems] = useState(() => {
+    const saved = localStorage.getItem('cart_items');
+    try {
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [discountPercent, setDiscountPercent] = useState(0);
   const [appliedPromo, setAppliedPromo] = useState('');
+
+  useEffect(() => {
+    localStorage.setItem('cart_items', JSON.stringify(cartItems));
+  }, [cartItems]);
   const navigate = useNavigate();
 
   const addToCart = (product) => {
-    // Navigate to the new Cart Page automatically when adding an item
-    navigate('/cart');
     setCartItems(prev => {
       const existing = prev.find(item => item.id === product.id);
       const qtyToAdd = product.quantity || 1;

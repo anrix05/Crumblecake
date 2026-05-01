@@ -149,7 +149,6 @@ export default function ProductPage() {
     
     // Optional: Show a toast or immediately open cart drawer
     // In this app, Cart is usually a page. Navigate to cart.
-    navigate('/cart');
   };
 
   return (
