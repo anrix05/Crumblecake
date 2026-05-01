@@ -99,14 +99,7 @@ export default function SearchPage() {
           </div>
         )}
 
-        <div className="suggested-categories">
-          <h3>Popular Categories</h3>
-          <div className="suggestion-pills">
-            {['Chocolate', 'Fruit', 'Classic', 'Specialty'].map(cat => (
-              <button key={cat} onClick={() => navigate(`/#cakes`)}>{cat}</button>
-            ))}
-          </div>
-        </div>
+        <div className="search-footer-spacer"></div>
       </main>
     </div>
   );
