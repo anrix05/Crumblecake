@@ -1,5 +1,5 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Search, ShoppingBag, User, Truck } from 'lucide-react';
+import { Search, ShoppingBag, User, Truck, X } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useProducts } from '../context/ProductContext';
@@ -91,6 +91,7 @@ export default function Navbar() {
         {isSearchOpen ? (
           <div className="search-container-relative">
             <form className="search-expand-form" onSubmit={handleSearchSubmit}>
+              <Search size={18} color="#888" style={{marginRight: '8px'}} />
               <input 
                 autoFocus
                 type="text" 
@@ -98,13 +99,19 @@ export default function Navbar() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onBlur={() => {
-                  // Small timeout to allow clicking suggestions
                   setTimeout(() => {
                     if (!searchQuery) setIsSearchOpen(false);
                   }, 200);
                 }}
                 className="search-input-field"
               />
+              <button 
+                type="button" 
+                className="search-close-btn" 
+                onClick={() => setIsSearchOpen(false)}
+              >
+                <X size={20} />
+              </button>
             </form>
             
             {suggestions.length > 0 && (
