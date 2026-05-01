@@ -4,7 +4,7 @@ import { X, Mail, Lock } from 'lucide-react';
 import './CustomerAuthModal.css';
 
 export default function CustomerAuthModal({ isOpen, onClose }) {
-  const { signIn, signUp, user, signOut, resetPassword } = useAuth();
+  const { signIn, signUp, user, signOut, resetPassword, signInWithGoogle } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [isResetting, setIsResetting] = useState(false);
   const [resetSent, setResetSent] = useState(false);
@@ -151,6 +151,23 @@ export default function CustomerAuthModal({ isOpen, onClose }) {
                 {loading ? 'Processing...' : (isResetting ? 'Send Reset Link' : (isLogin ? 'Sign In' : 'Create Account'))}
               </button>
             </form>
+
+            {!isResetting && (
+              <>
+                <div className="auth-divider">
+                  <span>or</span>
+                </div>
+
+                <button 
+                  type="button" 
+                  className="google-btn" 
+                  onClick={() => signInWithGoogle()}
+                >
+                  <img src="https://img.icons8.com/color/48/000000/google-logo.png" alt="Google" />
+                  Continue with Google
+                </button>
+              </>
+            )}
 
             <div className="auth-toggle" style={{marginTop: '1.5rem', textAlign: 'center'}}>
               {isResetting ? (

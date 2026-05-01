@@ -90,6 +90,15 @@ export const AuthProvider = ({ children }) => {
     return { data, error };
   };
 
+  const signInWithGoogle = async () => {
+    return await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin
+      }
+    });
+  };
+
   const isAdmin = user?.email === 'chef@crumblecakes.in';
 
   return (
@@ -101,6 +110,7 @@ export const AuthProvider = ({ children }) => {
       signOut, 
       updateProfile,
       resetPassword,
+      signInWithGoogle,
       savedName,
       savedPhone,
       savedAddress,
