@@ -10,7 +10,7 @@ export default function ProductPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { products } = useProducts();
-  const { addToCart } = useCart();
+  const { addToCart, cartItems } = useCart();
   
   const [product, setProduct] = useState(null);
   const [currentImgIndex, setCurrentImgIndex] = useState(0);
@@ -401,9 +401,15 @@ export default function ProductPage() {
                     <span>{quantity}</span>
                     <button onClick={() => setQuantity(prev => prev + 1)}><Plus size={18} /></button>
                   </div>
-                  <button className="btn-add-to-cart" onClick={handleAddToCart}>
-                    Add to Cart - ₹{totalDisplayPrice.toFixed(2)}
-                  </button>
+                  {cartItems.some(item => item.id === product.id) ? (
+                    <button className="btn-add-to-cart" onClick={() => navigate('/cart')} style={{background: '#25D366'}}>
+                      Go to Cart
+                    </button>
+                  ) : (
+                    <button className="btn-add-to-cart" onClick={handleAddToCart}>
+                      Add to Cart - ₹{totalDisplayPrice.toFixed(2)}
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
