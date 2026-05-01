@@ -11,10 +11,17 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const hideBanner = ['/cart', '/checkout', '/account'].includes(location.pathname) || location.pathname.startsWith('/account/order/');
-  const isHome = location.pathname === '/';
-  const isProductPage = location.pathname.startsWith('/product/');
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/#cakes?search=${encodeURIComponent(searchQuery.trim())}`);
+      setIsSearchOpen(false);
+      setSearchQuery('');
+    }
+  };
 
   const handleAuthClick = () => {
     setIsMobileMenuOpen(false);
@@ -64,12 +71,28 @@ export default function Navbar() {
       </ul>
 
       <div className="navbar-actions">
-        <a href="#cakes" className="navbar-order-btn">
-          Order Now <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-        </a>
-        <button className="icon-btn search-btn">
-          <Search size={20} />
-        </button>
+        {isSearchOpen ? (
+          <form className="search-expand-form" onSubmit={handleSearchSubmit}>
+            <input 
+              autoFocus
+              type="text" 
+              placeholder="Search cakes..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onBlur={() => !searchQuery && setIsSearchOpen(false)}
+              className="search-input-field"
+            />
+          </form>
+        ) : (
+          <>
+            <a href="#cakes" className="navbar-order-btn">
+              Order Now <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </a>
+            <button className="icon-btn search-btn" onClick={() => setIsSearchOpen(true)}>
+              <Search size={20} />
+            </button>
+          </>
+        )}
         <button className="icon-btn auth-btn" onClick={handleAuthClick} aria-label="Account">
           <User size={20} style={{ color: user ? 'var(--color-primary)' : 'inherit' }} />
         </button>

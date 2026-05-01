@@ -1,11 +1,20 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useProducts } from '../context/ProductContext';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useOrders } from '../context/OrderContext';
-import { ShoppingBag, Star, Plus, Upload, X, Palette, Info, Cake, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { ShoppingBag, Star, Plus, Upload, X, Palette, Info, Cake, ChevronLeft, ChevronRight, SearchX } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import './CakesPage.css';
+
+// ... (CakeCard component remains same, but I need to include it in the replacement if I replace the whole start)
+// I'll just replace from the imports to the filteredCakes logic.
+
+// Wait, I'll be careful with CakeCard. 
+// Actually, I'll just replace the imports and then the start of the CakesPage component.
+
+// I'll do it in chunks to be safe.
+
 
 function CakeCard({ cake }) {
   const [currentImgIndex, setCurrentImgIndex] = useState(0);
@@ -89,12 +98,23 @@ export default function CakesPage() {
   const { user, setIsAuthModalOpen } = useAuth();
   const [activeCategory, setActiveCategory] = useState('All');
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const searchQuery = searchParams.get('search');
 
   const categories = ['All', 'Fruit', 'Chocolate', 'Classic', 'Specialty', 'Combos & Gifts'];
 
-  const filteredCakes = activeCategory === 'All' 
-    ? CAKES 
-    : CAKES.filter(cake => cake.category === activeCategory);
+  const filteredCakes = CAKES.filter(cake => {
+    const matchesCategory = activeCategory === 'All' || cake.category === activeCategory;
+    const matchesSearch = !searchQuery || 
+      cake.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (cake.description && cake.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (cake.category && cake.category.toLowerCase().includes(searchQuery.toLowerCase()));
+    return matchesCategory && matchesSearch;
+  });
+
+  const clearSearch = () => {
+    setSearchParams({});
+  };
 
 
 
@@ -111,12 +131,33 @@ export default function CakesPage() {
             <button 
               key={cat} 
               className={`filter-btn ${activeCategory === cat ? 'active' : ''}`}
-              onClick={() => setActiveCategory(cat)}
+              onClick={() => {
+                setActiveCategory(cat);
+                if (searchQuery) setSearchParams({}); // Reset search if category changed? Or keep both?
+              }}
             >
               {cat}
             </button>
           ))}
         </div>
+
+        {searchQuery && (
+          <div className="search-results-info">
+            <h2>Showing results for "<span className="text-pink">{searchQuery}</span>"</h2>
+            <button className="clear-search-btn" onClick={clearSearch}>
+              <X size={16} /> Clear Search
+            </button>
+          </div>
+        )}
+
+        {filteredCakes.length === 0 && (
+          <div className="no-results">
+            <SearchX size={48} color="#ccc" />
+            <h3>No cakes found matching your search.</h3>
+            <p>Try a different keyword or browse our categories.</p>
+            <button className="btn-back" onClick={clearSearch}>View All Cakes</button>
+          </div>
+        )}
 
         <div className="cakes-grid">
           {/* Build Your Own Cake Card */}
