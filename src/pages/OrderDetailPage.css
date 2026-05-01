@@ -465,6 +465,55 @@
   }
 }
 
+@media (max-width: 600px) {
+  .amz-tracking-section {
+    padding: 1.5rem;
+  }
+
+  .tracking-header {
+    margin-bottom: 2rem;
+  }
+
+  .status-badge {
+    font-size: 1.2rem;
+  }
+
+  .progress-stepper {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+    padding: 0;
+  }
+
+  .step {
+    flex-direction: row;
+    align-items: center;
+    gap: 1.2rem;
+    flex: none;
+    width: 100%;
+  }
+
+  .step-circle {
+    margin-bottom: 0;
+    width: 36px;
+    height: 36px;
+    z-index: 2;
+  }
+
+  .step-label {
+    text-align: left;
+    font-size: 0.9rem;
+  }
+
+  .step-line {
+    top: 36px;
+    left: 18px;
+    width: 2px;
+    height: calc(100% + 1.5rem - 36px);
+    transform: none;
+  }
+}
+
 .order-details-loading {
   display: flex;
   flex-direction: column;
