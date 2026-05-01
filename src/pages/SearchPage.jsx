@@ -52,6 +52,8 @@ export default function SearchPage() {
     (cake.category && cake.category.toLowerCase().includes(query.toLowerCase()))
   );
 
+  const otherCakes = CAKES.filter(cake => !filteredCakes.find(f => f.id === cake.id)).slice(0, 8);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [query]);
@@ -81,6 +83,19 @@ export default function SearchPage() {
             <h2>No cakes found matching your search</h2>
             <p>We couldn't find anything for "{query}". Try checking your spelling or using different keywords.</p>
             <button className="btn-explore" onClick={() => navigate('/')}>Explore All Cakes</button>
+          </div>
+        )}
+
+        {otherCakes.length > 0 && (
+          <div className="more-products-section">
+            <div className="section-divider">
+              <span>You might also like</span>
+            </div>
+            <div className="search-results-grid">
+              {otherCakes.map(cake => (
+                <CakeCard key={cake.id} cake={cake} />
+              ))}
+            </div>
           </div>
         )}
 

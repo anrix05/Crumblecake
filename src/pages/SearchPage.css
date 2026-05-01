@@ -1,7 +1,7 @@
 .search-page-wrapper {
   min-height: 100vh;
   background-color: #fff;
-  padding-top: 120px;
+  padding-top: 160px; /* Increased to prevent Navbar overlap */
 }
 
 .search-results-container {
@@ -13,6 +13,8 @@
 .search-header-context {
   margin-bottom: 4rem;
   animation: slideDown 0.6s ease-out;
+  position: relative;
+  z-index: 10;
 }
 
 .back-to-shop {
@@ -22,14 +24,15 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 0.6rem 1.2rem;
+  padding: 0.65rem 1.4rem;
   border-radius: 50px;
   cursor: pointer;
   font-family: 'Manrope', sans-serif;
   font-weight: 700;
   font-size: 0.85rem;
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
 }
 
 .back-to-shop:hover {
@@ -37,7 +40,42 @@
   border-color: #cd3d7a;
   color: #cd3d7a;
   transform: translateX(-5px);
-  box-shadow: 0 4px 12px rgba(205, 61, 122, 0.1);
+  box-shadow: 0 4px 15px rgba(205, 61, 122, 0.12);
+}
+
+/* Recommendations Section */
+.more-products-section {
+  margin-top: 6rem;
+  animation: fadeIn 1s ease-out;
+}
+
+.section-divider {
+  display: flex;
+  align-items: center;
+  margin-bottom: 3rem;
+  position: relative;
+}
+
+.section-divider::before {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #eee, transparent);
+}
+
+.section-divider span {
+  padding: 0 2rem;
+  font-family: 'Noto Serif', serif;
+  font-size: 1.8rem;
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+.section-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #eee, transparent);
 }
 
 .search-header-context h1 {
