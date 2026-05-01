@@ -47,26 +47,43 @@ export default function SearchPage() {
   const query = searchParams.get('q') || '';
   const force = searchParams.get('force') === 'true';
 
-  // Fuzzy matching for "Did you mean?" functionality
+  // Refined fuzzy matching for "Did you mean?" functionality
   const getCorrection = (q) => {
     if (!q || q.length < 3 || force) return null;
     const lowerQ = q.toLowerCase();
     
-    // If we have actual results for this query, don't correct
+    // If original query already has results, don't correct anything
     const hasActualResults = CAKES.some(cake => 
       cake.name.toLowerCase().includes(lowerQ) ||
       (cake.category && cake.category.toLowerCase().includes(lowerQ))
     );
     if (hasActualResults) return null;
 
-    const keywords = ['chocolate', 'fruit', 'classic', 'specialty', 'combo', 'gift', 'dutch', 'truffle', 'red velvet', 'vanilla', 'strawberry', 'cake', 'eggless'];
+    const keywords = ['chocolate', 'fruit', 'classic', 'specialty', 'combo', 'gift', 'dutch', 'truffle', 'red velvet', 'vanilla', 'strawberry', 'eggless'];
+    const words = lowerQ.split(/\s+/);
     
-    for (const key of keywords) {
-      if (key.includes(lowerQ) || lowerQ.includes(key)) return key;
-      let dist = 0;
-      for (let i=0; i<Math.min(key.length, lowerQ.length); i++) if (key[i] !== lowerQ[i]) dist++;
-      dist += Math.abs(key.length - lowerQ.length);
-      if (dist <= 2) return key;
+    // Check each word in the user's query against our high-value keywords
+    for (const word of words) {
+      if (word.length < 3) continue;
+      
+      for (const key of keywords) {
+        // Exact match within a word (e.g. "choc" in "chocolate")
+        if (key.includes(word)) return key;
+        
+        // Basic Levenshtein-like distance check for typos
+        let diff = 0;
+        const maxLen = Math.max(key.length, word.length);
+        const minLen = Math.min(key.length, word.length);
+        
+        if (Math.abs(key.length - word.length) > 2) continue;
+
+        for (let i = 0; i < minLen; i++) {
+          if (key[i] !== word[i]) diff++;
+        }
+        diff += (maxLen - minLen);
+
+        if (diff <= 2) return key;
+      }
     }
     return null;
   };
